@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  background: #0b0b0b;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 20px;
+  background: #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+main {
+  padding: 10px 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 60px 70px 220px 1fr 120px 120px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #222;
+  align-items: center;
+}
+
+.leaderboard-header {
+  font-weight: bold;
+  background: #151515;
+  border-bottom: 2px solid #333;
+}
+
+.lap {
+  font-family: monospace;
+  font-size: 20px;
+}
+
+.position {
+  font-weight: bold;
+  font-size: 20px;
+}
