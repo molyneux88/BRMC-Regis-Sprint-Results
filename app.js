@@ -1,13 +1,46 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxa5GitlumgE44NiBazqNRGdHBfZwRSjmdOurxN1rO1qOBiLlJrwbbCZpWRQayY_B_LQw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby4Oiy23C6NO1E9s9WsMZutyUyzec72G1Q72ycEElecZIdpNFtNyPkcSH4kkwFuEeJOUA/exec";
 
-fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-    console.log("FULL DATA:", data);
+async function loadLeaderboard() {
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json();
 
-    if (data.length > 0) {
-      console.log("FIRST ROW:", data[0]);
-      console.log("KEYS:", Object.keys(data[0]));
-    }
-  })
-  .catch(err => console.error(err));
+    const leaderboard = document.getElementById("leaderboard");
+    leaderboard.innerHTML = "";
+
+    data.forEach(row => {
+      // Skip withdrawn cars if you want later:
+      // if (row.withdrawn_check === "WITHDRAWN") return;
+
+      const div = document.createElement("div");
+      div.className = "row";
+
+      div.innerHTML = `
+        <div class="position">${row.position}</div>
+        <div class="number">#${row.car_number}</div>
+        <div class="driver">${row.driver}</div>
+        <div class="car">${row.car}</div>
+        <div class="lap">${formatLap(row.best_lap)}</div>
+        <div class="gap">${row.gap_to_first_display}</div>
+      `;
+
+      leaderboard.appendChild(div);
+    });
+
+    document.getElementById("lastUpdated").textContent =
+      "Last updated: " + new Date().toLocaleTimeString();
+
+  } catch (error) {
+    console.error("Error loading leaderboard:", error);
+  }
+}
+
+function formatLap(seconds) {
+  if (seconds === null || seconds === undefined || seconds === "") {
+    return "—";
+  }
+  return Number(seconds).toFixed(2);
+}
+
+loadLeaderboard();
+setInterval(loadLeaderboard, 30000);
