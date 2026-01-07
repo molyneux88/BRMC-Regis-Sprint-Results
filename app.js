@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycby4Oiy23C6NO1E9s9WsMZutyUyzec72G1Q72ycEElecZIdpNFtNyPkcSH4kkwFuEeJOUA/exec";
+const API_URL = "https://lap-times-proxy.yourname.workers.dev";
 
 async function loadLeaderboard() {
   try {
