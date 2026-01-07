@@ -138,7 +138,7 @@ async function loadLeaderboard() {
 
         requestAnimationFrame(() => {
           row.style.transform = "";
-          row.style.transition = "transform 0.8s ease";
+          row.style.transition = "transform 5s ease";
         });
       }
     });
