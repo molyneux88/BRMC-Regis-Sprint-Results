@@ -2,7 +2,11 @@ const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 
 async function loadLeaderboard() {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL, {
+        method: "GET",
+        mode: "cors"
+        });
+        
     const data = await response.json();
 
     const leaderboard = document.getElementById("leaderboard");
