@@ -1,6 +1,6 @@
 const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
-const EXAGGERATION = 1.5; // optional exaggeration for visibility
-const ANIMATION_DURATION = 1000; // ms
+const EXAGGERATION = 5.5; // optional exaggeration for visibility
+const ANIMATION_DURATION = 10000; // ms
 let firstLoad = true;
 const previousPositions = {};
 
