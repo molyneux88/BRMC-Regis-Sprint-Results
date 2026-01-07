@@ -1,10 +1,9 @@
-const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/"; // deployed Worker
-const EXAGGERATION = 1.5; // exaggerate vertical movement
+const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
+const EXAGGERATION = 1.5; 
 const ANIMATION_DURATION = 800; // ms
 let firstLoad = true;
 const previousPositions = {};
 
-// Format lap time as minutes:seconds.milliseconds
 function formatLap(seconds) {
   const min = Math.floor(seconds / 60);
   const sec = (seconds % 60).toFixed(3);
@@ -12,24 +11,20 @@ function formatLap(seconds) {
 }
 
 async function loadLeaderboard() {
-  console.log("Loading leaderboard…");
-
   try {
     const response = await fetch(API_URL, { mode: "cors" });
     const data = await response.json();
 
     const leaderboard = document.getElementById("leaderboard");
-    if (!leaderboard) return console.error("#leaderboard not found");
+    if (!leaderboard) return;
 
-    // --------- FIRST LOAD ----------
     if (firstLoad) {
+      // Initial render
       leaderboard.innerHTML = "";
-
       data.forEach(row => {
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
         rowDiv.id = `car-${row.car_number}`;
-
         rowDiv.innerHTML = `
           <div class="position">${row.position}<span class="arrow"></span></div>
           <div class="number">#${row.car_number}</div>
@@ -38,35 +33,26 @@ async function loadLeaderboard() {
           <div class="lap">${formatLap(row.best_lap)}</div>
           <div class="gap">${row.gap_to_first_display}</div>
         `;
-
         leaderboard.appendChild(rowDiv);
         previousPositions[row.car_number] = row.position;
       });
 
       document.getElementById("lastUpdated").textContent =
         "Last updated: " + new Date().toLocaleTimeString();
-
       firstLoad = false;
       return;
     }
 
-    // --------- SUBSEQUENT LOADS ----------
+    // 1️⃣ Measure initial positions
     const firstRects = {};
     Array.from(leaderboard.children).forEach(row => {
       firstRects[row.id] = row.getBoundingClientRect();
     });
 
-    // 1️⃣ Update row contents & highlights
+    // 2️⃣ Update content and apply highlights/arrows (do not reorder DOM)
     data.forEach(row => {
-      const id = `car-${row.car_number}`;
-      let rowDiv = document.getElementById(id);
-
-      if (!rowDiv) {
-        rowDiv = document.createElement("div");
-        rowDiv.className = "row";
-        rowDiv.id = id;
-        leaderboard.appendChild(rowDiv);
-      }
+      const rowDiv = document.getElementById(`car-${row.car_number}`);
+      if (!rowDiv) return;
 
       // Ensure arrow span exists
       let arrowSpan = rowDiv.querySelector(".arrow");
@@ -76,7 +62,7 @@ async function loadLeaderboard() {
         rowDiv.querySelector(".position").appendChild(arrowSpan);
       }
 
-      // Update text content
+      // Update text
       rowDiv.querySelector(".position").childNodes[0].textContent = row.position;
       rowDiv.querySelector(".number").textContent = `#${row.car_number}`;
       rowDiv.querySelector(".driver").textContent = row.driver;
@@ -84,42 +70,45 @@ async function loadLeaderboard() {
       rowDiv.querySelector(".lap").textContent = formatLap(row.best_lap);
       rowDiv.querySelector(".gap").textContent = row.gap_to_first_display;
 
-      // Movement detection
+      // Apply highlight & arrow based on movement
       const oldPos = previousPositions[row.car_number];
-      if (oldPos !== undefined) {
-        const arrow = arrowSpan;
+      const arrow = arrowSpan;
 
-        // Apply highlight
+      if (oldPos !== undefined) {
         if (row.position < oldPos) {
-        rowDiv.classList.add("up");
-        rowDiv.classList.remove("down");
-        arrowSpan.textContent = "↑";
+          rowDiv.classList.add("up");
+          rowDiv.classList.remove("down");
+          arrow.textContent = "↑";
+          arrow.classList.add("up");
+          arrow.classList.remove("down");
         } else if (row.position > oldPos) {
-        rowDiv.classList.add("down");
-        rowDiv.classList.remove("up");
-        arrowSpan.textContent = "↓";
+          rowDiv.classList.add("down");
+          rowDiv.classList.remove("up");
+          arrow.textContent = "↓";
+          arrow.classList.add("down");
+          arrow.classList.remove("up");
         } else {
-        arrowSpan.textContent = "";
-        rowDiv.classList.remove("up", "down");
+          rowDiv.classList.remove("up", "down");
+          arrow.textContent = "";
+          arrow.classList.remove("up", "down");
         }
 
         // Remove highlight after 2s
         setTimeout(() => {
-        rowDiv.classList.remove("up", "down");
+          rowDiv.classList.remove("up", "down");
         }, 2000);
-
       }
 
       previousPositions[row.car_number] = row.position;
     });
 
-    // 2️⃣ Measure final positions
+    // 3️⃣ Measure final positions
     const lastRects = {};
     Array.from(leaderboard.children).forEach(row => {
       lastRects[row.id] = row.getBoundingClientRect();
     });
 
-    // 3️⃣ Apply FLIP transforms
+    // 4️⃣ Apply FLIP transforms
     Array.from(leaderboard.children).forEach(row => {
       const first = firstRects[row.id];
       const last = lastRects[row.id];
@@ -132,7 +121,7 @@ async function loadLeaderboard() {
       }
     });
 
-    // 4️⃣ Trigger animation
+    // 5️⃣ Animate transforms
     requestAnimationFrame(() => {
       Array.from(leaderboard.children).forEach(row => {
         if (row.style.transform) {
@@ -142,7 +131,7 @@ async function loadLeaderboard() {
       });
     });
 
-    // 5️⃣ Reorder DOM after animation completes
+    // 6️⃣ Reorder DOM after animation
     setTimeout(() => {
       data.forEach(row => {
         const rowDiv = document.getElementById(`car-${row.car_number}`);
@@ -150,7 +139,7 @@ async function loadLeaderboard() {
       });
     }, ANIMATION_DURATION);
 
-    // 6️⃣ Update timestamp
+    // 7️⃣ Update timestamp
     document.getElementById("lastUpdated").textContent =
       "Last updated: " + new Date().toLocaleTimeString();
 
@@ -159,7 +148,6 @@ async function loadLeaderboard() {
   }
 }
 
-// Start polling
 document.addEventListener("DOMContentLoaded", () => {
   loadLeaderboard();
   setInterval(loadLeaderboard, 30000);
