@@ -1,4 +1,4 @@
-const API_URL = "https://lap-times-proxy.yourname.workers.dev";
+const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 
 async function loadLeaderboard() {
   try {
