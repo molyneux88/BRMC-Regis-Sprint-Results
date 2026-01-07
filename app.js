@@ -1,5 +1,7 @@
 const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 
+console.log("Loading leaderboard…");
+
 const previousPositions = {};
 
 async function loadLeaderboard() {
