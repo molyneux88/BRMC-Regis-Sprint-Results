@@ -1,62 +1,110 @@
+/* ------------------------------
+   Global / Body
+--------------------------------*/
 body {
   margin: 0;
-  background: #0b0b0b;
-  color: white;
+  background: #0b0b0b; /* dark background for page */
+  color: white;         /* default text color */
   font-family: Arial, sans-serif;
 }
 
+/* ------------------------------
+   Header
+--------------------------------*/
 header {
   padding: 20px;
-  background: #111;
+  background: #111;   /* slightly lighter dark header */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: white;
 }
 
+/* ------------------------------
+   Main content
+--------------------------------*/
 main {
   padding: 10px 0;
 }
 
+/* ------------------------------
+   Leaderboard rows
+--------------------------------*/
 .row {
   display: grid;
   grid-template-columns: 60px 70px 2fr 2fr 100px 100px;
   align-items: center;
   padding: 10px 12px;
-  border-bottom: 1px solid #eee;
-  background: white;
-
-  transition:
-    transform 0.4s ease,
-    background-color 0.6s ease;
+  border-bottom: 1px solid #333;
+  background: #111;   /* dark row background */
+  color: white;       /* text is visible */
+  transition: transform 0.4s ease, background-color 0.6s ease;
   will-change: transform;
 }
 
+/* ------------------------------
+   Position change highlights
+--------------------------------*/
 .row.up {
-  background-color: #e6f7ec;
+  background-color: #006400; /* dark green for moving up */
+  color: white;
 }
 
 .row.down {
-  background-color: #fdeaea;
+  background-color: #8B0000; /* dark red for moving down */
+  color: white;
 }
 
+/* Optional smooth transform class */
 .row.move {
   transition: transform 0.4s ease;
 }
 
+/* ------------------------------
+   Leaderboard header row
+--------------------------------*/
 .leaderboard-header {
   font-weight: bold;
-  background: #151515;
+  background: #151515;   /* slightly lighter than rows */
   border-bottom: 2px solid #333;
+  color: white;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 60px 70px 2fr 2fr 100px 100px;
 }
 
+/* ------------------------------
+   Lap / Position styling
+--------------------------------*/
 .lap {
   font-family: monospace;
   font-size: 20px;
+  color: white;
 }
 
 .position {
   font-weight: bold;
   font-size: 20px;
+  color: white;
 }
 
+/* ------------------------------
+   Optional hover effect
+--------------------------------*/
+.row:hover {
+  background-color: #222; /* subtle hover for readability */
+}
 
+/* ------------------------------
+   Responsive tweaks (optional)
+--------------------------------*/
+@media (max-width: 768px) {
+  .row, .leaderboard-header {
+    grid-template-columns: 50px 60px 1.5fr 1.5fr 80px 80px;
+    font-size: 16px;
+  }
+
+  .lap, .position {
+    font-size: 16px;
+  }
+}
