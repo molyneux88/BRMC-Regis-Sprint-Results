@@ -1,9 +1,10 @@
-const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/"; // <-- deployed Worker
+const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/"; // deployed Worker
 let firstLoad = true;
 const previousPositions = {};
+const EXAGGERATION = 1.5; // exaggerate vertical movement
 
+// Format lap time as minutes:seconds.milliseconds
 function formatLap(seconds) {
-  // Convert 79.74 -> 1:19.740 style
   const min = Math.floor(seconds / 60);
   const sec = (seconds % 60).toFixed(3);
   return `${min}:${sec.padStart(6, "0")}`;
@@ -15,13 +16,14 @@ async function loadLeaderboard() {
   try {
     const response = await fetch(API_URL, { mode: "cors" });
     const data = await response.json();
-    const leaderboard = document.getElementById("leaderboard");
 
+    const leaderboard = document.getElementById("leaderboard");
     if (!leaderboard) return console.error("#leaderboard not found");
 
-    // FIRST LOAD — simple render
+    // --------- FIRST LOAD: render without animation ----------
     if (firstLoad) {
       leaderboard.innerHTML = "";
+
       data.forEach(row => {
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
@@ -40,7 +42,6 @@ async function loadLeaderboard() {
         previousPositions[row.car_number] = row.position;
       });
 
-      // Update timestamp
       document.getElementById("lastUpdated").textContent =
         "Last updated: " + new Date().toLocaleTimeString();
 
@@ -48,15 +49,14 @@ async function loadLeaderboard() {
       return;
     }
 
-    // ---------- Subsequent loads (FLIP) ----------
-
+    // --------- SUBSEQUENT LOADS: FLIP animation ----------
     // 1️⃣ Measure current positions
     const firstRects = {};
     Array.from(leaderboard.children).forEach(row => {
       firstRects[row.id] = row.getBoundingClientRect();
     });
 
-    // 2️⃣ Update / create rows
+    // 2️⃣ Update rows
     data.forEach(row => {
       const id = `car-${row.car_number}`;
       let rowDiv = document.getElementById(id);
@@ -84,7 +84,7 @@ async function loadLeaderboard() {
       rowDiv.querySelector(".lap").textContent = formatLap(row.best_lap);
       rowDiv.querySelector(".gap").textContent = row.gap_to_first_display;
 
-      // Movement detection
+      // Detect movement
       const oldPos = previousPositions[row.car_number];
       if (oldPos !== undefined) {
         if (row.position < oldPos) {
@@ -100,12 +100,11 @@ async function loadLeaderboard() {
           arrowSpan.classList.add("down");
           arrowSpan.classList.remove("up");
         } else {
-          // no movement
-          rowDiv.classList.remove("up", "down");
           arrowSpan.textContent = "";
+          rowDiv.classList.remove("up", "down");
         }
 
-        // Highlight fades after 2s
+        // Keep highlight visible longer
         setTimeout(() => {
           rowDiv.classList.remove("up", "down");
         }, 2000);
@@ -114,7 +113,7 @@ async function loadLeaderboard() {
       previousPositions[row.car_number] = row.position;
     });
 
-    // 3️⃣ Reorder DOM
+    // 3️⃣ Reorder DOM according to new positions
     data.forEach(row => {
       const rowDiv = document.getElementById(`car-${row.car_number}`);
       leaderboard.appendChild(rowDiv);
@@ -126,7 +125,7 @@ async function loadLeaderboard() {
       lastRects[row.id] = row.getBoundingClientRect();
     });
 
-    // 5️⃣ Apply FLIP animation
+    // 5️⃣ Apply FLIP animation with slight exaggeration
     Array.from(leaderboard.children).forEach(row => {
       const first = firstRects[row.id];
       const last = lastRects[row.id];
@@ -134,17 +133,17 @@ async function loadLeaderboard() {
 
       const deltaY = first.top - last.top;
       if (deltaY !== 0) {
-        row.style.transform = `translateY(${deltaY}px)`;
+        row.style.transform = `translateY(${deltaY * EXAGGERATION}px)`;
         row.style.transition = "none";
 
         requestAnimationFrame(() => {
           row.style.transform = "";
-          row.style.transition = "transform 0.4s ease";
+          row.style.transition = "transform 0.8s ease";
         });
       }
     });
 
-    // Update timestamp
+    // 6️⃣ Update timestamp
     document.getElementById("lastUpdated").textContent =
       "Last updated: " + new Date().toLocaleTimeString();
 
@@ -153,8 +152,8 @@ async function loadLeaderboard() {
   }
 }
 
-// Ensure DOM ready
+// Start polling after DOM ready
 document.addEventListener("DOMContentLoaded", () => {
   loadLeaderboard();
-  setInterval(loadLeaderboard, 30000); // poll every 30s
+  setInterval(loadLeaderboard, 30000);
 });
