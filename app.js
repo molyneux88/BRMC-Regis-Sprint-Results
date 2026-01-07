@@ -103,5 +103,8 @@ function formatLap(seconds) {
   return Number(seconds).toFixed(2);
 }
 
-loadLeaderboard();
-setInterval(loadLeaderboard, 30000);
+document.addEventListener("DOMContentLoaded", () => {
+  loadLeaderboard();
+  setInterval(loadLeaderboard, 30000);
+});
+
