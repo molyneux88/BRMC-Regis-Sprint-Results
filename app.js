@@ -89,27 +89,25 @@ async function loadLeaderboard() {
       if (oldPos !== undefined) {
         const arrow = arrowSpan;
 
+        // Apply highlight
         if (row.position < oldPos) {
-          rowDiv.classList.add("up");
-          rowDiv.classList.remove("down");
-          arrow.textContent = "↑";
-          arrow.classList.add("up");
-          arrow.classList.remove("down");
+        rowDiv.classList.add("up");
+        rowDiv.classList.remove("down");
+        arrowSpan.textContent = "↑";
         } else if (row.position > oldPos) {
-          rowDiv.classList.add("down");
-          rowDiv.classList.remove("up");
-          arrow.textContent = "↓";
-          arrow.classList.add("down");
-          arrow.classList.remove("up");
+        rowDiv.classList.add("down");
+        rowDiv.classList.remove("up");
+        arrowSpan.textContent = "↓";
         } else {
-          arrow.textContent = "";
-          rowDiv.classList.remove("up", "down");
+        arrowSpan.textContent = "";
+        rowDiv.classList.remove("up", "down");
         }
 
-        // highlight flash
+        // Remove highlight after 2s
         setTimeout(() => {
-          rowDiv.classList.remove("up", "down");
+        rowDiv.classList.remove("up", "down");
         }, 2000);
+
       }
 
       previousPositions[row.car_number] = row.position;
