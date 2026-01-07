@@ -1,9 +1,13 @@
-const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
-
-console.log("Loading leaderboard…");
-
+const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/"; // <-- deployed Worker
 let firstLoad = true;
 const previousPositions = {};
+
+function formatLap(seconds) {
+  // Convert 79.74 -> 1:19.740 style
+  const min = Math.floor(seconds / 60);
+  const sec = (seconds % 60).toFixed(3);
+  return `${min}:${sec.padStart(6, "0")}`;
+}
 
 async function loadLeaderboard() {
   console.log("Loading leaderboard…");
@@ -11,20 +15,20 @@ async function loadLeaderboard() {
   try {
     const response = await fetch(API_URL, { mode: "cors" });
     const data = await response.json();
-
     const leaderboard = document.getElementById("leaderboard");
 
-    // FIRST LOAD — simple render, no animation
+    if (!leaderboard) return console.error("#leaderboard not found");
+
+    // FIRST LOAD — simple render
     if (firstLoad) {
       leaderboard.innerHTML = "";
-
       data.forEach(row => {
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
         rowDiv.id = `car-${row.car_number}`;
 
         rowDiv.innerHTML = `
-          <div class="position">${row.position}</div>
+          <div class="position">${row.position}<span class="arrow"></span></div>
           <div class="number">#${row.car_number}</div>
           <div class="driver">${row.driver}</div>
           <div class="car">${row.car}</div>
@@ -44,7 +48,7 @@ async function loadLeaderboard() {
       return;
     }
 
-    // ---------- SUBSEQUENT LOADS (FLIP) ----------
+    // ---------- Subsequent loads (FLIP) ----------
 
     // 1️⃣ Measure current positions
     const firstRects = {};
@@ -64,23 +68,47 @@ async function loadLeaderboard() {
         leaderboard.appendChild(rowDiv);
       }
 
-      rowDiv.innerHTML = `
-        <div class="position">${row.position}</div>
-        <div class="number">#${row.car_number}</div>
-        <div class="driver">${row.driver}</div>
-        <div class="car">${row.car}</div>
-        <div class="lap">${formatLap(row.best_lap)}</div>
-        <div class="gap">${row.gap_to_first_display}</div>
-      `;
+      // Ensure arrow span exists
+      let arrowSpan = rowDiv.querySelector(".arrow");
+      if (!arrowSpan) {
+        arrowSpan = document.createElement("span");
+        arrowSpan.className = "arrow";
+        rowDiv.querySelector(".position").appendChild(arrowSpan);
+      }
 
+      // Update row content
+      rowDiv.querySelector(".position").childNodes[0].textContent = row.position;
+      rowDiv.querySelector(".number").textContent = `#${row.car_number}`;
+      rowDiv.querySelector(".driver").textContent = row.driver;
+      rowDiv.querySelector(".car").textContent = row.car;
+      rowDiv.querySelector(".lap").textContent = formatLap(row.best_lap);
+      rowDiv.querySelector(".gap").textContent = row.gap_to_first_display;
+
+      // Movement detection
       const oldPos = previousPositions[row.car_number];
       if (oldPos !== undefined) {
-        if (row.position < oldPos) rowDiv.classList.add("up");
-        if (row.position > oldPos) rowDiv.classList.add("down");
+        if (row.position < oldPos) {
+          rowDiv.classList.add("up");
+          rowDiv.classList.remove("down");
+          arrowSpan.textContent = "↑";
+          arrowSpan.classList.add("up");
+          arrowSpan.classList.remove("down");
+        } else if (row.position > oldPos) {
+          rowDiv.classList.add("down");
+          rowDiv.classList.remove("up");
+          arrowSpan.textContent = "↓";
+          arrowSpan.classList.add("down");
+          arrowSpan.classList.remove("up");
+        } else {
+          // no movement
+          rowDiv.classList.remove("up", "down");
+          arrowSpan.textContent = "";
+        }
 
+        // Highlight fades after 2s
         setTimeout(() => {
           rowDiv.classList.remove("up", "down");
-        }, 800);
+        }, 2000);
       }
 
       previousPositions[row.car_number] = row.position;
@@ -98,7 +126,7 @@ async function loadLeaderboard() {
       lastRects[row.id] = row.getBoundingClientRect();
     });
 
-    // 5️⃣ FLIP animation
+    // 5️⃣ Apply FLIP animation
     Array.from(leaderboard.children).forEach(row => {
       const first = firstRects[row.id];
       const last = lastRects[row.id];
@@ -125,18 +153,8 @@ async function loadLeaderboard() {
   }
 }
 
-
-
-
-function formatLap(seconds) {
-  if (seconds === null || seconds === undefined || seconds === "") {
-    return "—";
-  }
-  return Number(seconds).toFixed(2);
-}
-
+// Ensure DOM ready
 document.addEventListener("DOMContentLoaded", () => {
   loadLeaderboard();
-  setInterval(loadLeaderboard, 30000);
+  setInterval(loadLeaderboard, 30000); // poll every 30s
 });
-

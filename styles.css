@@ -3,8 +3,8 @@
 --------------------------------*/
 body {
   margin: 0;
-  background: #0b0b0b; /* dark background for page */
-  color: white;         /* default text color */
+  background: #0b0b0b; /* dark page background */
+  color: white;         
   font-family: Arial, sans-serif;
 }
 
@@ -13,7 +13,7 @@ body {
 --------------------------------*/
 header {
   padding: 20px;
-  background: #111;   /* slightly lighter dark header */
+  background: #111;   
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,8 +37,8 @@ main {
   padding: 10px 12px;
   border-bottom: 1px solid #333;
   background: #111;   /* dark row background */
-  color: white;       /* text is visible */
-  transition: transform 0.4s ease, background-color 0.6s ease;
+  color: white;
+  transition: transform 0.4s ease, background-color 2s ease;
   will-change: transform;
 }
 
@@ -46,18 +46,49 @@ main {
    Position change highlights
 --------------------------------*/
 .row.up {
-  background-color: #006400; /* dark green for moving up */
-  color: white;
+  background-color: #006400; /* dark green flash */
 }
 
 .row.down {
-  background-color: #8B0000; /* dark red for moving down */
-  color: white;
+  background-color: #8B0000; /* dark red flash */
 }
 
-/* Optional smooth transform class */
-.row.move {
-  transition: transform 0.4s ease;
+/* Optional scale “pop” animation */
+.row.up {
+  animation: scaleUp 0.6s ease forwards;
+}
+
+.row.down {
+  animation: scaleDown 0.6s ease forwards;
+}
+
+@keyframes scaleUp {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes scaleDown {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* ------------------------------
+   Persistent arrows
+--------------------------------*/
+.arrow {
+  font-size: 18px;
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.arrow.up {
+  color: #0f0; /* bright green */
+}
+
+.arrow.down {
+  color: #f00; /* bright red */
 }
 
 /* ------------------------------
@@ -65,7 +96,7 @@ main {
 --------------------------------*/
 .leaderboard-header {
   font-weight: bold;
-  background: #151515;   /* slightly lighter than rows */
+  background: #151515;  
   border-bottom: 2px solid #333;
   color: white;
   padding: 10px 12px;
@@ -92,11 +123,11 @@ main {
    Optional hover effect
 --------------------------------*/
 .row:hover {
-  background-color: #222; /* subtle hover for readability */
+  background-color: #222;
 }
 
 /* ------------------------------
-   Responsive tweaks (optional)
+   Responsive tweaks
 --------------------------------*/
 @media (max-width: 768px) {
   .row, .leaderboard-header {
