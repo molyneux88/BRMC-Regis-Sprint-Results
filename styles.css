@@ -1,22 +1,32 @@
 /* ------------------------------
-   Global layout
+   RESET
 --------------------------------*/
+* {
+  box-sizing: border-box;
+}
+
 html, body {
   height: 100%;
   margin: 0;
 }
 
+/* ------------------------------
+   PAGE LAYOUT (SINGLE FLEX COLUMN)
+--------------------------------*/
 body {
+  display: flex;
+  flex-direction: column;
   background: #0b0b0b;
   color: white;
   font-family: Arial, sans-serif;
-  overflow: hidden;
+  overflow: hidden; /* 🚫 no page scroll */
 }
 
 /* ------------------------------
-   Header
+   HEADER (FIXED HEIGHT)
 --------------------------------*/
 header {
+  flex: 0 0 auto;
   padding: 20px;
   background: #111;
   display: flex;
@@ -25,19 +35,20 @@ header {
 }
 
 /* ------------------------------
-   Main area
+   MAIN (TAKES REMAINING SPACE)
 --------------------------------*/
 main {
-  height: calc(100vh - 80px); /* header height */
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden; /* 🔑 critical */
 }
 
 /* ------------------------------
-   Leaderboard header
+   LEADERBOARD HEADER (STICKY)
 --------------------------------*/
 .leaderboard-header {
+  flex: 0 0 auto;
   font-weight: bold;
   background: #151515;
   border-bottom: 2px solid #333;
@@ -50,14 +61,15 @@ main {
 }
 
 /* ------------------------------
-   Scroll container
+   SCROLL CONTAINER (ONLY SCROLLER)
 --------------------------------*/
 #leaderboard-wrapper {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
 }
+
 /* ------------------------------
-   Rows
+   ROWS
 --------------------------------*/
 .row {
   display: grid;
@@ -75,7 +87,7 @@ main {
 }
 
 /* ------------------------------
-   Position highlights
+   MOVEMENT HIGHLIGHTS
 --------------------------------*/
 .row.up {
   background-color: #064d1a;
@@ -86,7 +98,7 @@ main {
 }
 
 /* ------------------------------
-   Arrows
+   ARROWS
 --------------------------------*/
 .arrow {
   font-size: 18px;
@@ -97,10 +109,9 @@ main {
 .arrow.down { color: #ff4c4c; }
 
 /* ------------------------------
-   Withdrawn
+   WITHDRAWN
 --------------------------------*/
 .row.withdrawn {
-  background: #0f0f0f;
   opacity: 0.45;
 }
 
@@ -111,7 +122,7 @@ main {
 }
 
 /* ------------------------------
-   Text styling
+   TEXT
 --------------------------------*/
 .position {
   font-weight: bold;
@@ -121,11 +132,4 @@ main {
 .lap {
   font-family: monospace;
   font-size: 20px;
-}
-
-/* ------------------------------
-   Hover
---------------------------------*/
-.row:hover {
-  background-color: #222;
 }
