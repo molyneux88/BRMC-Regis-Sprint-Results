@@ -30,9 +30,9 @@ header {
    Main area
 --------------------------------*/
 main {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  min-height: 0; /* 🔑 REQUIRED for scrolling */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 /* ------------------------------
@@ -54,10 +54,9 @@ main {
    Scroll container
 --------------------------------*/
 #leaderboard-wrapper {
+  flex: 1;
   overflow-y: auto;
-  min-height: 0; /* 🔑 REQUIRED */
 }
-
 /* ------------------------------
    Rows
 --------------------------------*/

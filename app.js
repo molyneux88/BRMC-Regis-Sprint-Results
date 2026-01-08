@@ -194,20 +194,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const scrollEl = document.getElementById("leaderboard-wrapper");
   const autoScrollToggle = document.getElementById("autoScrollToggle");
 
-  let autoScrollEnabled = true;
+  if (!scrollEl) {
+    console.error("❌ leaderboard-wrapper not found");
+    return;
+  }
+
+  let autoScrollEnabled = autoScrollToggle.checked;
   let direction = 1;
-  const speed = 0.3;
+  const speed = 0.35;
 
   autoScrollToggle.addEventListener("change", () => {
     autoScrollEnabled = autoScrollToggle.checked;
+    console.log("Auto-scroll:", autoScrollEnabled ? "ON" : "OFF");
   });
 
   function loop() {
-    if (autoScrollEnabled && scrollEl) {
-      scrollEl.scrollTop += speed * direction;
+    const max = scrollEl.scrollHeight - scrollEl.clientHeight;
 
-      const max =
-        scrollEl.scrollHeight - scrollEl.clientHeight;
+    if (autoScrollEnabled && max > 0) {
+      scrollEl.scrollTop += speed * direction;
 
       if (scrollEl.scrollTop >= max - 1) direction = -1;
       if (scrollEl.scrollTop <= 1) direction = 1;
@@ -216,7 +221,16 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(loop);
   }
 
+  console.log(
+    "✅ Auto-scroll ready",
+    "scrollHeight:",
+    scrollEl.scrollHeight,
+    "clientHeight:",
+    scrollEl.clientHeight
+  );
+
   requestAnimationFrame(loop);
 });
+
 
 
