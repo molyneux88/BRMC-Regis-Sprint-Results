@@ -188,48 +188,52 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ------------------------------
-   Auto Scroll
+   Auto Scroll (FINAL, FIXED)
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   const scrollEl = document.getElementById("leaderboard-wrapper");
-  const autoScrollToggle = document.getElementById("autoScrollToggle");
+  const toggle = document.getElementById("autoScrollToggle");
 
-  if (!scrollEl) {
-    console.error("❌ leaderboard-wrapper not found");
-    return;
-  }
-
-  let autoScrollEnabled = autoScrollToggle.checked;
+  let enabled = toggle.checked;
   let direction = 1;
-  const speed = 0.35;
+  let lastTime = performance.now();
 
-  autoScrollToggle.addEventListener("change", () => {
-    autoScrollEnabled = autoScrollToggle.checked;
-    console.log("Auto-scroll:", autoScrollEnabled ? "ON" : "OFF");
+  toggle.addEventListener("change", () => {
+    enabled = toggle.checked;
   });
 
-  function loop() {
-    const max = scrollEl.scrollHeight - scrollEl.clientHeight;
-
-    if (autoScrollEnabled && max > 0) {
-      scrollEl.scrollTop += speed * direction;
-
-      if (scrollEl.scrollTop >= max - 1) direction = -1;
-      if (scrollEl.scrollTop <= 1) direction = 1;
+  function step(now) {
+    if (!enabled || !scrollEl) {
+      lastTime = now;
+      requestAnimationFrame(step);
+      return;
     }
 
-    requestAnimationFrame(loop);
+    const delta = now - lastTime;
+    lastTime = now;
+
+    const speed = 40; // px per second (VERY visible)
+    scrollEl.scrollTop += direction * speed * (delta / 1000);
+
+    const max =
+      scrollEl.scrollHeight - scrollEl.clientHeight;
+
+    if (scrollEl.scrollTop >= max - 2) {
+      direction = -1;
+    } else if (scrollEl.scrollTop <= 2) {
+      direction = 1;
+    }
+
+    requestAnimationFrame(step);
   }
 
   console.log(
-    "✅ Auto-scroll ready",
-    "scrollHeight:",
-    scrollEl.scrollHeight,
-    "clientHeight:",
-    scrollEl.clientHeight
+    "✅ Auto-scroll running",
+    "scrollHeight:", scrollEl.scrollHeight,
+    "clientHeight:", scrollEl.clientHeight
   );
 
-  requestAnimationFrame(loop);
+  requestAnimationFrame(step);
 });
 
 
