@@ -3,8 +3,8 @@
 --------------------------------*/
 body {
   margin: 0;
-  background: #0b0b0b; /* dark page background */
-  color: white;         
+  background: #0b0b0b;
+  color: white;
   font-family: Arial, sans-serif;
 }
 
@@ -13,7 +13,7 @@ body {
 --------------------------------*/
 header {
   padding: 20px;
-  background: #111;   
+  background: #111;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,9 +36,13 @@ main {
   align-items: center;
   padding: 10px 12px;
   border-bottom: 1px solid #333;
-  background: #111;   /* dark row background */
+  background: #111;
   color: white;
-  transition: transform 0.4s ease, background-color 2s ease;
+
+  transition:
+    transform 10s ease,
+    background-color 2s ease;
+
   will-change: transform;
 }
 
@@ -46,32 +50,11 @@ main {
    Position change highlights
 --------------------------------*/
 .row.up {
-  background-color: #006400; /* dark green flash */
+  background-color: #064d1a;
 }
 
 .row.down {
-  background-color: #8B0000; /* dark red flash */
-}
-
-/* Optional scale “pop” animation */
-.row.up {
-  animation: scaleUp 0.6s ease forwards;
-}
-
-.row.down {
-  animation: scaleDown 0.6s ease forwards;
-}
-
-@keyframes scaleUp {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-@keyframes scaleDown {
-  0% { transform: scale(1); }
-  50% { transform: scale(0.95); }
-  100% { transform: scale(1); }
+  background-color: #5a0f0f;
 }
 
 /* ------------------------------
@@ -79,16 +62,30 @@ main {
 --------------------------------*/
 .arrow {
   font-size: 18px;
-  margin-left: 5px;
+  margin-left: 6px;
   display: inline-block;
 }
 
 .arrow.up {
-  color: #0f0; /* bright green */
+  color: #00ff6a;
 }
 
 .arrow.down {
-  color: #f00; /* bright red */
+  color: #ff4c4c;
+}
+
+/* ------------------------------
+   Withdrawn cars
+--------------------------------*/
+.row.withdrawn {
+  background: #0f0f0f;
+  opacity: 0.45;
+}
+
+.row.withdrawn .lap,
+.row.withdrawn .gap {
+  color: #aaa;
+  font-style: italic;
 }
 
 /* ------------------------------
@@ -96,7 +93,7 @@ main {
 --------------------------------*/
 .leaderboard-header {
   font-weight: bold;
-  background: #151515;  
+  background: #151515;
   border-bottom: 2px solid #333;
   color: white;
   padding: 10px 12px;
@@ -110,17 +107,15 @@ main {
 .lap {
   font-family: monospace;
   font-size: 20px;
-  color: white;
 }
 
 .position {
   font-weight: bold;
   font-size: 20px;
-  color: white;
 }
 
 /* ------------------------------
-   Optional hover effect
+   Hover effect
 --------------------------------*/
 .row:hover {
   background-color: #222;
@@ -130,12 +125,14 @@ main {
    Responsive tweaks
 --------------------------------*/
 @media (max-width: 768px) {
-  .row, .leaderboard-header {
+  .row,
+  .leaderboard-header {
     grid-template-columns: 50px 60px 1.5fr 1.5fr 80px 80px;
     font-size: 16px;
   }
 
-  .lap, .position {
+  .lap,
+  .position {
     font-size: 16px;
   }
 }

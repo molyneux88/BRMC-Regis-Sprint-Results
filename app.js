@@ -1,112 +1,153 @@
 const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
-const EXAGGERATION = 5.5; // optional exaggeration for visibility
+const EXAGGERATION = 5.5;
 const ANIMATION_DURATION = 10000; // ms
+
 let firstLoad = true;
 const previousPositions = {};
 
-function formatLap(seconds) {
-  const min = Math.floor(seconds / 60);
-  const sec = (seconds % 60).toFixed(3);
+/* ------------------------------
+   Helpers
+--------------------------------*/
+function isValidPosition(pos) {
+  return Number.isFinite(pos) && pos > 0;
+}
+
+function isWithdrawn(row) {
+  return (
+    row.best_lap === "Withdrawn" ||
+    row.best_lap === null ||
+    row.best_lap === "" ||
+    !Number.isFinite(row.best_lap)
+  );
+}
+
+function formatLapSafe(value) {
+  if (!Number.isFinite(value)) return "0:00.000";
+  const min = Math.floor(value / 60);
+  const sec = (value % 60).toFixed(3);
   return `${min}:${sec.padStart(6, "0")}`;
 }
 
+/* ------------------------------
+   Main loader
+--------------------------------*/
 async function loadLeaderboard() {
   try {
     const response = await fetch(API_URL, { mode: "cors" });
-    const data = await response.json();
+    const rawData = await response.json();
+
+    // 🔴 Remove empty / junk rows
+    const data = rawData.filter(row => isValidPosition(row.position));
+
     const leaderboard = document.getElementById("leaderboard");
     if (!leaderboard) return;
 
+    /* ---------- First load ---------- */
     if (firstLoad) {
       leaderboard.innerHTML = "";
+
       data.forEach(row => {
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
         rowDiv.id = `car-${row.car_number}`;
+
         rowDiv.innerHTML = `
           <div class="position">${row.position}<span class="arrow"></span></div>
           <div class="number">#${row.car_number}</div>
           <div class="driver">${row.driver}</div>
           <div class="car">${row.car}</div>
-          <div class="lap">${formatLap(row.best_lap)}</div>
-          <div class="gap">${row.gap_to_first_display}</div>
+          <div class="lap">${formatLapSafe(row.best_lap)}</div>
+          <div class="gap">${row.gap_to_first_display ?? "—"}</div>
         `;
+
+        if (isWithdrawn(row)) {
+          rowDiv.classList.add("withdrawn");
+          rowDiv.querySelector(".lap").textContent = "0:00.000";
+          rowDiv.querySelector(".gap").textContent = "—";
+        }
+
         leaderboard.appendChild(rowDiv);
         previousPositions[row.car_number] = row.position;
       });
+
       document.getElementById("lastUpdated").textContent =
         "Last updated: " + new Date().toLocaleTimeString();
+
       firstLoad = false;
       return;
     }
 
-    // 1️⃣ Measure previous positions
+    /* ---------- FLIP STEP 1: measure old ---------- */
     const firstRects = {};
     Array.from(leaderboard.children).forEach(row => {
       firstRects[row.id] = row.getBoundingClientRect();
     });
 
-    // 2️⃣ Update text content and highlights/arrows
+    /* ---------- Update content ---------- */
     data.forEach(row => {
       const rowDiv = document.getElementById(`car-${row.car_number}`);
       if (!rowDiv) return;
 
-      let arrowSpan = rowDiv.querySelector(".arrow");
-      if (!arrowSpan) {
-        arrowSpan = document.createElement("span");
-        arrowSpan.className = "arrow";
-        rowDiv.querySelector(".position").appendChild(arrowSpan);
+      const arrow = rowDiv.querySelector(".arrow");
+
+      // Withdrawn handling
+      if (isWithdrawn(row)) {
+        rowDiv.classList.add("withdrawn");
+        rowDiv.classList.remove("up", "down");
+        arrow.textContent = "";
+        arrow.classList.remove("up", "down");
+
+        rowDiv.querySelector(".lap").textContent = "0:00.000";
+        rowDiv.querySelector(".gap").textContent = "—";
+
+        previousPositions[row.car_number] = row.position;
+        return;
       }
 
+      rowDiv.classList.remove("withdrawn");
+
       rowDiv.querySelector(".position").childNodes[0].textContent = row.position;
-      rowDiv.querySelector(".number").textContent = `#${row.car_number}`;
       rowDiv.querySelector(".driver").textContent = row.driver;
       rowDiv.querySelector(".car").textContent = row.car;
-      rowDiv.querySelector(".lap").textContent = formatLap(row.best_lap);
-      rowDiv.querySelector(".gap").textContent = row.gap_to_first_display;
+      rowDiv.querySelector(".lap").textContent = formatLapSafe(row.best_lap);
+      rowDiv.querySelector(".gap").textContent =
+        row.gap_to_first_display ?? "—";
 
       const oldPos = previousPositions[row.car_number];
+
       if (oldPos !== undefined) {
         if (row.position < oldPos) {
           rowDiv.classList.add("up");
           rowDiv.classList.remove("down");
-          arrowSpan.textContent = "↑";
-          arrowSpan.classList.add("up");
-          arrowSpan.classList.remove("down");
+          arrow.textContent = "↑";
+          arrow.classList.add("up");
+          arrow.classList.remove("down");
         } else if (row.position > oldPos) {
           rowDiv.classList.add("down");
           rowDiv.classList.remove("up");
-          arrowSpan.textContent = "↓";
-          arrowSpan.classList.add("down");
-          arrowSpan.classList.remove("up");
-        } else {
-          rowDiv.classList.remove("up", "down");
-          arrowSpan.textContent = "";
-          arrowSpan.classList.remove("up", "down");
+          arrow.textContent = "↓";
+          arrow.classList.add("down");
+          arrow.classList.remove("up");
         }
-
-        // Remove highlight after 2s
-        setTimeout(() => {
-          rowDiv.classList.remove("up", "down");
-        }, 2000);
       }
 
       previousPositions[row.car_number] = row.position;
     });
 
-    // 3️⃣ Pre-reorder DOM to new positions
+    /* ---------- Reorder DOM first ---------- */
     data.forEach(row => {
-      const rowDiv = document.getElementById(`car-${row.car_number}`);
-      leaderboard.appendChild(rowDiv); // appendChild moves to correct order
+      leaderboard.appendChild(
+        document.getElementById(`car-${row.car_number}`)
+      );
     });
 
-    // 4️⃣ Measure new positions after reorder
+    /* ---------- FLIP STEP 2: measure new ---------- */
     const lastRects = {};
     Array.from(leaderboard.children).forEach(row => {
       lastRects[row.id] = row.getBoundingClientRect();
     });
 
-    // 5️⃣ Apply transform to offset back to old visual position
+    /* ---------- FLIP STEP 3: invert ---------- */
     Array.from(leaderboard.children).forEach(row => {
       const first = firstRects[row.id];
       const last = lastRects[row.id];
@@ -119,7 +160,7 @@ async function loadLeaderboard() {
       }
     });
 
-    // 6️⃣ Animate transform back to 0
+    /* ---------- FLIP STEP 4: play ---------- */
     requestAnimationFrame(() => {
       Array.from(leaderboard.children).forEach(row => {
         if (row.style.transform) {
@@ -129,16 +170,18 @@ async function loadLeaderboard() {
       });
     });
 
-    // 7️⃣ Update timestamp
+    /* ---------- Timestamp ---------- */
     document.getElementById("lastUpdated").textContent =
       "Last updated: " + new Date().toLocaleTimeString();
 
-  } catch (error) {
-    console.error("Error loading leaderboard:", error);
+  } catch (err) {
+    console.error("Error loading leaderboard:", err);
   }
 }
 
-// Start polling
+/* ------------------------------
+   Polling
+--------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   loadLeaderboard();
   setInterval(loadLeaderboard, 30000);
