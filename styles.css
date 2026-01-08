@@ -1,6 +1,12 @@
 /* ------------------------------
    Global / Body
 --------------------------------*/
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   background: #0b0b0b;
@@ -196,10 +202,16 @@ main {
 /* ------------------------------
    Scrollable leaderboard
 --------------------------------*/
+main {
+  height: calc(100vh - 80px); /* header height */
+  padding: 0;
+}
+
 .leaderboard-wrapper {
-  height: calc(100vh - 120px);
+  height: 100%;
   overflow: hidden;
 }
+
 
 /* Sticky header row */
 .leaderboard-header {
