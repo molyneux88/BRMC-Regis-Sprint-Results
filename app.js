@@ -191,37 +191,32 @@ document.addEventListener("DOMContentLoaded", () => {
    Auto Scroll
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
-  const leaderboardEl = document.getElementById("leaderboard");
+  const scrollEl = document.getElementById("leaderboard-wrapper");
   const autoScrollToggle = document.getElementById("autoScrollToggle");
 
   let autoScrollEnabled = true;
-  let scrollDirection = 1;
-  let scrollSpeed = 0.3; // px per frame (slow & readable)
+  let direction = 1;
+  const speed = 0.3;
 
   autoScrollToggle.addEventListener("change", () => {
     autoScrollEnabled = autoScrollToggle.checked;
   });
 
-  function autoScrollLoop() {
-    if (!autoScrollEnabled || !leaderboardEl) {
-      requestAnimationFrame(autoScrollLoop);
-      return;
+  function loop() {
+    if (autoScrollEnabled && scrollEl) {
+      scrollEl.scrollTop += speed * direction;
+
+      const max =
+        scrollEl.scrollHeight - scrollEl.clientHeight;
+
+      if (scrollEl.scrollTop >= max - 1) direction = -1;
+      if (scrollEl.scrollTop <= 1) direction = 1;
     }
 
-    leaderboardEl.scrollTop += scrollSpeed * scrollDirection;
-
-    const maxScroll =
-      leaderboardEl.scrollHeight - leaderboardEl.clientHeight;
-
-    if (leaderboardEl.scrollTop >= maxScroll - 1) {
-      scrollDirection = -1;
-    } else if (leaderboardEl.scrollTop <= 1) {
-      scrollDirection = 1;
-    }
-
-    requestAnimationFrame(autoScrollLoop);
+    requestAnimationFrame(loop);
   }
 
-  requestAnimationFrame(autoScrollLoop);
+  requestAnimationFrame(loop);
 });
+
 
