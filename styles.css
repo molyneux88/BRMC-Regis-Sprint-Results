@@ -1,4 +1,143 @@
 /* ------------------------------
+   Global / Body
+--------------------------------*/
+body {
+  margin: 0;
+  background: #0b0b0b;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+/* ------------------------------
+   Header
+--------------------------------*/
+header {
+  padding: 20px;
+  background: #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+/* ------------------------------
+   Main content
+--------------------------------*/
+main {
+  padding: 10px 0;
+}
+
+/* ------------------------------
+   Leaderboard rows
+--------------------------------*/
+.row {
+  display: grid;
+  grid-template-columns: 60px 70px 2fr 2fr 100px 100px;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #333;
+  background: #111;
+  color: white;
+
+  transition:
+    transform 10s ease,
+    background-color 2s ease;
+
+  will-change: transform;
+}
+
+/* ------------------------------
+   Position change highlights
+--------------------------------*/
+.row.up {
+  background-color: #064d1a;
+}
+
+.row.down {
+  background-color: #5a0f0f;
+}
+
+/* ------------------------------
+   Persistent arrows
+--------------------------------*/
+.arrow {
+  font-size: 18px;
+  margin-left: 6px;
+  display: inline-block;
+}
+
+.arrow.up {
+  color: #00ff6a;
+}
+
+.arrow.down {
+  color: #ff4c4c;
+}
+
+/* ------------------------------
+   Withdrawn cars
+--------------------------------*/
+.row.withdrawn {
+  background: #0f0f0f;
+  opacity: 0.45;
+}
+
+.row.withdrawn .lap,
+.row.withdrawn .gap {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* ------------------------------
+   Leaderboard header row
+--------------------------------*/
+.leaderboard-header {
+  font-weight: bold;
+  background: #151515;
+  border-bottom: 2px solid #333;
+  color: white;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 60px 70px 2fr 2fr 100px 100px;
+}
+
+/* ------------------------------
+   Lap / Position styling
+--------------------------------*/
+.lap {
+  font-family: monospace;
+  font-size: 20px;
+}
+
+.position {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* ------------------------------
+   Hover effect
+--------------------------------*/
+.row:hover {
+  background-color: #222;
+}
+
+/* ------------------------------
+   Responsive tweaks
+--------------------------------*/
+@media (max-width: 768px) {
+  .row,
+  .leaderboard-header {
+    grid-template-columns: 50px 60px 1.5fr 1.5fr 80px 80px;
+    font-size: 16px;
+  }
+
+  .lap,
+  .position {
+    font-size: 16px;
+  }
+}
+
+/* ------------------------------
    Controls (toggle + timestamp)
 --------------------------------*/
 .controls {
@@ -75,3 +214,4 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+
