@@ -3,27 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <title>Live Lap Times</title>
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
   <header>
     <h1>Live Lap Times</h1>
-    <div id="lastUpdated">Waiting for data…</div>
+
+    <div class="controls">
+      <label class="toggle">
+        <input type="checkbox" id="autoScrollToggle" checked />
+        <span class="slider"></span>
+        <span class="label-text">Auto Scroll</span>
+      </label>
+
+      <div id="lastUpdated">Waiting for data…</div>
+    </div>
   </header>
 
   <main>
-    <div class="leaderboard-header row">
-      <div>Pos</div>
-      <div>No</div>
-      <div>Driver</div>
-      <div>Car</div>
-      <div>Best</div>
-      <div>Gap</div>
-    </div>
+    <div class="leaderboard-wrapper">
+      <div class="leaderboard-header row">
+        <div>Pos</div>
+        <div>No</div>
+        <div>Driver</div>
+        <div>Car</div>
+        <div>Best</div>
+        <div>Gap</div>
+      </div>
 
-    <div id="leaderboard"></div>
+      <div id="leaderboard"></div>
+    </div>
   </main>
 
   <script src="app.js"></script>

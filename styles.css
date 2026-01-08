@@ -1,138 +1,77 @@
 /* ------------------------------
-   Global / Body
+   Controls (toggle + timestamp)
 --------------------------------*/
-body {
-  margin: 0;
-  background: #0b0b0b;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-/* ------------------------------
-   Header
---------------------------------*/
-header {
-  padding: 20px;
-  background: #111;
+.controls {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  color: white;
+  gap: 20px;
 }
 
-/* ------------------------------
-   Main content
---------------------------------*/
-main {
-  padding: 10px 0;
-}
-
-/* ------------------------------
-   Leaderboard rows
---------------------------------*/
-.row {
-  display: grid;
-  grid-template-columns: 60px 70px 2fr 2fr 100px 100px;
+/* Toggle switch */
+.toggle {
+  display: flex;
   align-items: center;
-  padding: 10px 12px;
-  border-bottom: 1px solid #333;
-  background: #111;
-  color: white;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
 
-  transition:
-    transform 10s ease,
-    background-color 2s ease;
+.toggle input {
+  display: none;
+}
 
-  will-change: transform;
+.slider {
+  width: 44px;
+  height: 22px;
+  background: #444;
+  border-radius: 11px;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+
+.toggle input:checked + .slider {
+  background: #00aa55;
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+.label-text {
+  font-size: 14px;
+  color: #ccc;
 }
 
 /* ------------------------------
-   Position change highlights
+   Scrollable leaderboard
 --------------------------------*/
-.row.up {
-  background-color: #064d1a;
+.leaderboard-wrapper {
+  height: calc(100vh - 120px);
+  overflow: hidden;
 }
 
-.row.down {
-  background-color: #5a0f0f;
-}
-
-/* ------------------------------
-   Persistent arrows
---------------------------------*/
-.arrow {
-  font-size: 18px;
-  margin-left: 6px;
-  display: inline-block;
-}
-
-.arrow.up {
-  color: #00ff6a;
-}
-
-.arrow.down {
-  color: #ff4c4c;
-}
-
-/* ------------------------------
-   Withdrawn cars
---------------------------------*/
-.row.withdrawn {
-  background: #0f0f0f;
-  opacity: 0.45;
-}
-
-.row.withdrawn .lap,
-.row.withdrawn .gap {
-  color: #aaa;
-  font-style: italic;
-}
-
-/* ------------------------------
-   Leaderboard header row
---------------------------------*/
+/* Sticky header row */
 .leaderboard-header {
-  font-weight: bold;
-  background: #151515;
-  border-bottom: 2px solid #333;
-  color: white;
-  padding: 10px 12px;
-  display: grid;
-  grid-template-columns: 60px 70px 2fr 2fr 100px 100px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-/* ------------------------------
-   Lap / Position styling
---------------------------------*/
-.lap {
-  font-family: monospace;
-  font-size: 20px;
-}
-
-.position {
-  font-weight: bold;
-  font-size: 20px;
-}
-
-/* ------------------------------
-   Hover effect
---------------------------------*/
-.row:hover {
-  background-color: #222;
-}
-
-/* ------------------------------
-   Responsive tweaks
---------------------------------*/
-@media (max-width: 768px) {
-  .row,
-  .leaderboard-header {
-    grid-template-columns: 50px 60px 1.5fr 1.5fr 80px 80px;
-    font-size: 16px;
-  }
-
-  .lap,
-  .position {
-    font-size: 16px;
-  }
+/* Scroll container */
+#leaderboard {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }

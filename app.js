@@ -186,3 +186,40 @@ document.addEventListener("DOMContentLoaded", () => {
   loadLeaderboard();
   setInterval(loadLeaderboard, 30000);
 });
+
+/* ------------------------------
+   Auto Scroll
+--------------------------------*/
+let autoScrollEnabled = true;
+let scrollDirection = 1;
+let scrollSpeed = 0.25; // px per frame
+
+const leaderboardEl = document.getElementById("leaderboard");
+const autoScrollToggle = document.getElementById("autoScrollToggle");
+
+autoScrollToggle.addEventListener("change", () => {
+  autoScrollEnabled = autoScrollToggle.checked;
+});
+
+function autoScrollLoop() {
+  if (!leaderboardEl || !autoScrollEnabled) {
+    requestAnimationFrame(autoScrollLoop);
+    return;
+  }
+
+  leaderboardEl.scrollTop += scrollSpeed * scrollDirection;
+
+  const maxScroll =
+    leaderboardEl.scrollHeight - leaderboardEl.clientHeight;
+
+  if (leaderboardEl.scrollTop >= maxScroll) {
+    scrollDirection = -1;
+  } else if (leaderboardEl.scrollTop <= 0) {
+    scrollDirection = 1;
+  }
+
+  requestAnimationFrame(autoScrollLoop);
+}
+
+requestAnimationFrame(autoScrollLoop);
+
