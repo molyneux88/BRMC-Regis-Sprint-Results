@@ -188,53 +188,43 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ------------------------------
-   Auto Scroll (FINAL, FIXED)
+   Auto Scroll (FINAL)
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
-  const scrollEl = document.getElementById("leaderboard-wrapper");
+  const wrapper = document.getElementById("leaderboard-wrapper");
   const toggle = document.getElementById("autoScrollToggle");
 
-  let enabled = toggle.checked;
   let direction = 1;
-  let lastTime = performance.now();
+  const speed = 1; // px per tick
+  const interval = 20; // ms (~50fps)
 
-  toggle.addEventListener("change", () => {
-    enabled = toggle.checked;
-  });
-
-  function step(now) {
-    if (!enabled || !scrollEl) {
-      lastTime = now;
-      requestAnimationFrame(step);
-      return;
-    }
-
-    const delta = now - lastTime;
-    lastTime = now;
-
-    const speed = 40; // px per second (VERY visible)
-    scrollEl.scrollTop += direction * speed * (delta / 1000);
-
-    const max =
-      scrollEl.scrollHeight - scrollEl.clientHeight;
-
-    if (scrollEl.scrollTop >= max - 2) {
-      direction = -1;
-    } else if (scrollEl.scrollTop <= 2) {
-      direction = 1;
-    }
-
-    requestAnimationFrame(step);
+  if (!wrapper || !toggle) {
+    console.warn("Auto-scroll elements not found");
+    return;
   }
 
   console.log(
-    "✅ Auto-scroll running",
-    "scrollHeight:", scrollEl.scrollHeight,
-    "clientHeight:", scrollEl.clientHeight
+    "✅ Auto-scroll ready",
+    "scrollHeight:", wrapper.scrollHeight,
+    "clientHeight:", wrapper.clientHeight
   );
 
-  requestAnimationFrame(step);
+  setInterval(() => {
+    if (!toggle.checked) return;
+
+    wrapper.scrollTop += direction * speed;
+
+    const maxScroll =
+      wrapper.scrollHeight - wrapper.clientHeight;
+
+    if (wrapper.scrollTop >= maxScroll - 2) {
+      direction = -1;
+    } else if (wrapper.scrollTop <= 2) {
+      direction = 1;
+    }
+  }, interval);
 });
+
 
 
 
