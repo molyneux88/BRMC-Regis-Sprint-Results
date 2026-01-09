@@ -1,6 +1,7 @@
 const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 const EXAGGERATION = 5.5;
 const ANIMATION_DURATION = 10000; // ms
+const GAP_DISPLAY_MODE = "stacked"; // "separate" | "stacked"
 
 let firstLoad = true;
 const previousPositions = {};
@@ -28,6 +29,12 @@ function formatLapSafe(value) {
   return `${min}:${sec.padStart(6, "0")}`;
 }
 
+function positionsChanged(data) {
+  return data.some(
+    row => previousPositions[row.car_number] !== row.position
+  );
+}
+
 /* ------------------------------
    Main loader
 --------------------------------*/
@@ -36,9 +43,7 @@ async function loadLeaderboard() {
     const response = await fetch(API_URL, { mode: "cors" });
     const rawData = await response.json();
 
-    // 🔴 Remove empty / junk rows
     const data = rawData.filter(row => isValidPosition(row.position));
-
     const leaderboard = document.getElementById("leaderboard");
     if (!leaderboard) return;
 
@@ -52,18 +57,34 @@ async function loadLeaderboard() {
         rowDiv.id = `car-${row.car_number}`;
 
         rowDiv.innerHTML = `
+          <div></div>
           <div class="position">${row.position}<span class="arrow"></span></div>
           <div class="number">#${row.car_number}</div>
+          <div class="class">${row.class ?? ""}</div>
           <div class="driver">${row.driver}</div>
           <div class="car">${row.car}</div>
           <div class="lap">${formatLapSafe(row.best_lap)}</div>
-          <div class="gap">${row.gap_to_first_display ?? "—"}</div>
+
+          ${
+            GAP_DISPLAY_MODE === "stacked"
+              ? `
+                <div class="gap gap-stack">
+                  <span>${row.gap_to_first_display ?? "—"}</span>
+                  <span class="gap-front">${row.gap_to_car_in_front_display ?? "—"}</span>
+                </div>
+              `
+              : `
+                <div class="gap">${row.gap_to_first_display ?? "—"}</div>
+                <div class="gap-front-col">${row.gap_to_car_in_front_display ?? "—"}</div>
+              `
+          }
         `;
 
         if (isWithdrawn(row)) {
           rowDiv.classList.add("withdrawn");
           rowDiv.querySelector(".lap").textContent = "0:00.000";
-          rowDiv.querySelector(".gap").textContent = "—";
+          rowDiv.querySelectorAll(".gap, .gap-front, .gap-front-col")
+            .forEach(el => el && (el.textContent = "—"));
         }
 
         leaderboard.appendChild(rowDiv);
@@ -77,11 +98,17 @@ async function loadLeaderboard() {
       return;
     }
 
+    /* ---------- Detect movement ---------- */
+    const doFlip = positionsChanged(data);
+
     /* ---------- FLIP STEP 1: measure old ---------- */
-    const firstRects = {};
-    Array.from(leaderboard.children).forEach(row => {
-      firstRects[row.id] = row.getBoundingClientRect();
-    });
+    let firstRects = null;
+    if (doFlip) {
+      firstRects = {};
+      [...leaderboard.children].forEach(row => {
+        firstRects[row.id] = row.getBoundingClientRect();
+      });
+    }
 
     /* ---------- Update content ---------- */
     data.forEach(row => {
@@ -90,7 +117,6 @@ async function loadLeaderboard() {
 
       const arrow = rowDiv.querySelector(".arrow");
 
-      // Withdrawn handling
       if (isWithdrawn(row)) {
         rowDiv.classList.add("withdrawn");
         rowDiv.classList.remove("up", "down");
@@ -98,7 +124,8 @@ async function loadLeaderboard() {
         arrow.classList.remove("up", "down");
 
         rowDiv.querySelector(".lap").textContent = "0:00.000";
-        rowDiv.querySelector(".gap").textContent = "—";
+        rowDiv.querySelectorAll(".gap, .gap-front, .gap-front-col")
+          .forEach(el => el && (el.textContent = "—"));
 
         previousPositions[row.car_number] = row.position;
         return;
@@ -110,8 +137,14 @@ async function loadLeaderboard() {
       rowDiv.querySelector(".driver").textContent = row.driver;
       rowDiv.querySelector(".car").textContent = row.car;
       rowDiv.querySelector(".lap").textContent = formatLapSafe(row.best_lap);
-      rowDiv.querySelector(".gap").textContent =
-        row.gap_to_first_display ?? "—";
+
+      rowDiv.querySelector(".gap") &&
+        (rowDiv.querySelector(".gap").firstElementChild.textContent =
+          row.gap_to_first_display ?? "—");
+
+      rowDiv.querySelector(".gap-front") &&
+        (rowDiv.querySelector(".gap-front").textContent =
+          row.gap_to_car_in_front_display ?? "—");
 
       const oldPos = previousPositions[row.car_number];
 
@@ -120,57 +153,55 @@ async function loadLeaderboard() {
           rowDiv.classList.add("up");
           rowDiv.classList.remove("down");
           arrow.textContent = "↑";
-          arrow.classList.add("up");
-          arrow.classList.remove("down");
+          arrow.className = "arrow up";
         } else if (row.position > oldPos) {
           rowDiv.classList.add("down");
           rowDiv.classList.remove("up");
           arrow.textContent = "↓";
-          arrow.classList.add("down");
-          arrow.classList.remove("up");
+          arrow.className = "arrow down";
         }
       }
 
       previousPositions[row.car_number] = row.position;
     });
 
-    /* ---------- Reorder DOM first ---------- */
-    data.forEach(row => {
-      leaderboard.appendChild(
-        document.getElementById(`car-${row.car_number}`)
-      );
-    });
+    /* ---------- Reorder DOM ONLY if needed ---------- */
+    if (doFlip) {
+      data.forEach(row => {
+        const el = document.getElementById(`car-${row.car_number}`);
+        if (el) leaderboard.appendChild(el);
+      });
 
-    /* ---------- FLIP STEP 2: measure new ---------- */
-    const lastRects = {};
-    Array.from(leaderboard.children).forEach(row => {
-      lastRects[row.id] = row.getBoundingClientRect();
-    });
+      /* ---------- FLIP STEP 2: measure new ---------- */
+      const lastRects = {};
+      [...leaderboard.children].forEach(row => {
+        lastRects[row.id] = row.getBoundingClientRect();
+      });
 
-    /* ---------- FLIP STEP 3: invert ---------- */
-    Array.from(leaderboard.children).forEach(row => {
-      const first = firstRects[row.id];
-      const last = lastRects[row.id];
-      if (!first || !last) return;
+      /* ---------- FLIP STEP 3: invert ---------- */
+      [...leaderboard.children].forEach(row => {
+        const first = firstRects[row.id];
+        const last = lastRects[row.id];
+        if (!first || !last) return;
 
-      const deltaY = first.top - last.top;
-      if (deltaY !== 0) {
-        row.style.transition = "none";
-        row.style.transform = `translateY(${deltaY * EXAGGERATION}px)`;
-      }
-    });
-
-    /* ---------- FLIP STEP 4: play ---------- */
-    requestAnimationFrame(() => {
-      Array.from(leaderboard.children).forEach(row => {
-        if (row.style.transform) {
-          row.style.transition = `transform ${ANIMATION_DURATION}ms ease`;
-          row.style.transform = "";
+        const deltaY = first.top - last.top;
+        if (deltaY !== 0) {
+          row.style.transition = "none";
+          row.style.transform = `translateY(${deltaY * EXAGGERATION}px)`;
         }
       });
-    });
 
-    /* ---------- Timestamp ---------- */
+      /* ---------- FLIP STEP 4: play ---------- */
+      requestAnimationFrame(() => {
+        [...leaderboard.children].forEach(row => {
+          if (row.style.transform) {
+            row.style.transition = `transform ${ANIMATION_DURATION}ms ease`;
+            row.style.transform = "";
+          }
+        });
+      });
+    }
+
     document.getElementById("lastUpdated").textContent =
       "Last updated: " + new Date().toLocaleTimeString();
 
@@ -183,6 +214,10 @@ async function loadLeaderboard() {
    Polling
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
+  if (GAP_DISPLAY_MODE === "stacked") {
+    document.body.classList.add("stacked-gaps");
+  }
+
   loadLeaderboard();
   setInterval(loadLeaderboard, 30000);
 });
@@ -194,16 +229,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.getElementById("leaderboard-wrapper");
   const toggle = document.getElementById("autoScrollToggle");
 
-  let direction = 1;
-  const speed = 1;        // px per tick
-  const interval = 20;   // ms
-  const pauseTime = 5000; // 5 seconds
-
-  let paused = false;
-
   if (!wrapper || !toggle) return;
 
-  function pauseAtEnd() {
+  let direction = 1;
+  const speed = 1;
+  const interval = 20;
+  const pauseTime = 5000;
+  let paused = false;
+
+  function pause() {
     paused = true;
     setTimeout(() => {
       paused = false;
@@ -216,19 +250,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     wrapper.scrollTop += direction * speed;
 
-    const maxScroll =
-      wrapper.scrollHeight - wrapper.clientHeight;
+    const max = wrapper.scrollHeight - wrapper.clientHeight;
 
-    if (direction === 1 && wrapper.scrollTop >= maxScroll - 2) {
-      pauseAtEnd();
-    } 
-    else if (direction === -1 && wrapper.scrollTop <= 2) {
-      pauseAtEnd();
-    }
+    if (direction === 1 && wrapper.scrollTop >= max - 2) pause();
+    if (direction === -1 && wrapper.scrollTop <= 2) pause();
   }, interval);
 });
-
-
-
-
-

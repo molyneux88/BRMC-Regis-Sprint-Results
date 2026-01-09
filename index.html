@@ -8,28 +8,34 @@
 <body>
 
   <header>
-    <h1>Live Lap Times</h1>
+    <h1>Overall Leaderboard</h1>
 
     <div class="controls">
       <label class="toggle">
-        <input type="checkbox" id="autoScrollToggle" checked />
+        <input type="checkbox" id="autoScrollToggle" unchecked />
         <span class="slider"></span>
         <span class="label-text">Auto Scroll</span>
       </label>
-
+      <br>
       <div id="lastUpdated">Waiting for data…</div>
     </div>
   </header>
 
   <main>
     <div class="leaderboard-header row">
+        <div></div>
         <div>Pos</div>
         <div>No</div>
+        <div>Class</div>
         <div>Driver</div>
         <div>Car</div>
         <div>Best</div>
-        <div>Gap</div>
+        <div class="gap gap-stack">
+        <span>Gap</span>
+        <span class="gap-front">+/-</span>
     </div>
+    </div>
+
 
     <div id="leaderboard-wrapper">
         <div id="leaderboard"></div>

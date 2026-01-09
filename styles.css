@@ -182,3 +182,47 @@ main {
   font-size: 14px;
   color: #ccc;
 }
+
+/* ------------------------------
+   Base row grid (Mode A: separate columns)
+--------------------------------*/
+
+.row,
+.leaderboard-header {
+  display: grid;
+  grid-template-columns:
+    80px     /* left gutter */
+    70px     /* Pos */
+    70px     /* No */
+    90px     /* Class */
+    2fr      /* Driver */
+    2fr      /* Car */
+    110px    /* Best */
+    120px;   /* Gap */
+
+  align-items: center;
+  padding: 10px 12px;
+}
+
+
+/* ------------------------------
+    Styling for stacked gap (Mode B)
+--------------------------------*/
+
+.gap-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.gap-stack span:first-child {
+  font-size: 16px;
+}
+
+.gap-stack .gap-front {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+
+
