@@ -188,42 +188,46 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ------------------------------
-   Auto Scroll (FINAL)
+   Auto Scroll (with pauses)
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.getElementById("leaderboard-wrapper");
   const toggle = document.getElementById("autoScrollToggle");
 
   let direction = 1;
-  const speed = 1; // px per tick
-  const interval = 20; // ms (~50fps)
+  const speed = 1;        // px per tick
+  const interval = 20;   // ms
+  const pauseTime = 5000; // 5 seconds
 
-  if (!wrapper || !toggle) {
-    console.warn("Auto-scroll elements not found");
-    return;
+  let paused = false;
+
+  if (!wrapper || !toggle) return;
+
+  function pauseAtEnd() {
+    paused = true;
+    setTimeout(() => {
+      paused = false;
+      direction *= -1;
+    }, pauseTime);
   }
 
-  console.log(
-    "✅ Auto-scroll ready",
-    "scrollHeight:", wrapper.scrollHeight,
-    "clientHeight:", wrapper.clientHeight
-  );
-
   setInterval(() => {
-    if (!toggle.checked) return;
+    if (!toggle.checked || paused) return;
 
     wrapper.scrollTop += direction * speed;
 
     const maxScroll =
       wrapper.scrollHeight - wrapper.clientHeight;
 
-    if (wrapper.scrollTop >= maxScroll - 2) {
-      direction = -1;
-    } else if (wrapper.scrollTop <= 2) {
-      direction = 1;
+    if (direction === 1 && wrapper.scrollTop >= maxScroll - 2) {
+      pauseAtEnd();
+    } 
+    else if (direction === -1 && wrapper.scrollTop <= 2) {
+      pauseAtEnd();
     }
   }, interval);
 });
+
 
 
 

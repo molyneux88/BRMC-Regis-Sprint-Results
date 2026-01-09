@@ -133,3 +133,52 @@ main {
   font-family: monospace;
   font-size: 20px;
 }
+
+/* ------------------------------
+   Auto-scroll toggle (slider)
+--------------------------------*/
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle input {
+  display: none;
+}
+
+.slider {
+  width: 44px;
+  height: 22px;
+  background: #444;
+  border-radius: 11px;
+  position: relative;
+  transition: background 0.25s ease;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.25s ease;
+}
+
+.toggle input:checked + .slider {
+  background: #00aa55;
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+.label-text {
+  font-size: 14px;
+  color: #ccc;
+}
