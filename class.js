@@ -12,20 +12,22 @@ function isValidPosition(pos) {
 }
 
 function isWithdrawn(row) {
-  return !Number.isFinite(row.best_lap);
+  return (
+    row.best_lap === null ||
+    row.best_lap === "" ||
+    !Number.isFinite(row.best_lap)
+  );
 }
 
 function formatLapSafe(value) {
   if (!Number.isFinite(value)) return "0:00.000";
-
   const min = Math.floor(value / 60);
   const sec = (value % 60).toFixed(3);
-
   return `${min}:${sec.padStart(6, "0")}`;
 }
 
 /* ------------------------------
-   Load + poll
+   Load + Poll
 --------------------------------*/
 async function loadClassData() {
   try {
@@ -35,29 +37,34 @@ async function loadClassData() {
     allData = rawData.filter(row => isValidPosition(row.position));
 
     syncClassDropdown(allData);
+
+    // ✅ ALWAYS render after data load
     renderClassLeaderboard();
+
   } catch (err) {
     console.error("Error loading class data:", err);
   }
 }
 
 /* ------------------------------
-   Dropdown (stable, non-resetting)
+   Dropdown (stable)
 --------------------------------*/
 function syncClassDropdown(data) {
   const select = document.getElementById("classSelect");
   if (!select) return;
 
-  const classes = [...new Set(data.map(row => row.class))]
-    .filter(c => c !== null && c !== undefined)
+  const classes = [...new Set(data.map(r => r.class))]
+    .filter(c => Number.isFinite(c))
     .sort((a, b) => a - b);
 
-  // Only rebuild if classes actually changed
+  if (!classes.length) return;
+
+  // Prevent rebuild if unchanged
   if (JSON.stringify(classes) === JSON.stringify(knownClasses)) return;
 
   knownClasses = classes.slice();
-  const previous = currentClass;
 
+  const previous = currentClass;
   select.innerHTML = "";
 
   classes.forEach(cls => {
@@ -67,13 +74,14 @@ function syncClassDropdown(data) {
     select.appendChild(option);
   });
 
-  if (previous && classes.includes(Number(previous))) {
-    select.value = previous;
+  // ✅ Default to lowest class on first load
+  if (previous !== null && classes.includes(Number(previous))) {
     currentClass = previous;
   } else {
     currentClass = classes[0];
-    select.value = currentClass;
   }
+
+  select.value = currentClass;
 
   select.onchange = () => {
     currentClass = select.value;
@@ -86,46 +94,45 @@ function syncClassDropdown(data) {
 --------------------------------*/
 function renderClassLeaderboard() {
   const leaderboard = document.getElementById("leaderboard");
-  if (!leaderboard || !currentClass) return;
+  if (!leaderboard || currentClass === null) return;
 
   leaderboard.innerHTML = "";
 
-  const classRows = allData
-    .filter(row => String(row.class) === String(currentClass))
-    .sort((a, b) => {
-      const aWithdrawn = isWithdrawn(a);
-      const bWithdrawn = isWithdrawn(b);
+    const rowsInClass = allData.filter(
+    row => String(row.class) === String(currentClass)
+    );
 
-      // ✅ Valid runners first
-      if (aWithdrawn && !bWithdrawn) return 1;
-      if (!aWithdrawn && bWithdrawn) return -1;
+    const activeRows = rowsInClass
+    .filter(row => !isWithdrawn(row))
+    .sort((a, b) => a.class_position - b.class_position);
 
-      return a.class_position - b.class_position;
-    });
+    const withdrawnRows = rowsInClass.filter(row => isWithdrawn(row));
+
+    const classRows = [...activeRows, ...withdrawnRows];
+
 
   classRows.forEach(row => {
-    const withdrawn = isWithdrawn(row);
-
     const rowDiv = document.createElement("div");
     rowDiv.className = "row";
-    rowDiv.id = `class-car-${row.car_number}`;
 
     rowDiv.innerHTML = `
       <div></div>
-      <div class="position">${withdrawn ? "—" : row.class_position}</div>
-      <div class="positionOverall">${withdrawn ? "—" : row.position}</div>
+      <div class="position">${row.class_position}</div>
+      <div class="positionOverall">${row.position}</div>
       <div class="number">#${row.car_number}</div>
       <div class="driver">${row.driver}</div>
       <div class="car">${row.car}</div>
-      <div class="lap">${withdrawn ? "0:00.000" : formatLapSafe(row.best_lap)}</div>
+      <div class="lap">${formatLapSafe(row.best_lap)}</div>
       <div class="gap gap-stack">
-        <span>${withdrawn ? "—" : (row.gap_to_first_in_class_display ?? "—")}</span>
-        <span class="gap-front">${withdrawn ? "—" : (row.gap_to_car_in_front_in_class_display ?? "—")}</span>
+        <span>${row.gap_to_first_in_class_display ?? "—"}</span>
+        <span class="gap-front">${row.gap_to_car_in_front_in_class_display ?? "—"}</span>
       </div>
     `;
 
-    if (withdrawn) {
+    if (isWithdrawn(row)) {
       rowDiv.classList.add("withdrawn");
+      rowDiv.querySelector(".lap").textContent = "0:00.000";
+      rowDiv.querySelectorAll(".gap span").forEach(el => el.textContent = "—");
     }
 
     leaderboard.appendChild(rowDiv);
@@ -136,7 +143,7 @@ function renderClassLeaderboard() {
 }
 
 /* ------------------------------
-   Boot
+   Init
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   loadClassData();
