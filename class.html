@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Class Results</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header>
+  <h1>Class Results</h1>
+  <div id="lastUpdated">Waiting for data…</div>
+</header>
+
+<!-- Prominent class selector -->
+<div class="class-selector">
+  <label for="classSelect">Select Class</label>
+  <select id="classSelect">
+    <option value="">— Choose Class —</option>
+  </select>
+</div>
+
+<main>
+  <div class="leaderboard-header row">
+    <div></div>
+    <div>Class Pos</div>
+    <div>Overall Pos</div>
+    <div>No</div>
+    <div>Driver</div>
+    <div>Car</div>
+    <div>Best</div>
+    <div class="gap gap-stack">
+      <span>Gap</span>
+      <span class="gap-front">±</span>
+    </div>
+  </div>
+
+  <div id="leaderboard-wrapper">
+    <div id="leaderboard"></div>
+  </div>
+</main>
+
+<script src="class.js"></script>
+</body>
+</html>
