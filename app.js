@@ -47,6 +47,17 @@ async function loadLeaderboard() {
     const leaderboard = document.getElementById("leaderboard");
     if (!leaderboard) return;
 
+    // -----------------------------
+    // Identify class leaders
+    const classLeaders = {};
+    data.forEach(row => {
+      if (!isWithdrawn(row)) {
+        if (!classLeaders[row.class] || row.position < data.find(r => r.car_number === classLeaders[row.class])?.position) {
+          classLeaders[row.class] = row.car_number;
+        }
+      }
+    });
+
     /* ---------- First load ---------- */
     if (firstLoad) {
       leaderboard.innerHTML = "";
@@ -61,7 +72,14 @@ async function loadLeaderboard() {
           <div class="position">${row.position}<span class="arrow"></span></div>
           <div class="number">#${row.car_number}</div>
           <div class="class">${row.class ?? ""}</div>
-          <div class="driver">${row.driver}</div>
+          <div class="driver">
+            ${row.driver}
+            ${
+              classLeaders[row.class] === row.car_number
+                ? `<span class="class-leader-badge">Class ${row.class} Leader</span>`
+                : ''
+            }
+          </div>
           <div class="car">${row.car}</div>
           <div class="lap">${formatLapSafe(row.best_lap)}</div>
 
@@ -83,8 +101,7 @@ async function loadLeaderboard() {
         if (isWithdrawn(row)) {
           rowDiv.classList.add("withdrawn");
           rowDiv.querySelector(".lap").textContent = "0:00.000";
-          rowDiv.querySelectorAll(".gap, .gap-front, .gap-front-col")
-            .forEach(el => el && (el.textContent = "—"));
+          rowDiv.querySelectorAll(".gap, .gap-front, .gap-front-col").forEach(el => el && (el.textContent = "—"));
         }
 
         leaderboard.appendChild(rowDiv);
@@ -124,8 +141,7 @@ async function loadLeaderboard() {
         arrow.classList.remove("up", "down");
 
         rowDiv.querySelector(".lap").textContent = "0:00.000";
-        rowDiv.querySelectorAll(".gap, .gap-front, .gap-front-col")
-          .forEach(el => el && (el.textContent = "—"));
+        rowDiv.querySelectorAll(".gap, .gap-front, .gap-front-col").forEach(el => el && (el.textContent = "—"));
 
         previousPositions[row.car_number] = row.position;
         return;
@@ -134,7 +150,17 @@ async function loadLeaderboard() {
       rowDiv.classList.remove("withdrawn");
 
       rowDiv.querySelector(".position").childNodes[0].textContent = row.position;
-      rowDiv.querySelector(".driver").textContent = row.driver;
+
+      // Update driver and badge
+      rowDiv.querySelector(".driver").innerHTML = `
+        ${row.driver}
+        ${
+          classLeaders[row.class] === row.car_number
+            ? `<span class="class-leader-badge">Class ${row.class} Leader</span>`
+            : ''
+        }
+      `;
+
       rowDiv.querySelector(".car").textContent = row.car;
       rowDiv.querySelector(".lap").textContent = formatLapSafe(row.best_lap);
 

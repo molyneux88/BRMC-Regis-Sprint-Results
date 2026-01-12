@@ -257,6 +257,21 @@ main {
   border-color: #00ff6a;
 }
 
+/* ------------------------------
+   Class leader Badge
+--------------------------------*/
+
+.class-leader-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border: 2px solid #FFD700; /* gold border */
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.1);
+}
 
 
 
