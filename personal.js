@@ -13,6 +13,25 @@ function formatLapSafe(value) {
   return `${min}:${sec.padStart(6, "0")}`;
 }
 
+function isClassLeader(row, allRows) {
+  if (!row || !Number.isFinite(row.class)) return false;
+
+  const classRows = allRows.filter(r =>
+    String(r.class) === String(row.class) &&
+    Number.isFinite(r.class_position) &&
+    r.class_position > 0 &&
+    Number.isFinite(r.best_lap)
+  );
+
+  if (!classRows.length) return false;
+
+  const leader = classRows.reduce((best, r) =>
+    r.class_position < best.class_position ? r : best
+  );
+
+  return leader.driver === row.driver;
+}
+
 /* ------------------------------
    Load Data
 --------------------------------*/
@@ -58,35 +77,6 @@ function buildDropdown() {
 }
 
 /* ------------------------------
-   Render Sparkline
---------------------------------*/
-
-function renderSparkline(values, bestIndex) {
-  if (!values.length) return "";
-
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-
-  return `
-    <div class="sparkline">
-      ${values.map((v, i) => {
-        const pct = max === min ? 1 : (max - v) / (max - min);
-        const height = 20 + pct * 30;
-
-        return `
-          <span
-            class="${i === bestIndex ? "best" : ""}"
-            style="height:${height}px"
-            title="${formatLapSafe(v)}"
-          ></span>
-        `;
-      }).join("")}
-    </div>
-  `;
-}
-
-
-/* ------------------------------
    Render
 --------------------------------*/
 function renderPersonal() {
@@ -94,55 +84,46 @@ function renderPersonal() {
   const row = allData.find(r => r.driver === currentDriver);
   if (!row) return;
 
-  const runTimes = [
-    row.run_1_time,
-    row.run_2_time,
-    row.run_3_time
-  ].filter(v => Number.isFinite(v));
-
-  const bestIndex = runTimes.findIndex(v => v === row.best_lap);
-
   container.innerHTML = `
-    <div class="personal-header-row">
-      <div>No</div>
-      <div>Driver</div>
-      <div>Car</div>
-      <div>Class</div>
-      <div>Overall</div>
+  <div class="driver-summary">
+    <div class="driver-top">
+      <h2 class="driver-name">#${row.car_number} ${row.driver} 
+      ${
+        isClassLeader(row, allData)
+          ? `<span class="class-leader-badge">Class ${row.class} Leader</span>`
+          : ""
+      }</h2>
+
+      <div class="positions">
+        <span>Class Position:<strong>${row.class_position}</strong></span>
+        <span>Overall Position:<strong>${row.position}</strong></span>
+      </div>
     </div>
 
-    <div class="personal-info-row">
-      <div>#${row.car_number}</div>
-      <div>${row.driver}</div>
-      <div>${row.car}</div>
-      <div>${row.class} (P${row.class_position})</div>
-      <div>P${row.position}</div>
+    <div class="driver-meta">
+      <span class="car-no">Class ${row.class}</span>
+      <span class="class">${row.car}</span>
     </div>
+  </div>
 
-    <div class="personal-runs header">
-      <div>Practice</div>
-      <div>Run 1</div>
-      <div>Run 2</div>
-      <div>Run 3</div>
-      <div>Best</div>
+  <div class="runs">
+    <div><label>Practice</label><span>${formatLapSafe(row.run_p_time)}</span></div>
+    <div><label>Run 1</label><span>${formatLapSafe(row.run_1_time)}</span></div>
+    <div><label>Run 2</label><span>${formatLapSafe(row.run_2_time)}</span></div>
+    <div><label>Run 3</label><span>${formatLapSafe(row.run_3_time)}</span></div>
+    <div class="best">
+      <label>Best (${row.best_run ?? ""})</label>
+      <span>${formatLapSafe(row.best_lap)}</span>
     </div>
+  </div>
+`;
 
-    <div class="personal-runs values">
-      <div>${formatLapSafe(row.run_p_time)}</div>
-      <div>${formatLapSafe(row.run_1_time)}</div>
-      <div>${formatLapSafe(row.run_2_time)}</div>
-      <div>${formatLapSafe(row.run_3_time)}</div>
-      <div>${formatLapSafe(row.best_lap)} (${row.best_run ?? ""})</div>
-    </div>
 
-    ${renderSparkline(runTimes, bestIndex)}
-  `;
+  document.getElementById("lastUpdated").textContent =
+    "Last updated: " + new Date().toLocaleTimeString();
 }
-
 
 /* ------------------------------
    Init
 --------------------------------*/
-document.addEventListener("DOMContentLoaded", () => {
-  loadPersonalData();
-});
+document.addEventListener("DOMContentLoaded", loadPersonalData);

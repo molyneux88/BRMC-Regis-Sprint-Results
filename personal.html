@@ -9,16 +9,19 @@
 
 <header class="personal-header">
   <h1>Personal Tracker</h1>
-    
+    <div id="lastUpdated">Waiting for data…</div>
 </header>
+<div class="dropdown-personal-wrapper">
+  <section class="class-selector">
+    <label for="competitorSelect">Select Competitor:</label>
+    <select id="competitorSelect"></select>
+  </section>
+</div>
 
 <div class="track-map-wrapper">
 
-<section class="personal-selector">
-  <label for="competitorSelect">Select Competitor:</label>
-  <select id="competitorSelect"></select>
-</section>
-    <svg
+
+<svg
   viewBox="0 0 2048 1444"
   class="track-svg"
   xmlns="http://www.w3.org/2000/svg"
@@ -75,15 +78,11 @@
 
 </svg>
 
-
-
-
 <section id="personalDetails" class="personal-leaderboard">
   <div class="loading">Waiting for data…</div>
 </section>
 
-
-    </div>
+</div>
 
 
 
