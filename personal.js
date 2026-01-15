@@ -32,6 +32,22 @@ function isClassLeader(row, allRows) {
   return leader.driver === row.driver;
 }
 
+function updateLapAnimation(bestLap) {
+  const dot = document.getElementById("lapDot");
+  if (!dot) return;
+
+  const anim = dot.querySelector("animateMotion");
+  if (!anim) return;
+
+  if (!Number.isFinite(bestLap) || bestLap <= 0) {
+    dot.style.display = "none";
+    return;
+  }
+
+  dot.style.display = "block";
+  anim.setAttribute("dur", `${bestLap}s`);
+}
+
 /* ------------------------------
    Load Data
 --------------------------------*/
@@ -121,9 +137,14 @@ function renderPersonal() {
 
   document.getElementById("lastUpdated").textContent =
     "Last updated: " + new Date().toLocaleTimeString();
+
+  updateLapAnimation(row.best_lap);
 }
 
 /* ------------------------------
    Init
 --------------------------------*/
-document.addEventListener("DOMContentLoaded", loadPersonalData);
+document.addEventListener("DOMContentLoaded", () => {
+  loadPersonalData();
+  setInterval(loadPersonalData, 30000);
+});
