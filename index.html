@@ -9,29 +9,30 @@
 
   <header class="site-header centered-layout">
 
-    <!-- LEFT: reserved for future nav / page title -->
-    <div class="header-left">
-      <div class="page-title">Overall Leaderboard</div>
-    </div>
+  <!-- LEFT: Navigation -->
+  <nav class="header-nav">
+    <a href="index.html" class="nav-link" data-page="overall">Overall</a>
+    <a href="class.html" class="nav-link" data-page="class">Class</a>
+    <a href="personal.html" class="nav-link" data-page="personal">Personal</a>
+  </nav>
 
-    <!-- CENTER: event branding -->
-    <div class="header-center">
-      <img src="BRMC Logo.avif" alt="BRMC Crest" class="header-logo large">
-      <h1>2026 Regis Sprint at Goodwood</h1>
-    </div>
+  <!-- CENTER: Logo + Event -->
+  <div class="header-center">
+    <img src="BRMC Logo.avif" alt="BRMC Crest" class="header-logo large">
+    <h1>2026 Regis Sprint at Goodwood</h1>
+  </div>
 
-    <!-- RIGHT: controls / status -->
-    <div class="header-right">
-      <label class="toggle">
-        <input type="checkbox" id="autoScrollToggle">
-        <span class="slider"></span>
-        <span class="label-text">Auto Scroll</span>
-      </label>
+  <!-- RIGHT: Controls -->
+  <div class="header-right">
+    <label class="toggle">
+      <input type="checkbox" id="autoScrollToggle">
+      <span class="slider"></span>
+      <span class="label-text">Auto Scroll</span>
+    </label>
+    <div id="lastUpdated">Waiting for data…</div>
+  </div>
 
-      <div id="lastUpdated">Waiting for data…</div>
-    </div>
-
-  </header>
+</header>
 
   <main>
   <div id="leaderboard-wrapper">
@@ -57,5 +58,6 @@
 
 
   <script src="app.js"></script>
+  <script src="nav.js"></script>
 </body>
 </html>
