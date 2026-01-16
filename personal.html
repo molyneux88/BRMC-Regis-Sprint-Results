@@ -7,13 +7,31 @@
 </head>
 <body>
 
-<header>
-  <h1>Personal Tracker</h1>
-    <div id="lastUpdated">Waiting for data…</div>
-</header>
+<header class="site-header centered-layout">
+
+    <!-- LEFT: reserved for future nav / page title -->
+    <div class="header-left">
+      <div class="page-title">Personal Tracker</div>
+    </div>
+
+    <!-- CENTER: event branding -->
+    <div class="header-center">
+      <img src="BRMC Logo.avif" alt="BRMC Crest" class="header-logo large">
+      <h1>2026 Regis Sprint at Goodwood</h1>
+    </div>
+
+    <!-- RIGHT: controls / status -->
+    <div class="header-right">
+      
+      <div id="lastUpdated">Waiting for data…</div>
+    </div>
+
+  </header>
+
+
 <div class="dropdown-personal-wrapper">
   <section class="class-selector">
-    <label for="competitorSelect">Select Competitor:</label>
+    Select Competitor:   
     <select id="competitorSelect"></select>
   </section>
 </div>

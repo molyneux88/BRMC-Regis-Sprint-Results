@@ -11,7 +11,7 @@ html, body {
 }
 
 /* ------------------------------
-   PAGE LAYOUT (SINGLE FLEX COLUMN)
+   PAGE LAYOUT
 --------------------------------*/
 body {
   display: flex;
@@ -19,47 +19,92 @@ body {
   background: #0b0b0b;
   color: white;
   font-family: Arial, sans-serif;
-  overflow: hidden; /* 🚫 no page scroll */
+  overflow: hidden;
 }
 
 /* ------------------------------
-   HEADER (FIXED HEIGHT)
+   HEADER
 --------------------------------*/
 header {
   flex: 0 0 auto;
-  padding: 20px;
   background: #111;
+}
+
+/* ==============================
+   HEADER – 3 ZONE LAYOUT
+================================ */
+.site-header.centered-layout {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 18px 28px;
+  border-bottom: 2px solid #222;
+}
+
+/* LEFT */
+.header-left {
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
+.page-title {
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 30px;
+}
+
+/* CENTER */
+.header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.header-center h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  white-space: nowrap;
+}
+
+.header-logo.large {
+  height: 64px;
+}
+
+/* RIGHT */
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  font-size: 13px;
+  color: #ccc;
+}
+
 /* ------------------------------
-   MAIN (TAKES REMAINING SPACE)
+   MAIN
 --------------------------------*/
 main {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 🔑 critical */
+  overflow: hidden;
 }
 
 /* ------------------------------
-   LEADERBOARD HEADER (STICKY)
---------------------------------*/
-
-
-/* ------------------------------
-   SCROLL CONTAINER (ONLY SCROLLER)
+   SCROLL CONTAINER
 --------------------------------*/
 #leaderboard-wrapper {
   flex: 1 1 auto;
   overflow-y: auto;
 }
 
-/* ------------------------------
-   ROW (shared behavior ONLY)
---------------------------------*/
+/* ==============================
+   ROW – SHARED BEHAVIOR ONLY
+================================ */
 .row {
   display: grid;
   align-items: center;
@@ -75,34 +120,72 @@ main {
 }
 
 /* ------------------------------
-   MOVEMENT HIGHLIGHTS
+   STICKY HEADERS
 --------------------------------*/
-.row.up {
-  background-color: #064d1a;
+.overall-leaderboard-header,
+.leaderboard-header-class {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-weight: bold;
+  background: #151515;
+  border-bottom: 2px solid #333;
 }
 
-.row.down {
-  background-color: #5a0f0f;
+/* ==============================
+   OVERALL LEADERBOARD GRID
+================================ */
+.overall-row,
+.overall-leaderboard-header {
+  grid-template-columns:
+    80px     /* gutter */
+    70px     /* Pos */
+    70px     /* No */
+    90px     /* Class */
+    3fr      /* Driver */
+    2fr      /* Car */
+    110px    /* Best */
+    120px;   /* Gap */
 }
+
+/* ==============================
+   CLASS LEADERBOARD GRID
+================================ */
+.class-row,
+.leaderboard-header-class {
+  grid-template-columns:
+    80px
+    70px
+    70px
+    90px
+    0.75fr   /* Driver */
+    0.75fr   /* Car */
+    120px    /* P */
+    120px    /* R1 */
+    120px    /* R2 */
+    120px    /* R3 */
+    200px    /* Sparkline */
+    0.5fr
+    120px;
+}
+
+/* ------------------------------
+   MOVEMENT HIGHLIGHTS
+--------------------------------*/
+.row.up { background-color: #064d1a; }
+.row.down { background-color: #5a0f0f; }
 
 /* ------------------------------
    ARROWS
 --------------------------------*/
-.arrow {
-  font-size: 18px;
-  margin-left: 6px;
-}
-
+.arrow { font-size: 18px; margin-left: 6px; }
 .arrow.up { color: #00ff6a; }
 .arrow.down { color: #ff4c4c; }
 
 /* ------------------------------
    WITHDRAWN
 --------------------------------*/
-.row.withdrawn {
-  opacity: 0.45;
-}
-
+.row.withdrawn { opacity: 0.45; }
 .row.withdrawn .lap,
 .row.withdrawn .gap {
   color: #aaa;
@@ -112,30 +195,20 @@ main {
 /* ------------------------------
    TEXT
 --------------------------------*/
-.position {
-  font-weight: bold;
-  font-size: 20px;
-}
-
-.lap {
-  font-family: monospace;
-  font-size: 20px;
-}
+.position { font-weight: bold; font-size: 20px; }
+.lap { font-family: monospace; font-size: 20px; }
 
 /* ------------------------------
-   Auto-scroll toggle (slider)
+   AUTO-SCROLL TOGGLE
 --------------------------------*/
 .toggle {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  user-select: none;
 }
 
-.toggle input {
-  display: none;
-}
+.toggle input { display: none; }
 
 .slider {
   width: 44px;
@@ -143,7 +216,6 @@ main {
   background: #444;
   border-radius: 11px;
   position: relative;
-  transition: background 0.25s ease;
 }
 
 .slider::before {
@@ -166,408 +238,45 @@ main {
   transform: translateX(22px);
 }
 
-.label-text {
-  font-size: 14px;
-  color: #ccc;
-}
-
-/* ==============================
-   OVERALL LEADERBOARD GRID
-================================ */
-.overall-row,
-.overall-leaderboard-header {
-  grid-template-columns:
-    80px
-    70px
-    70px
-    90px
-    3fr
-    2fr
-    110px
-    120px;
-}
-
-/* ==============================
-   CLASS LEADERBOARD GRID
-================================ */
-.class-row,
-.leaderboard-header-class {
-  grid-template-columns:
-    80px
-    70px
-    70px
-    90px
-    0.75fr
-    0.75fr
-    120px
-    120px
-    120px
-    120px
-    200px
-    0.5fr
-    120px;
-}
+.label-text { font-size: 14px; color: #ccc; }
 
 /* ------------------------------
-    Styling for stacked gap (Mode B)
+   GAP STACK
 --------------------------------*/
-
 .gap-stack {
   display: flex;
   flex-direction: column;
   line-height: 1.1;
 }
 
-.gap-stack span:first-child {
-  font-size: 16px;
-}
-
-.gap-stack .gap-front {
-  font-size: 14px;
-  opacity: 0.7;
-}
+.gap-stack span:first-child { font-size: 16px; }
+.gap-stack .gap-front { font-size: 14px; opacity: 0.7; }
 
 /* ------------------------------
-   Class selector (prominent)
---------------------------------*/
-.class-selector {
-  background: #0e0e0e;
-  border-bottom: 2px solid #222;
-  padding: 16px;
-  text-align: center;
-}
-
-.class-selector label {
-  display: block;
-  font-size: 14px;
-  color: #aaa;
-  margin-bottom: 6px;
-}
-
-.class-selector select {
-  font-size: 20px;
-  padding: 10px 20px;
-  background: #111;
-  color: white;
-  border: 2px solid #444;
-  border-radius: 6px;
-  min-width: 260px;
-  text-align: center;
-}
-
-.class-selector select:focus {
-  outline: none;
-  border-color: #00ff6a;
-}
-
-/* ------------------------------
-   Class leader Badge
---------------------------------*/
-
-.class-leader-badge {
-  display: inline-block;
-  margin-left: 6px;
-  padding: 2px 6px;
-  border: 2px solid #FFD700; /* gold border */
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #FFD700;
-  background: rgba(255, 215, 0, 0.1);
-}
-
-/* ------------------------------
-   Personal PAge
---------------------------------*/
-
-/* ------------------------------
-   Personal Header
---------------------------------*/
-.personal-header {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-  padding: 20px 40px;
-  background: #111;
-}
-
-.personal-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  white-space: nowrap;
-}
-
-.track-map-wrapper {
-  height: calc(100vh - 80px);
-  padding: 24px 40px;
-  display: grid;
-  grid-template-columns: 45% 55%;
-  gap: 32px;
-  align-items: center;
-}
-
-.dropdown-personal-wrapper {
-  width: 100%;
-  max-height: 70vh;      /* ← hard visual limit */
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
-
-.track-map {
-  width: 100%;
-  max-height: 340px;
-  object-fit: contain;
-  display: block;
-  
-
-  /* Tone it down */
-  filter:
-    brightness(0.95)
-    contrast(0.9)
-    saturate(0.8);
-
-  opacity: 0.85;
-}
-
-.track-svg {
-  width: 100%;
-  max-height: 70vh;      /* ← hard visual limit */
-  height: auto;
-  display: block;
-  margin: 0 auto;
-
-  background: #0f0f0f;
-  border-radius: 18px;
-  padding: 16px;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.05),
-    0 12px 30px rgba(0,0,0,0.6);
-
-  filter:
-    brightness(0.9)
-    contrast(0.85)
-    saturate(0.75);
-
-  opacity: 0.95;
-}
-
-.track-map-wrapper > svg {
-  justify-self: center;
-}
-
-/* ==============================
-   PERSONAL LEADERBOARD PANEL
-================================ */
-.personal-leaderboard {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  background: #111;
-  border-radius: 14px;
-  padding: 28px;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.05),
-    0 12px 30px rgba(0,0,0,0.6);
-}
-
-/* ==============================
-   DRIVER SUMMARY (REFINED)
-================================ */
-.driver-summary {
-  padding-bottom: 20px;
-  margin-bottom: 26px;
-  border-bottom: 2px solid #222;
-}
-
-/* Top row: name + positions */
-.driver-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 20px;
-}
-
-.driver-top h2 {
-  margin: 0;
-  font-size: 2rem;
-  white-space: nowrap;
-}
-
-/* Position block (right aligned) */
-.positions {
-  display: flex;
-  gap: 20px;
-  font-size: 15px;
-  color: #ccc;
-}
-
-.positions strong {
-  font-size: 20px;
-  font-weight: bold;
-  color: #fff;
-  margin-left: 4px;
-}
-
-/* Second row: car meta */
-.driver-meta {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: 80px 1fr;
-  gap: 20px;
-
-  font-size: 15px;
-  color: #bbb;
-}
-
-.driver-meta .car-no {
-  font-weight: bold;
-  color: #fff;
-}
-
-.driver-meta .class {
-  text-align: left;
-}
-
-.driver-meta .car {
-  text-align: right;
-}
-
-.driver-name {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.class-leader-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border: 2px solid #FFD700;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: bold;
-  color: #FFD700;
-  background: rgba(255, 215, 0, 0.12);
-  white-space: nowrap;
-}
-
-
-/* ==============================
-   RUNS GRID
-================================ */
-.runs {
-  flex: 1; /* ← makes this section fill height */
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 18px;
-  align-items: stretch;
-}
-
-/* Individual run card */
-.runs > div {
-  background: #151515;
-  border: 1px solid #333;
-  border-radius: 10px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  padding: 18px 10px;
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
-.runs > div:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-}
-
-/* Label */
-.runs label {
-  font-size: 13px;
-  color: #aaa;
-  margin-bottom: 10px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* Time value */
-.runs span {
-  font-family: monospace;
-  font-size: 22px;
-}
-
-/* ==============================
-   BEST RUN EMPHASIS
-================================ */
-.runs .best {
-  border-color: #ffd700;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,215,0,0.08),
-      rgba(255,215,0,0.02)
-    );
-  box-shadow:
-    0 0 0 1px rgba(255,215,0,0.3),
-    0 0 18px rgba(255,215,0,0.25);
-}
-
-.runs .best span {
-  font-size: 24px;
-  color: #ffd700;
-}
-
-/* ==============================
-   LOADING STATE
-================================ */
-.personal-leaderboard .loading {
-  margin: auto;
-  font-size: 16px;
-  color: #aaa;
-}
-
-
-/* ------------------------------
-   Sparkline
+   SPARKLINE
 --------------------------------*/
 .sparkline {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 8px;
-  height: 60px;
-  margin: 16px auto 20px;
+  gap: 6px;
+  height: 28px;
 }
 
 .sparkline span {
-  width: 16px;
+  width: 8px;
+  border-radius: 3px;
   background: linear-gradient(to top, #00ff9c, #008f5a);
-  border-radius: 4px;
-  opacity: 0.85;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0.7;
 }
 
 .sparkline span.best {
   background: linear-gradient(to top, #ffd700, #caa400);
   opacity: 1;
-  box-shadow: 0 0 6px rgba(255,215,0,0.6);
-}
-
-.sparkline span:hover {
-  transform: scaleY(1.1);
-  opacity: 1;
 }
 
 /* ------------------------------
-   Run times (P / R1 / R2 / R3)
+   RUN TIMES
 --------------------------------*/
 .run-time {
   font-family: monospace;
@@ -575,29 +284,9 @@ main {
   text-align: center;
 }
 
-.run-time.slow {
-  opacity: 0.45;
-}
+.run-time.slow { opacity: 0.45; }
 
-/* Header labels tighter */
 .leaderboard-header-class .run-time {
   font-weight: bold;
-  font-family: inherit;
   font-size: 14px;
 }
-
-/* Condensed sparkline for leaderboard rows */
-.row .sparkline {
-  height: 28px;
-  align-items: flex-end;
-  overflow: hidden;
-}
-
-.row .sparkline span {
-  width: 8px;
-  border-radius: 3px;
-}
-
-
-
-

@@ -7,14 +7,31 @@
 </head>
 <body>
 
-<header>
-  <h1>Class Results</h1>
-  <div id="lastUpdated">Waiting for data…</div>
-</header>
+<header class="site-header centered-layout">
+
+    <!-- LEFT: reserved for future nav / page title -->
+    <div class="header-left">
+      <div class="page-title">Class Leaderboard</div>
+    </div>
+
+    <!-- CENTER: event branding -->
+    <div class="header-center">
+      <img src="BRMC Logo.avif" alt="BRMC Crest" class="header-logo large">
+      <h1>2026 Regis Sprint at Goodwood</h1>
+    </div>
+
+    <!-- RIGHT: controls / status -->
+    <div class="header-right">
+      
+
+      <div id="lastUpdated">Waiting for data…</div>
+    </div>
+
+  </header>
 
 <!-- Prominent class selector -->
 <div class="class-selector">
-  <label for="classSelect">Select Class</label>
+  Select Class:
   <select id="classSelect">
     <option value="">— Choose Class —</option>
   </select>

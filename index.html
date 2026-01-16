@@ -2,45 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Live Lap Times</title>
+  <title>Overall Leaderboard</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <header>
-    <h1>Overall Leaderboard</h1>
+  <header class="site-header centered-layout">
 
-    <div class="controls">
+    <!-- LEFT: reserved for future nav / page title -->
+    <div class="header-left">
+      <div class="page-title">Overall Leaderboard</div>
+    </div>
+
+    <!-- CENTER: event branding -->
+    <div class="header-center">
+      <img src="BRMC Logo.avif" alt="BRMC Crest" class="header-logo large">
+      <h1>2026 Regis Sprint at Goodwood</h1>
+    </div>
+
+    <!-- RIGHT: controls / status -->
+    <div class="header-right">
       <label class="toggle">
-        <input type="checkbox" id="autoScrollToggle" unchecked />
+        <input type="checkbox" id="autoScrollToggle">
         <span class="slider"></span>
         <span class="label-text">Auto Scroll</span>
       </label>
-      <br>
+
       <div id="lastUpdated">Waiting for data…</div>
     </div>
+
   </header>
 
   <main>
+  <div id="leaderboard-wrapper">
+
     <div class="overall-leaderboard-header row overall-row">
-        <div></div>
-        <div>Pos</div>
-        <div>No</div>
-        <div>Class</div>
-        <div>Driver</div>
-        <div>Car</div>
-        <div>Best</div>
-        <div class="gap gap-stack">
+      <div></div>
+      <div>Pos</div>
+      <div>No</div>
+      <div>Class</div>
+      <div>Driver</div>
+      <div>Car</div>
+      <div>Best</div>
+      <div class="gap gap-stack">
         <span>Gap</span>
         <span class="gap-front">+/-</span>
-    </div>
+      </div>
     </div>
 
+    <div id="leaderboard"></div>
 
-    <div id="leaderboard-wrapper">
-        <div id="leaderboard"></div>
-    </div>
-  </main>
+  </div>
+</main>
 
 
   <script src="app.js"></script>

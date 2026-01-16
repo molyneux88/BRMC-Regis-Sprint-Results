@@ -73,9 +73,13 @@ async function loadPersonalData() {
 --------------------------------*/
 function buildDropdown() {
   const select = document.getElementById("competitorSelect");
+  if (!select) return;
+
   select.innerHTML = "";
 
   const names = [...new Set(allData.map(r => r.driver))];
+
+  if (!names.length) return;
 
   names.forEach(name => {
     const opt = document.createElement("option");
@@ -84,7 +88,16 @@ function buildDropdown() {
     select.appendChild(opt);
   });
 
+  // ✅ Default to first driver on initial load
+  if (!currentDriver || !names.includes(currentDriver)) {
+    currentDriver = names[0];
+  }
+
+  // ✅ Ensure the dropdown actually displays it
   select.value = currentDriver;
+
+  // ✅ Render immediately on load
+  renderPersonal();
 
   select.onchange = () => {
     currentDriver = select.value;
