@@ -47,18 +47,7 @@ main {
 /* ------------------------------
    LEADERBOARD HEADER (STICKY)
 --------------------------------*/
-.leaderboard-header {
-  flex: 0 0 auto;
-  font-weight: bold;
-  background: #151515;
-  border-bottom: 2px solid #333;
-  display: grid;
-  grid-template-columns: 60px 70px 2fr 2fr 100px 100px;
-  padding: 10px 12px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+
 
 /* ------------------------------
    SCROLL CONTAINER (ONLY SCROLLER)
@@ -69,11 +58,10 @@ main {
 }
 
 /* ------------------------------
-   ROWS
+   ROW (shared behavior ONLY)
 --------------------------------*/
 .row {
   display: grid;
-  grid-template-columns: 60px 70px 2fr 2fr 100px 100px;
   align-items: center;
   padding: 10px 12px;
   border-bottom: 1px solid #333;
@@ -183,27 +171,42 @@ main {
   color: #ccc;
 }
 
-/* ------------------------------
-   Base row grid (Mode A: separate columns)
---------------------------------*/
-
-.row,
-.leaderboard-header {
-  display: grid;
+/* ==============================
+   OVERALL LEADERBOARD GRID
+================================ */
+.overall-row,
+.overall-leaderboard-header {
   grid-template-columns:
-    80px     /* left gutter */
-    70px     /* Pos */
-    70px     /* No */
-    90px     /* Class */
-    2fr      /* Driver */
-    2fr      /* Car */
-    110px    /* Best */
-    120px;   /* Gap */
-
-  align-items: center;
-  padding: 10px 12px;
+    80px
+    70px
+    70px
+    90px
+    3fr
+    2fr
+    110px
+    120px;
 }
 
+/* ==============================
+   CLASS LEADERBOARD GRID
+================================ */
+.class-row,
+.leaderboard-header-class {
+  grid-template-columns:
+    80px
+    70px
+    70px
+    90px
+    0.75fr
+    0.75fr
+    120px
+    120px
+    120px
+    120px
+    200px
+    0.5fr
+    120px;
+}
 
 /* ------------------------------
     Styling for stacked gap (Mode B)
@@ -561,6 +564,38 @@ main {
 .sparkline span:hover {
   transform: scaleY(1.1);
   opacity: 1;
+}
+
+/* ------------------------------
+   Run times (P / R1 / R2 / R3)
+--------------------------------*/
+.run-time {
+  font-family: monospace;
+  font-size: 16px;
+  text-align: center;
+}
+
+.run-time.slow {
+  opacity: 0.45;
+}
+
+/* Header labels tighter */
+.leaderboard-header-class .run-time {
+  font-weight: bold;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* Condensed sparkline for leaderboard rows */
+.row .sparkline {
+  height: 28px;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.row .sparkline span {
+  width: 8px;
+  border-radius: 3px;
 }
 
 

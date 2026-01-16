@@ -64,7 +64,7 @@ async function loadLeaderboard() {
 
       data.forEach(row => {
         const rowDiv = document.createElement("div");
-        rowDiv.className = "row";
+        rowDiv.className = "row overall-row";
         rowDiv.id = `car-${row.car_number}`;
 
         rowDiv.innerHTML = `

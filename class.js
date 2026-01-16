@@ -26,6 +26,49 @@ function formatLapSafe(value) {
   return `${min}:${sec.padStart(6, "0")}`;
 }
 
+function getRuns(row) {
+  return [
+    row.run_p_time,
+    row.run_1_time,
+    row.run_2_time,
+    row.run_3_time
+  ].filter(v => Number.isFinite(v));
+}
+
+function renderRun(value, best) {
+  if (!Number.isFinite(value)) {
+    return `<div class="run-time">—</div>`;
+  }
+
+  const slow = best !== null && value > best ? "slow" : "";
+  return `<div class="run-time ${slow}">${formatLapSafe(value)}</div>`;
+}
+
+function renderSparkline(runs) {
+  if (!runs.length) {
+    return `<div class="sparkline"></div>`;
+  }
+
+  const best = Math.min(...runs);
+  const worst = Math.max(...runs);
+  const range = Math.max(worst - best, 0.001);
+
+  const MIN = 6;
+  const MAX = 24;
+
+  return `
+    <div class="sparkline">
+      ${runs.map(v => {
+        const ratio = (worst - v) / range; // faster = taller
+        const height = MIN + ratio * (MAX - MIN);
+        const cls = v === best ? "best" : "";
+        return `<span class="${cls}" style="height:${height}px"></span>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+
 /* ------------------------------
    Load + Poll
 --------------------------------*/
@@ -113,7 +156,17 @@ function renderClassLeaderboard() {
 
   classRows.forEach(row => {
     const rowDiv = document.createElement("div");
-    rowDiv.className = "row";
+    rowDiv.className = "row class-row";
+
+    const runs = [
+      row.run_p_time,
+      row.run_1_time,
+      row.run_2_time,
+      row.run_3_time
+    ];
+
+    const validRuns = runs.filter(v => Number.isFinite(v));
+    const bestRun = validRuns.length ? Math.min(...validRuns) : null;
 
     rowDiv.innerHTML = `
       <div></div>
@@ -122,6 +175,14 @@ function renderClassLeaderboard() {
       <div class="number">#${row.car_number}</div>
       <div class="driver">${row.driver}</div>
       <div class="car">${row.car}</div>
+
+      ${renderRun(row.run_p_time, bestRun)}
+      ${renderRun(row.run_1_time, bestRun)}
+      ${renderRun(row.run_2_time, bestRun)}
+      ${renderRun(row.run_3_time, bestRun)}
+
+      ${renderSparkline(validRuns)}
+
       <div class="lap">${formatLapSafe(row.best_lap)}</div>
       <div class="gap gap-stack">
         <span>${row.gap_to_first_in_class_display ?? "—"}</span>
