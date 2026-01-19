@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Overall Leaderboard</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -9,12 +10,19 @@
 
   <header class="site-header centered-layout">
 
-  <!-- LEFT: Navigation -->
-  <nav class="header-nav">
+<!-- Desktop nav -->
+  <nav class="header-nav desktop-only">
     <a href="index.html" class="nav-link" data-page="overall">Overall</a>
     <a href="class.html" class="nav-link" data-page="class">Class</a>
     <a href="personal.html" class="nav-link" data-page="personal">Personal</a>
   </nav>
+
+  <!-- LEFT: Burger (mobile only) -->
+  <button class="burger mobile-only" id="burgerBtn">
+    <span class="burger-bar top"></span>
+    <span class="burger-bar middle"></span>
+    <span class="burger-bar bottom"></span>
+  </button>
 
   <!-- CENTER: Logo + Event -->
   <div class="header-center">
@@ -22,17 +30,39 @@
     <h1>2026 Regis Sprint at Goodwood</h1>
   </div>
 
-  <!-- RIGHT: Controls -->
+  <!-- RIGHT: Desktop controls + Mobile padding div -->
   <div class="header-right">
-    <label class="toggle">
-      <input type="checkbox" id="autoScrollToggle">
-      <span class="slider"></span>
-      <span class="label-text">Auto Scroll</span>
-    </label>
+    <!-- Desktop controls -->
+    <div class="desktop-only">
+      <label class="toggle">
+        <input type="checkbox" id="autoScrollToggle">
+        <span class="slider"></span>
+        <span class="label-text">Auto Scroll</span>
+      </label>
+      
+    </div>
     <div id="lastUpdated">Waiting for data…</div>
+
+    <!-- Mobile padding div for centering -->
+    <div class="mobile-only header-right-padding"></div>
   </div>
 
+  
+
+  <!-- Mobile nav (slide-in) -->
+  <nav class="mobile-nav mobile-only" id="mobileNav">
+    <button class="close-menu" id="closeBurger">×</button>
+    <a href="index.html" class="mobile-link" data-page="overall">Overall</a>
+    <a href="class.html" class="mobile-link" data-page="class">Class</a>
+    <a href="personal.html" class="mobile-link" data-page="personal">Personal</a>
+  </nav>
 </header>
+
+  <!-- Mobile last-updated -->
+  <div id="lastUpdatedMobile" class="last-updated-mobile">
+    Waiting for data…
+  </div>
+
 
   <main>
   <div id="leaderboard-wrapper">

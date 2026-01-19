@@ -108,9 +108,13 @@ async function loadLeaderboard() {
         previousPositions[row.car_number] = row.position;
       });
 
-      document.getElementById("lastUpdated").textContent =
-        "Last updated: " + new Date().toLocaleTimeString();
+      const timeText = "Last updated: " + new Date().toLocaleTimeString();
 
+      const desktopTime = document.getElementById("lastUpdated");
+      if (desktopTime) desktopTime.textContent = timeText;
+
+      const mobileTime = document.getElementById("lastUpdatedMobile");
+      if (mobileTime) mobileTime.textContent = timeText;
       firstLoad = false;
       return;
     }
@@ -228,8 +232,13 @@ async function loadLeaderboard() {
       });
     }
 
-    document.getElementById("lastUpdated").textContent =
-      "Last updated: " + new Date().toLocaleTimeString();
+    const timeText = "Last updated: " + new Date().toLocaleTimeString();
+
+    const desktopTime = document.getElementById("lastUpdated");
+    if (desktopTime) desktopTime.textContent = timeText;
+
+    const mobileTime = document.getElementById("lastUpdatedMobile");
+    if (mobileTime) mobileTime.textContent = timeText;
 
   } catch (err) {
     console.error("Error loading leaderboard:", err);
@@ -281,4 +290,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (direction === 1 && wrapper.scrollTop >= max - 2) pause();
     if (direction === -1 && wrapper.scrollTop <= 2) pause();
   }, interval);
+});
+
+const burger = document.getElementById("burgerBtn");
+const mobileNav = document.getElementById("mobileNav");
+const closeBtn = document.getElementById("closeBurger");
+
+// Toggle burger menu open
+burger.addEventListener("click", () => {
+  burger.classList.toggle("open");
+  mobileNav.classList.toggle("open");
+});
+
+// Close button
+closeBtn.addEventListener("click", () => {
+  burger.classList.remove("open");
+  mobileNav.classList.remove("open");
+});
+
+// Highlight active page
+const currentPage = window.location.pathname.split("/").pop(); 
+document.querySelectorAll(".header-nav a, .mobile-nav a").forEach(a => {
+  if (a.getAttribute("href") === currentPage) {
+    a.classList.add("active");
+  } else {
+    a.classList.remove("active");
+  }
 });
