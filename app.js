@@ -35,6 +35,10 @@ function positionsChanged(data) {
   );
 }
 
+function isMobileView() {
+  return window.innerWidth <= 768;
+}
+
 /* ------------------------------
    Main loader
 --------------------------------*/
@@ -67,41 +71,52 @@ async function loadLeaderboard() {
         rowDiv.className = "row overall-row";
         rowDiv.id = `car-${row.car_number}`;
 
-        rowDiv.innerHTML = `
-          <div></div>
-          <div class="position">${row.position}<span class="arrow"></span></div>
-          <div class="number">#${row.car_number}</div>
-          <div class="class">${row.class ?? ""}</div>
-          <div class="driver">
-            ${row.driver}
-            ${
-              classLeaders[row.class] === row.car_number
-                ? `<span class="class-leader-badge">Class ${row.class} Leader</span>`
-                : ''
-            }
-          </div>
-          <div class="car">${row.car}</div>
-          <div class="lap">${formatLapSafe(row.best_lap)}</div>
+        const mobile = isMobileView();
 
-          ${
-            GAP_DISPLAY_MODE === "stacked"
-              ? `
-                <div class="gap gap-stack">
-                  <span>${row.gap_to_first_display ?? "—"}</span>
-                  <span class="gap-front">${row.gap_to_car_in_front_display ?? "—"}</span>
-                </div>
-              `
-              : `
-                <div class="gap">${row.gap_to_first_display ?? "—"}</div>
-                <div class="gap-front-col">${row.gap_to_car_in_front_display ?? "—"}</div>
-              `
-          }
-        `;
+        rowDiv.innerHTML = mobile
+          ? `
+            <div class="position">${row.position}<span class="arrow"></span></div>
+            <div class="number">#${row.car_number}</div>
+            <div class="driver">${row.driver}</div>
+            <div class="lap">${formatLapSafe(row.best_lap)}</div>
+            <div class="gap gap-stack">
+              <span>${row.gap_to_first_display ?? "—"}</span>
+              <span class="gap-front">${row.gap_to_car_in_front_display ?? "—"}</span>
+            </div>
+          `
+          : `
+            <div></div>
+            <div class="position">${row.position}<span class="arrow"></span></div>
+            <div class="number">#${row.car_number}</div>
+            <div class="class">${row.class ?? ""}</div>
+            <div class="driver">
+              ${row.driver}
+              ${
+                classLeaders[row.class] === row.car_number
+                  ? `<span class="class-leader-badge">Class ${row.class} Leader</span>`
+                  : ''
+              }
+            </div>
+            <div class="car">${row.car}</div>
+            <div class="lap">${formatLapSafe(row.best_lap)}</div>
+            ${
+              GAP_DISPLAY_MODE === "stacked"
+                ? `
+                  <div class="gap gap-stack">
+                    <span>${row.gap_to_first_display ?? "—"}</span>
+                    <span class="gap-front">${row.gap_to_car_in_front_display ?? "—"}</span>
+                  </div>
+                `
+                : `
+                  <div class="gap">${row.gap_to_first_display ?? "—"}</div>
+                  <div class="gap-front-col">${row.gap_to_car_in_front_display ?? "—"}</div>
+                `
+            }
+          `;
 
         if (isWithdrawn(row)) {
           rowDiv.classList.add("withdrawn");
-          rowDiv.querySelector(".lap").textContent = "0:00.000";
-          rowDiv.querySelectorAll(".gap, .gap-front, .gap-front-col").forEach(el => el && (el.textContent = "—"));
+          rowDiv.querySelectorAll(".lap, .gap, .gap-front, .gap-front-col").forEach(el => el && (el.textContent = "—"));
         }
 
         leaderboard.appendChild(rowDiv);
@@ -306,6 +321,12 @@ burger.addEventListener("click", () => {
 closeBtn.addEventListener("click", () => {
   burger.classList.remove("open");
   mobileNav.classList.remove("open");
+});
+
+//rebuild the table for mobile/desktop:
+window.addEventListener("resize", () => {
+  firstLoad = true; // force rebuild on next poll
+  loadLeaderboard();
 });
 
 // Highlight active page

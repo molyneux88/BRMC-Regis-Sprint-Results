@@ -119,6 +119,14 @@ main {
   will-change: transform;
 }
 
+.row > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  line-height: 1;
+}
+
 /* ------------------------------
    STICKY HEADERS
 --------------------------------*/
@@ -872,4 +880,109 @@ main {
 .mobile-nav a:hover {
   background: rgba(255,255,255,0.06);
   color: #fff;
+}
+
+
+/* ==============================
+   OVERALL LEADERBOARD – MOBILE
+================================ */
+@media (max-width: 768px) {
+
+  /* Hide less important columns */
+  .overall-leaderboard-header div.hide-mobile,
+  .overall-row div.hide-mobile {
+    display: none;
+  }
+
+  /* Optional: remove blank spacer on mobile */
+  .overall-leaderboard-header .header-spacer,
+  .overall-row .header-spacer {
+    display: none;
+  }
+
+  /* Adjust grid for mobile (only keep visible columns) */
+  .overall-row,
+  .overall-leaderboard-header {
+    grid-template-columns:
+      70px   /* Pos */
+      70px   /* No */
+      110px  /* Best */
+      120px; /* Gap */
+  }
+
+  /* Optional: make leaderboard scrollable horizontally if needed */
+  #leaderboard-wrapper {
+    overflow-x: auto;
+  }
+}
+
+/* ==============================
+   MOBILE LEADERBOARD ROWS
+================================ */
+/* ==============================
+   MOBILE LEADERBOARD ROWS
+================================ */
+@media (max-width: 768px) {
+  .overall-leaderboard-header,
+  .overall-row {
+    display: grid;
+    grid-template-columns: 35px 45px 1fr 70px 60px; 
+    /* position | number | driver | lap | gap */
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+  }
+
+  /* Force no wrap on all columns except driver */
+  .overall-leaderboard-header div,
+  .overall-row div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;       /* match standard leaderboard */
+    line-height: 1.2;
+  }
+
+  /* Allow driver to wrap if needed */
+  .overall-row .driver {
+    white-space: normal;   /* allow wrapping */
+    overflow: visible;
+  }
+
+  /* Adjust gap column to match font of rest */
+  .overall-leaderboard-header .gap,
+  .overall-row .gap {
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: right;
+  }
+
+  /* Optional: center Pos, No, Best for consistency */
+  .overall-leaderboard-header .position,
+  .overall-leaderboard-header .number,
+  .overall-leaderboard-header .lap,
+  .overall-row .position,
+  .overall-row .number,
+  .overall-row .lap {
+    text-align: center;
+  }
+
+  /* Reduce padding inside each cell slightly to fit */
+  .overall-leaderboard-header div,
+  .overall-row div {
+    padding: 2px 4px;
+  }
+
+    /* Override gap-stack font sizing on mobile */
+  .overall-leaderboard-header .gap-stack span,
+  .overall-row .gap-stack span {
+    font-size: 12px !important;
+    line-height: 1.2;
+  }
+  
+  .overall-leaderboard-header .gap-stack .gap-front,
+  .overall-row .gap-stack .gap-front {
+    font-size: 12px !important;
+    opacity: 0.7;
+  }
 }

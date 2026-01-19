@@ -65,26 +65,26 @@
 
 
   <main>
-  <div id="leaderboard-wrapper">
+    <div id="leaderboard-wrapper">
 
-    <div class="overall-leaderboard-header row overall-row">
-      <div></div>
-      <div>Pos</div>
-      <div>No</div>
-      <div>Class</div>
-      <div>Driver</div>
-      <div>Car</div>
-      <div>Best</div>
-      <div class="gap gap-stack">
-        <span>Gap</span>
-        <span class="gap-front">+/-</span>
+      <div class="overall-leaderboard-header row overall-row">
+        <div class="header-spacer"></div> <!-- optional: can remove later -->
+        <div>Pos</div>
+        <div>No</div>
+        <div class="hide-mobile">Class</div>
+        <div>Driver</div>
+        <div class="hide-mobile">Car</div>
+        <div>Best</div>
+        <div class="gap gap-stack">
+          <span>Gap</span>
+          <span class="gap-front">+/-</span>
+        </div>
       </div>
+
+      <div id="leaderboard"></div>
+
     </div>
-
-    <div id="leaderboard"></div>
-
-  </div>
-</main>
+  </main>
 
 
   <script src="app.js"></script>
