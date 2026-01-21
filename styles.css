@@ -113,7 +113,6 @@ main {
   background: #111;
 
   transition:
-    transform 10s ease,
     background-color 2s ease;
 
   will-change: transform;
@@ -648,6 +647,7 @@ main {
   box-shadow:
     inset 0 0 0 1px rgba(255,215,0,0.4);
 }
+
 /* ==============================
    VISIBILITY HELPERS
 ================================ */
@@ -673,9 +673,7 @@ main {
 /* ------------------------------
    BURGER BUTTON (ANIMATED)
 --------------------------------*/
-/* ------------------------------
-   BURGER BUTTON (ANIMATED)
---------------------------------*/
+
 .burger {
   width: 32px;
   height: 24px;
@@ -919,9 +917,7 @@ main {
 /* ==============================
    MOBILE LEADERBOARD ROWS
 ================================ */
-/* ==============================
-   MOBILE LEADERBOARD ROWS
-================================ */
+
 @media (max-width: 768px) {
   .overall-leaderboard-header,
   .overall-row {
@@ -984,5 +980,84 @@ main {
   .overall-row .gap-stack .gap-front {
     font-size: 12px !important;
     opacity: 0.7;
+  }
+}
+
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  z-index: 300;
+
+  padding: 10px 20px;
+  border-radius: 999px;
+
+  background: rgba(20, 20, 20, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+
+  opacity: 0;
+  pointer-events: none;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Visible state */
+.scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Hover / focus */
+.scroll-top-btn:hover {
+  background: rgba(255, 215, 0, 0.18);
+  border-color: rgba(255, 215, 0, 0.6);
+  color: #ffd700;
+}
+
+/* Mobile tweak */
+@media (max-width: 768px) {
+  .scroll-top-btn {
+    bottom: 37.5px;
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+}
+
+/* ==============================
+   DESKTOP TEXT ALIGNMENT FIX
+================================ */
+@media (min-width: 769px) {
+  .overall-row .driver,
+  .overall-row .car,
+  .overall-row .driver-header,
+  .overall-row .car-header {
+    text-align: left;
+    justify-self: start;
+  }
+
+  .overall-row .driver,
+  .overall-row .driver-header{
+    padding-left: 35px;
   }
 }
