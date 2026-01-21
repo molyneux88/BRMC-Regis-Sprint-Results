@@ -969,6 +969,30 @@ main {
     font-size: 12px !important;
     opacity: 0.7;
   }
+
+  .class-selector {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    justify-content: center;
+  }
+
+  /* Optional separator */
+  .class-selector::after {
+
+    margin: 0 0.4rem;
+    color: #555;
+  }
+
+  /* Dropdown styling */
+  .class-selector select {
+    margin-left: 0.6rem; /* larger gap from label */
+    width: auto;         /* don't stretch to fill */
+    min-width: 150px;    /* minimum width */
+    max-width: 200px;    /* maximum width */
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+  }
 }
 
 
