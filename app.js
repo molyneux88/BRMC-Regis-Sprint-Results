@@ -322,61 +322,65 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.getElementById("leaderboard-wrapper");
   const toggle = document.getElementById("autoScrollToggle");
+  const scrollBtn = document.getElementById("scrollToTop");
 
-  if (!wrapper || !toggle) return;
+  if (!wrapper) return;
 
-  let direction = 1;
-  const speed = 1;
-  const interval = 20;
-  const pauseTime = 5000;
-  let paused = false;
+  /* ------------------------------
+     Auto-scroll interval
+  --------------------------------*/
+  if (toggle) {
+    let direction = 1;
+    const speed = 1;
+    const interval = 20;
+    const pauseTime = 5000;
+    let paused = false;
 
-  function pause() {
-    paused = true;
-    setTimeout(() => {
-      paused = false;
-      direction *= -1;
-    }, pauseTime);
+    function pause() {
+      paused = true;
+      setTimeout(() => {
+        paused = false;
+        direction *= -1;
+      }, pauseTime);
+    }
+
+    setInterval(() => {
+      if (!toggle.checked || paused) return;
+
+      wrapper.scrollTop += direction * speed;
+
+      const max = wrapper.scrollHeight - wrapper.clientHeight;
+      if (direction === 1 && wrapper.scrollTop >= max - 2) pause();
+      if (direction === -1 && wrapper.scrollTop <= 2) pause();
+    }, interval);
+
+    // Stop auto-scroll on user interaction
+    wrapper.addEventListener("wheel", () => { toggle.checked = false; }, { passive: true });
+    wrapper.addEventListener("touchstart", () => { toggle.checked = false; }, { passive: true });
   }
 
-  setInterval(() => {
-    if (!toggle.checked || paused) return;
+  /* ------------------------------
+     Scroll to top button
+  --------------------------------*/
+  if (scrollBtn) {
+    const SHOW_AFTER = 200;
 
-    wrapper.scrollTop += direction * speed;
-
-    const max = wrapper.scrollHeight - wrapper.clientHeight;
-
-    if (direction === 1 && wrapper.scrollTop >= max - 2) pause();
-    if (direction === -1 && wrapper.scrollTop <= 2) pause();
-  }, interval);
-});
-
-/* ------------------------------
-   Return to Top Button
---------------------------------*/
-document.addEventListener("DOMContentLoaded", () => {
-  const wrapper = document.getElementById("leaderboard-wrapper");
-  const btn = document.getElementById("scrollToTop");
-
-  if (!wrapper || !btn) return;
-
-  const SHOW_AFTER = 200; // px scrolled before showing
-
-  wrapper.addEventListener("scroll", () => {
-    if (wrapper.scrollTop > SHOW_AFTER) {
-      btn.classList.add("visible");
-    } else {
-      btn.classList.remove("visible");
-    }
-  });
-
-  btn.addEventListener("click", () => {
-    wrapper.scrollTo({
-      top: 0,
-      behavior: "smooth"
+    wrapper.addEventListener("scroll", () => {
+      if (wrapper.scrollTop > SHOW_AFTER) {
+        scrollBtn.classList.add("visible");
+      } else {
+        scrollBtn.classList.remove("visible");
+      }
     });
-  });
+
+    scrollBtn.addEventListener("click", () => {
+      if (toggle) toggle.checked = false; // stop auto-scroll
+      wrapper.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
 });
+
 
 const burger = document.getElementById("burgerBtn");
 const mobileNav = document.getElementById("mobileNav");

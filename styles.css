@@ -315,7 +315,7 @@ main {
 .class-selector {
   background: #0e0e0e;
   border-bottom: 2px solid #222;
-  padding: 16px;
+  padding: 10px;
   text-align: center;
 }
 
@@ -673,6 +673,7 @@ main {
   border: none;
   cursor: pointer;
   z-index: 200;
+  transition: 0.5s ease;
 }
 
 .burger-bar {
@@ -681,6 +682,13 @@ main {
   background: white;
   border-radius: 2px;
   transition: all 0.5s ease;
+}
+
+/* Instantly hide burger when menu is open */
+.burger.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Animation when open */

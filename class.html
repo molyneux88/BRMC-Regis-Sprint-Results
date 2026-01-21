@@ -2,35 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Class Results</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body data-page="class">
 
-<header class="site-header centered-layout">
+<header id="site-header"></header>
 
-    <!-- LEFT: reserved for future nav / page title -->
-    <nav class="header-nav">
-      <a href="index.html" class="nav-link" data-page="overall">Overall</a>
-      <a href="class.html" class="nav-link" data-page="class">Class</a>
-      <a href="personal.html" class="nav-link" data-page="personal">Personal</a>
-    </nav>
+  <!-- Mobile last-updated -->
+  <div id="lastUpdatedMobile" class="last-updated-mobile">
+    Waiting for data…
+  </div> 
 
-
-    <!-- CENTER: event branding -->
-    <div class="header-center">
-      <img src="BRMC Logo.avif" alt="BRMC Crest" class="header-logo large">
-      <h1>2026 Regis Sprint at Goodwood</h1>
-    </div>
-
-    <!-- RIGHT: controls / status -->
-    <div class="header-right">
-      
-
-      <div id="lastUpdated">Waiting for data…</div>
-    </div>
-
-  </header>
 
 <!-- Prominent class selector -->
 <div class="class-selector">
@@ -67,6 +51,7 @@
   </div>
 </main>
 
+<script src="header.js"></script>
 <script src="class.js"></script>
 <script src="nav.js"></script>
 </body>

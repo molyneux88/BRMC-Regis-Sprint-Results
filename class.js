@@ -199,8 +199,13 @@ function renderClassLeaderboard() {
     leaderboard.appendChild(rowDiv);
   });
 
-  document.getElementById("lastUpdated").textContent =
-    "Last updated: " + new Date().toLocaleTimeString();
+  const timeText = "Last updated: " + new Date().toLocaleTimeString();
+
+  const desktopTime = document.getElementById("lastUpdated");
+  if (desktopTime) desktopTime.textContent = timeText;
+
+  const mobileTime = document.getElementById("lastUpdatedMobile");
+  if (mobileTime) mobileTime.textContent = timeText;
 }
 
 /* ------------------------------
@@ -209,4 +214,37 @@ function renderClassLeaderboard() {
 document.addEventListener("DOMContentLoaded", () => {
   loadClassData();
   setInterval(loadClassData, 30000);
+});
+
+const burger = document.getElementById("burgerBtn");
+const mobileNav = document.getElementById("mobileNav");
+const closeBtn = document.getElementById("closeBurger");
+
+// Toggle burger menu open
+burger.addEventListener("click", () => {
+  burger.classList.toggle("open");
+  mobileNav.classList.toggle("open");
+});
+
+// Close button
+closeBtn.addEventListener("click", () => {
+  burger.classList.remove("open");
+  mobileNav.classList.remove("open");
+});
+
+//rebuild the table for mobile/desktop:
+window.addEventListener("resize", () => {
+  firstLoad = true;
+  Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
+  loadLeaderboard();
+});
+
+// Highlight active page
+const currentPage = window.location.pathname.split("/").pop(); 
+document.querySelectorAll(".header-nav a, .mobile-nav a").forEach(a => {
+  if (a.getAttribute("href") === currentPage) {
+    a.classList.add("active");
+  } else {
+    a.classList.remove("active");
+  }
 });
