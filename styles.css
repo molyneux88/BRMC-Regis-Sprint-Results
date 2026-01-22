@@ -868,6 +868,10 @@ main {
   color: #fff;
 }
 
+.leaderboard-header-class div.hide-desktop {
+    display: none;
+  }
+
 
 /* ==============================
    OVERALL LEADERBOARD – MOBILE
@@ -880,6 +884,10 @@ main {
   .leaderboard-header-class div.hide-mobile,
   .class-row div.hide-mobile {
     display: none;
+  }
+
+  .leaderboard-header-class div.hide-desktop {
+    display: flex;
   }
 
   /* Optional: remove blank spacer on mobile */
@@ -899,6 +907,9 @@ main {
 ================================ */
 
 @media (max-width: 768px) {
+
+  .arrow { margin-left: 2px; }
+
   .overall-leaderboard-header,
   .overall-row,
   .leaderboard-header-class,

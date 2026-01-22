@@ -2,7 +2,7 @@ const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 const EXAGGERATION = 1;
 const ANIMATION_DURATION = 2000; // ms
 const GAP_DISPLAY_MODE = "stacked"; // "separate" | "stacked"
-const FLIP_IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+const FLIP_IDLE_TIMEOUT = 1 * 60 * 1000; // 5 minutes
 let lastPositionChangeTime = Date.now();
 const movedCars = new Set();
 
@@ -232,10 +232,7 @@ async function loadLeaderboard() {
           rowDiv.classList.remove("up");
           arrow.textContent = "↓";
           arrow.className = "arrow down";
-        } else {
-          arrow.textContent = "";
-          arrow.classList.remove("up", "down");
-        }
+        } 
       }
 
       previousPositions[row.car_number] = row.position;
@@ -246,6 +243,15 @@ async function loadLeaderboard() {
       [...leaderboard.children].forEach(row => {
         row.style.transition = "";
         row.style.transform = "";
+
+        // 🔥 RESET MOVEMENT STATE
+        row.classList.remove("up", "down");
+
+        const arrow = row.querySelector(".arrow");
+        if (arrow) {
+          arrow.textContent = "";
+          arrow.classList.remove("up", "down");
+        }
       });
     }
 
