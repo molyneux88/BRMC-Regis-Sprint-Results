@@ -68,6 +68,10 @@ function renderSparkline(runs) {
   `;
 }
 
+function isMobileView() {
+  return window.innerWidth <= 768;
+}
+
 
 /* ------------------------------
    Load + Poll
@@ -136,6 +140,9 @@ function syncClassDropdown(data) {
    Render leaderboard
 --------------------------------*/
 function renderClassLeaderboard() {
+
+  const mobile = isMobileView();
+
   const leaderboard = document.getElementById("leaderboard");
   if (!leaderboard || currentClass === null) return;
 
@@ -168,27 +175,42 @@ function renderClassLeaderboard() {
     const validRuns = runs.filter(v => Number.isFinite(v));
     const bestRun = validRuns.length ? Math.min(...validRuns) : null;
 
-    rowDiv.innerHTML = `
-      <div></div>
-      <div class="position">${row.class_position}</div>
-      <div class="positionOverall">${row.position}</div>
-      <div class="number">#${row.car_number}</div>
-      <div class="driver">${row.driver}</div>
-      <div class="car">${row.car}</div>
+    rowDiv.innerHTML = mobile
+        ? `
+          <div class="position-combined">
+            <span class="class-pos">${row.class_position}</span>
+            <span class="pos-sep"> / </span>
+            <span class="overall-pos">${row.position}</span>
+          </div>
+          <div class="number">#${row.car_number}</div>
+          <div class="driver">${row.driver}</div>
+          <div class="lap">${formatLapSafe(row.best_lap)}</div>
+          <div class="gap gap-stack">
+            <span>${row.gap_to_first_in_class_display ?? "—"}</span>
+            <span class="gap-front">${row.gap_to_car_in_front_in_class_display ?? "—"}</span>
+          </div>
+        `
+        : `
+        <div></div>
+        <div class="position">${row.class_position}</div>
+        <div class="positionOverall">${row.position}</div>
+        <div class="number">#${row.car_number}</div>
+        <div class="driver">${row.driver}</div>
+        <div class="car">${row.car}</div>
 
-      ${renderRun(row.run_p_time, bestRun)}
-      ${renderRun(row.run_1_time, bestRun)}
-      ${renderRun(row.run_2_time, bestRun)}
-      ${renderRun(row.run_3_time, bestRun)}
+        ${renderRun(row.run_p_time, bestRun)}
+        ${renderRun(row.run_1_time, bestRun)}
+        ${renderRun(row.run_2_time, bestRun)}
+        ${renderRun(row.run_3_time, bestRun)}
 
-      ${renderSparkline(validRuns)}
+        ${renderSparkline(validRuns)}
 
-      <div class="lap">${formatLapSafe(row.best_lap)}</div>
-      <div class="gap gap-stack">
-        <span>${row.gap_to_first_in_class_display ?? "—"}</span>
-        <span class="gap-front">${row.gap_to_car_in_front_in_class_display ?? "—"}</span>
-      </div>
-    `;
+        <div class="lap">${formatLapSafe(row.best_lap)}</div>
+        <div class="gap gap-stack">
+          <span>${row.gap_to_first_in_class_display ?? "—"}</span>
+          <span class="gap-front">${row.gap_to_car_in_front_in_class_display ?? "—"}</span>
+        </div>
+      `;
 
     if (isWithdrawn(row)) {
       rowDiv.classList.add("withdrawn");

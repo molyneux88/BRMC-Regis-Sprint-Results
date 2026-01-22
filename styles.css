@@ -876,7 +876,9 @@ main {
 
   /* Hide less important columns */
   .overall-leaderboard-header div.hide-mobile,
-  .overall-row div.hide-mobile {
+  .overall-row div.hide-mobile,
+  .leaderboard-header-class div.hide-mobile,
+  .class-row div.hide-mobile {
     display: none;
   }
 
@@ -884,16 +886,6 @@ main {
   .overall-leaderboard-header .header-spacer,
   .overall-row .header-spacer {
     display: none;
-  }
-
-  /* Adjust grid for mobile (only keep visible columns) */
-  .overall-row,
-  .overall-leaderboard-header {
-    grid-template-columns:
-      70px   /* Pos */
-      70px   /* No */
-      110px  /* Best */
-      120px; /* Gap */
   }
 
   /* Optional: make leaderboard scrollable horizontally if needed */
@@ -908,7 +900,9 @@ main {
 
 @media (max-width: 768px) {
   .overall-leaderboard-header,
-  .overall-row {
+  .overall-row,
+  .leaderboard-header-class,
+  .class-row {
     display: grid;
     grid-template-columns: 35px 45px 1fr 70px 60px; 
     /* position | number | driver | lap | gap */
@@ -919,23 +913,29 @@ main {
 
   /* Force no wrap on all columns except driver */
   .overall-leaderboard-header div,
-  .overall-row div {
+  .overall-row div,
+  .leaderboard-header-class div,
+  .class-row div{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 12px;       /* match standard leaderboard */
     line-height: 1.2;
+    padding: 2px 4px;
   }
 
   /* Allow driver to wrap if needed */
-  .overall-row .driver {
+  .overall-row .driver,
+  .class-row .driver {
     white-space: normal;   /* allow wrapping */
     overflow: visible;
   }
 
   /* Adjust gap column to match font of rest */
   .overall-leaderboard-header .gap,
-  .overall-row .gap {
+  .overall-row .gap
+  .leaderboard-header-class .gap,
+  .class-row .gap {
     font-size: 12px;
     line-height: 1.2;
     text-align: right;
@@ -947,25 +947,30 @@ main {
   .overall-leaderboard-header .lap,
   .overall-row .position,
   .overall-row .number,
-  .overall-row .lap {
+  .overall-row .lap,
+  .leaderboard-header-class .position,
+  .leaderboard-header-class .number,
+  .leaderboard-header-class .lap,
+  .class-row .position,
+  .class-row .number,
+  .class-row .lap
+   {
     text-align: center;
-  }
-
-  /* Reduce padding inside each cell slightly to fit */
-  .overall-leaderboard-header div,
-  .overall-row div {
-    padding: 2px 4px;
-  }
+  }  
 
     /* Override gap-stack font sizing on mobile */
   .overall-leaderboard-header .gap-stack span,
-  .overall-row .gap-stack span {
+  .overall-row .gap-stack span,
+  .leaderboard-header-class .gap-stack span,
+  .class-row .gap-stack span {
     font-size: 12px !important;
     line-height: 1.2;
   }
   
   .overall-leaderboard-header .gap-stack .gap-front,
-  .overall-row .gap-stack .gap-front {
+  .overall-row .gap-stack .gap-front,
+  .leaderboard-header-class .gap-stack .gap-front,
+  .class-row .gap-stack .gap-front {
     font-size: 12px !important;
     opacity: 0.7;
   }
@@ -1072,4 +1077,25 @@ main {
   .overall-row .driver-header{
     padding-left: 35px;
   }
+}
+
+.position-combined {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.position-combined .class-pos {
+  font-weight: bold;
+  color: #fff;
+}
+
+.position-combined .pos-sep {
+  color: #666;
+}
+
+.position-combined .overall-pos {
+  color: #999;
 }
