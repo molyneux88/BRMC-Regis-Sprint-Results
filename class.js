@@ -179,31 +179,36 @@ function renderClassLeaderboard() {
     leaderboard.innerHTML = "";
 
     classRows.forEach(row => {
+      // wrapper
+      const wrapper = document.createElement("div");
+      wrapper.className = "row-wrapper";
+      wrapper.id = `car-${row.car_number}`;
+
+      // actual row
       const rowDiv = document.createElement("div");
       rowDiv.className = "row class-row";
-      rowDiv.id = `car-${row.car_number}`;
-      
-    const runs = [
-      row.run_p_time,
-      row.run_1_time,
-      row.run_2_time,
-      row.run_3_time
-    ];
 
-    const validRuns = runs.filter(v => Number.isFinite(v));
-    const bestRun = validRuns.length ? Math.min(...validRuns) : null;
+      const runs = [
+        row.run_p_time,
+        row.run_1_time,
+        row.run_2_time,
+        row.run_3_time
+      ];
+
+      const validRuns = runs.filter(v => Number.isFinite(v));
+      const bestRun = validRuns.length ? Math.min(...validRuns) : null;
 
       rowDiv.innerHTML = mobile
         ? `
           <div class="position-combined">
-            <div class="position-combined gap-stack">
+            <div class="gap-stack">
               <span class="class-pos">${row.class_position}</span>
               <span class="overall-pos">${row.position}</span>
             </div>
             <span class="arrow"></span>
           </div>
           <div class="number">#${row.car_number}</div>
-          <div class="driver">${row.driver}</div>
+          <div class="driver">${row.driver}<span class="expand-caret">▾</span></div>
           <div class="lap">${formatLapSafe(row.best_lap)}</div>
           <div class="gap gap-stack">
             <span>${row.gap_to_first_in_class_display ?? "—"}</span>
@@ -212,19 +217,19 @@ function renderClassLeaderboard() {
         `
         : `
           <div></div>
-          <div class="position">${row.class_position} <span class="arrow"></span> </div>
+          <div class="position">${row.class_position} <span class="arrow"></span></div>
           <div class="positionOverall">${row.position}</div>
           <div class="number">#${row.car_number}</div>
           <div class="driver">${row.driver}</div>
           <div class="car">${row.car}</div>
-          
-        ${renderRun(row.run_p_time, bestRun)}
-        ${renderRun(row.run_1_time, bestRun)}
-        ${renderRun(row.run_2_time, bestRun)}
-        ${renderRun(row.run_3_time, bestRun)}
 
-        ${renderSparkline(validRuns)}
-          
+          ${renderRun(row.run_p_time, bestRun)}
+          ${renderRun(row.run_1_time, bestRun)}
+          ${renderRun(row.run_2_time, bestRun)}
+          ${renderRun(row.run_3_time, bestRun)}
+
+          ${renderSparkline(validRuns)}
+
           <div class="lap">${formatLapSafe(row.best_lap)}</div>
           <div class="gap gap-stack">
             <span>${row.gap_to_first_in_class_display ?? "—"}</span>
@@ -232,16 +237,84 @@ function renderClassLeaderboard() {
           </div>
         `;
 
+      wrapper.appendChild(rowDiv);
+
+      // MOBILE expandable content
+      if (mobile) {
+        const expand = document.createElement("div");
+        expand.className = "row-expand";
+        expand.innerHTML = `
+          <div class="expand-inner">
+            <div class="expand-grid">
+              <div class="expand-item">
+                <span class="label">P</span>
+                <span class="value practice-time">
+                  ${Number.isFinite(row.run_p_time) ? formatLapSafe(row.run_p_time) : "—"}
+                </span>
+              </div>
+
+              <div class="expand-item">
+                <span class="label">R1</span>
+                <span class="value run1-time">
+                  ${Number.isFinite(row.run_1_time) ? formatLapSafe(row.run_1_time) : "—"}
+                </span>
+              </div>
+
+              <div class="expand-item">
+                <span class="label">R2</span>
+                <span class="value run2-time">
+                  ${Number.isFinite(row.run_2_time) ? formatLapSafe(row.run_2_time) : "—"}
+                </span>
+              </div>
+
+              <div class="expand-item">
+                <span class="label">R3</span>
+                <span class="value run3-time">
+                  ${Number.isFinite(row.run_3_time) ? formatLapSafe(row.run_3_time) : "—"}
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+        wrapper.appendChild(expand);
+
+        // Then populate the values + best-run class immediately
+          const runs = [
+            { key: "run_p_time", cls: ".practice-time" },
+            { key: "run_1_time", cls: ".run1-time" },
+            { key: "run_2_time", cls: ".run2-time" },
+            { key: "run_3_time", cls: ".run3-time" },
+          ];
+
+          const best = Math.min(
+            ...runs.map(r => Number.isFinite(row[r.key]) ? row[r.key] : Infinity)
+          );
+
+          runs.forEach(r => {
+            const el = expand.querySelector(r.cls);
+            if (!el) return;
+
+            el.textContent = Number.isFinite(row[r.key]) ? formatLapSafe(row[r.key]) : "—";
+
+            if (row[r.key] === best) {
+              el.parentElement.classList.add("best");
+            }
+          });
+
+      }
+
       if (isWithdrawn(row)) {
         rowDiv.classList.add("withdrawn");
         rowDiv.querySelector(".lap").textContent = "0:00.000";
         rowDiv.querySelectorAll(".gap span").forEach(el => el.textContent = "—");
       }
 
-      leaderboard.appendChild(rowDiv);
+      leaderboard.appendChild(wrapper);
       previousPositions[row.car_number] = row.class_position;
     });
 
+
+    enableRowExpansion();
     updateTimestamps();
     firstLoad = false;
     return;
@@ -277,10 +350,28 @@ function renderClassLeaderboard() {
 
   /* ---------- Update content ---------- */
   classRows.forEach(row => {
-    const rowDiv = document.getElementById(`car-${row.car_number}`);
-    if (!rowDiv) return;
+    const wrapper = document.getElementById(`car-${row.car_number}`);
+    if (!wrapper) return;
 
+    const rowDiv = wrapper.querySelector(".row");
     const arrow = rowDiv.querySelector(".arrow");
+
+    // Update class position
+    const classPosEl = rowDiv.querySelector(".class-pos");
+    if (classPosEl) {
+      classPosEl.textContent = row.class_position;
+    }
+
+    // Update overall position
+    const overallPosEl = rowDiv.querySelector(".overall-pos");
+    if (overallPosEl) {
+      overallPosEl.textContent = row.position;
+    }
+    
+    rowDiv.querySelector(".lap").textContent = formatLapSafe(row.best_lap);
+
+    rowDiv.querySelector(".gap span").textContent =
+      row.gap_to_first_in_class_display ?? "—";
 
     if (isWithdrawn(row)) {
       rowDiv.classList.add("withdrawn");
@@ -297,17 +388,45 @@ function renderClassLeaderboard() {
 
     rowDiv.classList.remove("withdrawn");
 
-    // Update class position
-    const classPosEl = rowDiv.querySelector(".class-pos");
-    if (classPosEl) {
-      classPosEl.textContent = row.class_position;
+    const wrapperEl = document.getElementById(`car-${row.car_number}`);
+
+    if (wrapperEl) {
+      const updateRun = (cls, value) => {
+        const el = wrapperEl.querySelector(cls);
+        if (el) {
+          el.textContent = Number.isFinite(value)
+            ? formatLapSafe(value)
+            : "—";
+        }
+      };
+
+      updateRun(".practice-time", row.run_p_time);
+      updateRun(".run1-time", row.run_1_time);
+      updateRun(".run2-time", row.run_2_time);
+      updateRun(".run3-time", row.run_3_time);
     }
 
-    // Update overall position
-    const overallPosEl = rowDiv.querySelector(".overall-pos");
-    if (overallPosEl) {
-      overallPosEl.textContent = row.position;
-    }
+    const runs = [
+      { key: "run_p_time", cls: ".practice-time" },
+      { key: "run_1_time", cls: ".run1-time" },
+      { key: "run_2_time", cls: ".run2-time" },
+      { key: "run_3_time", cls: ".run3-time" },
+    ];
+
+    const best = Math.min(
+      ...runs.map(r => Number.isFinite(row[r.key]) ? row[r.key] : Infinity)
+    );
+
+    runs.forEach(r => {
+      const el = wrapper.querySelector(r.cls)?.parentElement; // .expand-item
+      if (!el) return;
+
+      if (row[r.key] === best) {
+        el.classList.add("best");
+      } else {
+        el.classList.remove("best");
+      }
+    });
 
     rowDiv.querySelector(".lap").textContent =
       formatLapSafe(row.best_lap);
@@ -338,13 +457,12 @@ function renderClassLeaderboard() {
     previousPositions[row.car_number] = row.class_position;
   });
 
-  /* ---------- Reset FLIP if idle ---------- */
+ /* ---------- RESET IF IDLE ---------- */
   if (!flipEnabled) {
-    [...leaderboard.children].forEach(row => {
+    [...leaderboard.children].forEach(w => {
+      const row = w.querySelector(".row");
       row.style.transition = "";
       row.style.transform = "";
-
-      // 🔥 RESET MOVEMENT STATE
       row.classList.remove("up", "down");
 
       const arrow = row.querySelector(".arrow");
@@ -455,4 +573,22 @@ document.querySelectorAll(".header-nav a, .mobile-nav a").forEach(a => {
     a.classList.remove("active");
   }
 });
+
+function enableRowExpansion() {
+  if (!isMobileView()) return;
+
+  document.querySelectorAll(".row-wrapper").forEach(wrapper => {
+    const row = wrapper.querySelector(".row");
+    if (!row) return;
+
+    row.addEventListener("click", () => {
+      // Close others (optional but recommended)
+      document.querySelectorAll(".row-wrapper.open").forEach(w => {
+        if (w !== wrapper) w.classList.remove("open");
+      });
+
+      wrapper.classList.toggle("open");
+    });
+  });
+}
 

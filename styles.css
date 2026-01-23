@@ -915,7 +915,7 @@ main {
   .leaderboard-header-class,
   .class-row {
     display: grid;
-    grid-template-columns: 35px 45px 1fr 70px 60px; 
+    grid-template-columns: 45px 45px 1fr 70px 55px; 
     /* position | number | driver | lap | gap */
     align-items: center;
     gap: 6px;
@@ -1109,4 +1109,79 @@ main {
 
 .position-combined .overall-pos {
   color: #999;
+}
+
+
+/* ==============================
+   MOBILE CLASS LEADERBOARD DROPDOWN
+================================ */
+@media (max-width: 768px) {
+
+  /* Expandable row container */
+  .row-expand {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 300ms ease, opacity 200ms ease;
+    background: rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Open state */
+  .row-wrapper.open .row-expand {
+    max-height: 150px; /* enough for 4 items */
+    opacity: 1;
+  }
+
+  /* Caret/arrow indicator */
+  .expand-caret {
+    font-size: 1.2rem;
+    color: #aaa;
+    margin-left: 0.5rem;
+    transition: transform 200ms ease, color 200ms ease;
+  }
+
+  .row-wrapper.open .expand-caret {
+    transform: rotate(180deg);
+    color: #fff;
+  }
+
+  /* Inner padding */
+  .expand-inner {
+    padding: 0.6rem 0.9rem;
+  }
+
+  /* Grid for P/R1/R2/R3 */
+  .expand-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .expand-item {
+    text-align: center;
+  }
+
+  .expand-item .label {
+    display: block;
+    font-size: 0.65rem;
+    color: #aaa;
+    margin-bottom: 0.15rem;
+  }
+
+  .expand-item .value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  /* Highlight best run */
+  .expand-item.best .value {
+    color: #ffd700; /* gold */
+  }
+
+  /* Optional: subtle tap feedback */
+  .row:active {
+    background: rgba(255,255,255,0.05);
+  }
 }
