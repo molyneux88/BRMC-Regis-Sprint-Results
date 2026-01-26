@@ -915,7 +915,7 @@ main {
   .leaderboard-header-class,
   .class-row {
     display: grid;
-    grid-template-columns: 45px 45px 1fr 70px 55px; 
+    grid-template-columns: 45px 30px 1fr 65px 55px; 
     /* position | number | driver | lap | gap */
     align-items: center;
     gap: 6px;
@@ -1137,7 +1137,7 @@ main {
   .expand-caret {
     font-size: 1.2rem;
     color: #aaa;
-    margin-left: 0.5rem;
+    margin-left: 0.25rem;
     transition: transform 200ms ease, color 200ms ease;
   }
 

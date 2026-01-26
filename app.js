@@ -73,15 +73,31 @@ async function loadLeaderboard() {
       leaderboard.innerHTML = "";
 
       data.forEach(row => {
+
+        // wrapper
+        const wrapper = document.createElement("div");
+        wrapper.className = "row-wrapper";
+        wrapper.id = `car-${row.car_number}`;
+
         const rowDiv = document.createElement("div");
         rowDiv.className = "row overall-row";
         rowDiv.id = `car-${row.car_number}`;
+
+        const runs = [
+          row.run_p_time,
+          row.run_1_time,
+          row.run_2_time,
+          row.run_3_time
+        ];
+
+      const validRuns = runs.filter(v => Number.isFinite(v));
+      const bestRun = validRuns.length ? Math.min(...validRuns) : null;
 
         rowDiv.innerHTML = mobile
           ? `
             <div class="position">${row.position}<span class="arrow"></span></div>
             <div class="number">#${row.car_number}</div>
-            <div class="driver">${row.driver}</div>
+            <div class="driver">${row.driver}<span class="expand-caret">▾</span></div>
             <div class="lap">${formatLapSafe(row.best_lap)}</div>
             <div class="gap gap-stack">
               <span>${row.gap_to_first_display ?? "—"}</span>
@@ -118,14 +134,86 @@ async function loadLeaderboard() {
             }
           `;
 
+        wrapper.appendChild(rowDiv);
+
+        // MOBILE expandable content
+        if (mobile) {
+          const expand = document.createElement("div");
+          expand.className = "row-expand";
+          expand.innerHTML = `
+            <div class="expand-inner">
+              <div class="expand-grid">
+                <div class="expand-item">
+                  <span class="label">P</span>
+                  <span class="value practice-time">
+                    ${Number.isFinite(row.run_p_time) ? formatLapSafe(row.run_p_time) : "—"}
+                  </span>
+                </div>
+
+                <div class="expand-item">
+                  <span class="label">R1</span>
+                  <span class="value run1-time">
+                    ${Number.isFinite(row.run_1_time) ? formatLapSafe(row.run_1_time) : "—"}
+                  </span>
+                </div>
+
+                <div class="expand-item">
+                  <span class="label">R2</span>
+                  <span class="value run2-time">
+                    ${Number.isFinite(row.run_2_time) ? formatLapSafe(row.run_2_time) : "—"}
+                  </span>
+                </div>
+
+                <div class="expand-item">
+                  <span class="label">R3</span>
+                  <span class="value run3-time">
+                    ${Number.isFinite(row.run_3_time) ? formatLapSafe(row.run_3_time) : "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          `;
+          wrapper.appendChild(expand);
+
+          // Then populate the values + best-run class immediately
+            const runs = [
+              { key: "run_p_time", cls: ".practice-time" },
+              { key: "run_1_time", cls: ".run1-time" },
+              { key: "run_2_time", cls: ".run2-time" },
+              { key: "run_3_time", cls: ".run3-time" },
+            ];
+
+            const best = Math.min(
+              ...runs.map(r => Number.isFinite(row[r.key]) ? row[r.key] : Infinity)
+            );
+
+            runs.forEach(r => {
+              const el = expand.querySelector(r.cls);
+              if (!el) return;
+
+              el.textContent = Number.isFinite(row[r.key]) ? formatLapSafe(row[r.key]) : "—";
+
+              if (row[r.key] === best) {
+                el.parentElement.classList.add("best");
+              }
+            });
+
+        }
+
         if (isWithdrawn(row)) {
           rowDiv.classList.add("withdrawn");
           rowDiv.querySelectorAll(".lap, .gap, .gap-front, .gap-front-col").forEach(el => el && (el.textContent = "—"));
         }
 
-        leaderboard.appendChild(rowDiv);
+        
+
+        leaderboard.appendChild(wrapper);
         previousPositions[row.car_number] = row.position;
       });
+
+      if (mobile) {
+        enableRowExpansion();
+      }
 
       const timeText = "Last updated: " + new Date().toLocaleTimeString();
 
@@ -189,18 +277,61 @@ async function loadLeaderboard() {
 
       rowDiv.classList.remove("withdrawn");
 
+      const wrapperEl = document.getElementById(`car-${row.car_number}`);
+
+      if (wrapperEl) {
+        const updateRun = (cls, value) => {
+          const el = wrapperEl.querySelector(cls);
+          if (el) {
+            el.textContent = Number.isFinite(value)
+              ? formatLapSafe(value)
+              : "—";
+          }
+        };
+
+        updateRun(".practice-time", row.run_p_time);
+        updateRun(".run1-time", row.run_1_time);
+        updateRun(".run2-time", row.run_2_time);
+        updateRun(".run3-time", row.run_3_time);
+      }
+
+      const runs = [
+        { key: "run_p_time", cls: ".practice-time" },
+        { key: "run_1_time", cls: ".run1-time" },
+        { key: "run_2_time", cls: ".run2-time" },
+        { key: "run_3_time", cls: ".run3-time" },
+      ];
+
+      const best = Math.min(
+        ...runs.map(r => Number.isFinite(row[r.key]) ? row[r.key] : Infinity)
+      );
+
+      runs.forEach(r => {
+        const el = wrapperEl.querySelector(r.cls)?.parentElement; // .expand-item
+        if (!el) return;
+
+        if (row[r.key] === best) {
+          el.classList.add("best");
+        } else {
+          el.classList.remove("best");
+        }
+      });
+
       rowDiv.querySelector(".position").childNodes[0].textContent = row.position;
 
       // Update driver and badge
       const driverEl = rowDiv.querySelector(".driver");
       driverEl.innerHTML = mobile
-        ? row.driver
-        : `
+        ? `
+          ${row.driver}
+          <span class="expand-caret">▾</span>
+        `
+      : `
           ${row.driver}
           ${
             classLeaders[row.class] === row.car_number
               ? `<span class="class-leader-badge">Class ${row.class} Leader</span>`
-              : ''
+              : ""
           }
         `;
 
@@ -420,3 +551,21 @@ document.querySelectorAll(".header-nav a, .mobile-nav a").forEach(a => {
     a.classList.remove("active");
   }
 });
+
+function enableRowExpansion() {
+  if (!isMobileView()) return;
+
+  document.querySelectorAll(".row-wrapper").forEach(wrapper => {
+    const row = wrapper.querySelector(".row");
+    if (!row) return;
+
+    row.addEventListener("click", () => {
+      // Close others (optional but recommended)
+      document.querySelectorAll(".row-wrapper.open").forEach(w => {
+        if (w !== wrapper) w.classList.remove("open");
+      });
+
+      wrapper.classList.toggle("open");
+    });
+  });
+}
