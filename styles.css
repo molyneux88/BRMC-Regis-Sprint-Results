@@ -538,7 +538,6 @@ main {
   background: #151515;
   border: 1px solid #333;
   border-radius: 10px;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -549,6 +548,11 @@ main {
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
+}
+
+/* Individual run card */
+.desktop-only .runs > div {
+  min-width: 118px;
 }
 
 .runs > div:hover {
@@ -645,6 +649,10 @@ main {
 }
 
 .mobile-only {
+  display: none;
+}
+
+.mobile-only-personal {
   display: none;
 }
 
@@ -1184,4 +1192,110 @@ main {
   .row:active {
     background: rgba(255,255,255,0.05);
   }
+}
+
+/* =========================
+   PERSONAL — MOBILE LAYOUT
+========================= */
+@media (max-width: 768px) {
+
+  /* Show / hide */
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only-personal {
+    display: block;
+    width: 100%;
+  }
+
+  /* ---------- Track ---------- */
+  .mobile-track {
+    width: 100%;
+    margin: 0;
+  }
+
+  .mobile-track .track-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ---------- Card ---------- */
+  .mobile-details {
+    margin: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.08);
+    border-radius: 14px;
+  }
+
+  /* Driver header */
+  .mobile-details .driver-name {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    
+    text-overflow: ellipsis;
+  }
+
+  .mobile-details .positions, .driver-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    text-align: center;
+    color: #aaa;
+    margin-top: 6px;
+  }
+
+  .mobile-details .positions strong {
+    color: #fff;
+    font-weight: 600;
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
+  }
+
+  /* ---------- Runs ---------- */
+  .mobile-details .runs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+
+  .mobile-details .runs div {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 0.35rem 0.25rem;
+    min-width: none;
+  }
+
+  .mobile-details .runs label {
+    display: block;
+    font-size: 0.6rem;
+    color: #aaa;
+    margin-bottom: 0.15rem;
+  }
+
+  .mobile-details .runs span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  /* Best highlight */
+  .mobile-details .runs .best {
+    background: rgba(60,255,154,0.15);
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .mobile-details .runs .best span {
+    color: #3cff9a;
+  }
+
+  .runs .best {
+  grid-column: 1 / -1; /* span full row */
+}
+  
 }

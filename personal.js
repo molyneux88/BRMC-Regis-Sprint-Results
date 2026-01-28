@@ -13,6 +13,10 @@ function formatLapSafe(value) {
   return `${min}:${sec.padStart(6, "0")}`;
 }
 
+function isMobileView() {
+  return window.innerWidth <= 768;
+}
+
 function isClassLeader(row, allRows) {
   if (!row || !Number.isFinite(row.class)) return false;
 
@@ -33,16 +37,19 @@ function isClassLeader(row, allRows) {
 }
 
 function updateLapAnimation(bestLap) {
-  const dot = document.getElementById("lapDot");
-  if (!dot) return;
+  if (!Number.isFinite(bestLap) || bestLap <= 0) return;
 
-  const anim = dot.querySelector("animateMotion");
-  if (!anim) return;
+  // Find the active SVG (desktop OR mobile)
+  const svg = isMobileView()
+    ? document.querySelector(".mobile-track .track-svg")
+    : document.querySelector(".desktop-only .track-svg");
 
-  if (!Number.isFinite(bestLap) || bestLap <= 0) {
-    dot.style.display = "none";
-    return;
-  }
+  if (!svg) return;
+
+  const dot = svg.querySelector("#lapDot");
+  const anim = svg.querySelector("animateMotion");
+
+  if (!dot || !anim) return;
 
   dot.style.display = "block";
   anim.setAttribute("dur", `${bestLap}s`);
@@ -109,11 +116,54 @@ function buildDropdown() {
    Render
 --------------------------------*/
 function renderPersonal() {
-  const container = document.getElementById("personalDetails");
+  const container = isMobileView()
+    ? document.getElementById("personalDetailsMobile")
+    : document.getElementById("personalDetails");
+
+  if (!container) return;
+
   const row = allData.find(r => r.driver === currentDriver);
   if (!row) return;
 
-  container.innerHTML = `
+  const mobile = isMobileView();
+
+  container.innerHTML = mobile
+  ? `
+    <div class="driver-summary">
+      <div class="driver-top">
+        <div class="driver-name">
+          #${row.car_number} ${row.driver}
+        </div>
+
+        
+      </div>
+
+      <div class="driver-meta">
+        <span class="car-no">Class ${row.class}</span>
+        <span class="class">${row.car}</span>
+      </div>
+
+      <div class="positions">
+          <span>Class Pos: <strong>${row.class_position}</strong></span>
+          <span>Overall Pos: <strong>${row.position}</strong></span>
+        </div>
+
+      <div class="runs">
+        <div><label>P</label><span>${formatLapSafe(row.run_p_time)}</span></div>
+        <div><label>R1</label><span>${formatLapSafe(row.run_1_time)}</span></div>
+        <div><label>R2</label><span>${formatLapSafe(row.run_2_time)}</span></div>
+        <div><label>R3</label><span>${formatLapSafe(row.run_3_time)}</span></div>
+      </div>
+      <div class="runs">
+        <div class="best">
+          <label>Best</label>
+          <span>${formatLapSafe(row.best_lap)}</span>
+        </div>
+      </div>
+    </div>
+  `
+  :   
+  `
   <div class="driver-summary">
     <div class="driver-top">
       <h2 class="driver-name">#${row.car_number} ${row.driver} 
@@ -147,11 +197,8 @@ function renderPersonal() {
   </div>
 `;
 
-
-  document.getElementById("lastUpdated").textContent =
-    "Last updated: " + new Date().toLocaleTimeString();
-
   updateLapAnimation(row.best_lap);
+  updateTimestamps();
 }
 
 /* ------------------------------
@@ -161,3 +208,18 @@ document.addEventListener("DOMContentLoaded", () => {
   loadPersonalData();
   setInterval(loadPersonalData, 30000);
 });
+
+
+/* ------------------------------
+   Timestamps
+--------------------------------*/
+function updateTimestamps() {
+  const timeText = "Last updated: " + new Date().toLocaleTimeString();
+
+    const desktopTime = document.getElementById("lastUpdated");
+    if (desktopTime) desktopTime.textContent = timeText;
+
+    const mobileTime = document.getElementById("lastUpdatedMobile");
+    if (mobileTime) mobileTime.textContent = timeText;
+
+}
