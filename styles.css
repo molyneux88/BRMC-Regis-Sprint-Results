@@ -1199,6 +1199,16 @@ main {
 ========================= */
 @media (max-width: 768px) {
 
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  main {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   /* Show / hide */
   .desktop-only {
     display: none !important;
@@ -1296,6 +1306,12 @@ main {
 
   .runs .best {
   grid-column: 1 / -1; /* span full row */
-}
+  }
+
+  .driver-summary {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+
+  }
   
 }
