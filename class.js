@@ -357,15 +357,61 @@ function renderClassLeaderboard() {
     const arrow = rowDiv.querySelector(".arrow");
 
     // Update class position
+    // Update class position (mobile + desktop)
     const classPosEl = rowDiv.querySelector(".class-pos");
     if (classPosEl) {
+      // mobile
       classPosEl.textContent = row.class_position;
+    } else {
+      // desktop
+      const posEl = rowDiv.querySelector(".position");
+      if (posEl) {
+        posEl.firstChild.textContent = `${row.class_position} `;
+      }
     }
 
     // Update overall position
     const overallPosEl = rowDiv.querySelector(".overall-pos");
     if (overallPosEl) {
       overallPosEl.textContent = row.position;
+    } else {
+      // desktop
+      const overallPosEl = rowDiv.querySelector(".positionOverall");
+      if (overallPosEl) {
+        overallPosEl.firstChild.textContent = `${row.position} `;
+      }
+    }
+
+    // ----- Update DESKTOP sparkline -----
+    if (!isMobileView()) {
+      const sparklineEl = rowDiv.querySelector(".sparkline");
+
+      if (sparklineEl) {
+        const runs = [
+          row.run_p_time,
+          row.run_1_time,
+          row.run_2_time,
+          row.run_3_time
+        ].filter(v => Number.isFinite(v));
+
+        if (!runs.length) {
+          sparklineEl.innerHTML = "";
+        } else {
+          const best = Math.min(...runs);
+          const worst = Math.max(...runs);
+          const range = Math.max(worst - best, 0.001);
+
+          const MIN = 6;
+          const MAX = 24;
+
+          sparklineEl.innerHTML = runs.map(v => {
+            const ratio = (worst - v) / range;
+            const height = MIN + ratio * (MAX - MIN);
+            const cls = v === best ? "best" : "";
+            return `<span class="${cls}" style="height:${height}px"></span>`;
+          }).join("");
+        }
+      }
     }
     
     rowDiv.querySelector(".lap").textContent = formatLapSafe(row.best_lap);
@@ -405,6 +451,38 @@ function renderClassLeaderboard() {
       updateRun(".run2-time", row.run_2_time);
       updateRun(".run3-time", row.run_3_time);
     }
+
+    // ----- Update DESKTOP run columns -----
+    const desktopRuns = rowDiv.querySelectorAll(".run-time");
+
+    const runValues = [
+      row.run_p_time,
+      row.run_1_time,
+      row.run_2_time,
+      row.run_3_time
+    ];
+
+    const validRuns = runValues.filter(v => Number.isFinite(v));
+    const bestRun = validRuns.length ? Math.min(...validRuns) : null;
+
+    desktopRuns.forEach((el, i) => {
+      const value = runValues[i];
+
+      if (!Number.isFinite(value)) {
+        el.textContent = "—";
+        el.classList.remove("slow");
+        return;
+      }
+
+      el.textContent = formatLapSafe(value);
+
+      if (bestRun !== null && value > bestRun) {
+        el.classList.add("slow");
+      } else {
+        el.classList.remove("slow");
+      }
+    });
+
 
     const runs = [
       { key: "run_p_time", cls: ".practice-time" },
