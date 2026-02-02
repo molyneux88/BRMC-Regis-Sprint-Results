@@ -16,6 +16,12 @@ function isValidPosition(pos) {
   return Number.isFinite(pos) && pos > 0;
 }
 
+function safeText(value) {
+  return value !== null && value !== undefined && value !== ""
+    ? value
+    : null;
+}
+
 function isWithdrawn(row) {
   return (
     row.best_lap === "Withdrawn" ||
@@ -81,7 +87,7 @@ async function loadLeaderboard() {
 
         const rowDiv = document.createElement("div");
         rowDiv.className = "row overall-row";
-        rowDiv.id = `car-${row.car_number}`;
+        
 
         const runs = [
           row.run_p_time,
@@ -183,9 +189,11 @@ async function loadLeaderboard() {
               { key: "run_3_time", cls: ".run3-time" },
             ];
 
-            const best = Math.min(
-              ...runs.map(r => Number.isFinite(row[r.key]) ? row[r.key] : Infinity)
-            );
+            const validRuns = runs
+              .map(r => row[r.key])
+              .filter(v => Number.isFinite(v));
+
+            const best = validRuns.length ? Math.min(...validRuns) : null;
 
             runs.forEach(r => {
               const el = expand.querySelector(r.cls);
@@ -259,8 +267,12 @@ async function loadLeaderboard() {
 
     /* ---------- Update content (numbers, driver, badge, arrows) ---------- */
     data.forEach(row => {
-      const rowDiv = document.getElementById(`car-${row.car_number}`);
+      const wrapperEl = document.getElementById(`car-${row.car_number}`);
+      if (!wrapperEl) return;
+
+      const rowDiv = wrapperEl.querySelector(".row");
       if (!rowDiv) return;
+      
 
       const arrow = rowDiv.querySelector(".arrow");
 
@@ -275,9 +287,18 @@ async function loadLeaderboard() {
         return;
       }
 
+      // 🔄 Revive row if it was previously withdrawn
       rowDiv.classList.remove("withdrawn");
 
-      const wrapperEl = document.getElementById(`car-${row.car_number}`);
+      // Restore normal text colouring
+      rowDiv.querySelectorAll(
+        ".driver, .lap, .gap, .gap-front, .gap-front-col, .number, .class, .car"
+      ).forEach(el => {
+        if (el) el.style.color = "";
+      });
+
+      // Ensure opacity is restored if used in withdrawn styling
+      rowDiv.style.opacity = "";
 
       if (wrapperEl) {
         const updateRun = (cls, value) => {
@@ -302,22 +323,34 @@ async function loadLeaderboard() {
         { key: "run_3_time", cls: ".run3-time" },
       ];
 
-      const best = Math.min(
-        ...runs.map(r => Number.isFinite(row[r.key]) ? row[r.key] : Infinity)
-      );
+      const validRuns = runs
+        .map(r => row[r.key])
+        .filter(v => Number.isFinite(v));
+
+      const best = validRuns.length ? Math.min(...validRuns) : null;
 
       runs.forEach(r => {
-        const el = wrapperEl.querySelector(r.cls)?.parentElement; // .expand-item
+        const valueEl = wrapperEl.querySelector(r.cls);
+        if (!valueEl || !valueEl.parentElement) return;
+
+        const el = valueEl.parentElement; // .expand-item
         if (!el) return;
 
-        if (row[r.key] === best) {
+        if (best !== null && row[r.key] === best) {
           el.classList.add("best");
         } else {
           el.classList.remove("best");
         }
       });
 
-      rowDiv.querySelector(".position").childNodes[0].textContent = row.position;
+      const posEl = rowDiv.querySelector(".position");
+      if (posEl) {
+        const textNode = Array.from(posEl.childNodes)
+          .find(n => n.nodeType === Node.TEXT_NODE);
+        if (textNode) {
+          textNode.textContent = row.position;
+        }
+      }
 
       // Update driver and badge
       const driverEl = rowDiv.querySelector(".driver");
@@ -342,13 +375,49 @@ async function loadLeaderboard() {
 
       rowDiv.querySelector(".lap").textContent = formatLapSafe(row.best_lap);
 
-      rowDiv.querySelector(".gap") &&
-        (rowDiv.querySelector(".gap").firstElementChild.textContent =
-          row.gap_to_first_display ?? "—");
+      // ----- GAP UPDATE (robust, creates missing elements) -----
+     // ----- GAP UPDATE (text-node safe) -----
+      const gapToFirst = row.gap_to_first_display;
+      const gapToFront = row.gap_to_car_in_front_display;
 
-      rowDiv.querySelector(".gap-front") &&
-        (rowDiv.querySelector(".gap-front").textContent =
-          row.gap_to_car_in_front_display ?? "—");
+      let gapEl = rowDiv.querySelector(".gap");
+
+      // Create if missing
+      if (!gapEl) {
+        gapEl = document.createElement("div");
+        gapEl.className = GAP_DISPLAY_MODE === "stacked"
+          ? "gap gap-stack"
+          : "gap";
+        rowDiv.appendChild(gapEl);
+      }
+
+      // 🔥 THIS IS THE KEY LINE — removes the text node "—"
+      gapEl.textContent = "";
+      gapEl.innerHTML = "";
+
+      if (GAP_DISPLAY_MODE === "stacked") {
+        if (gapToFirst) {
+          gapEl.insertAdjacentHTML(
+            "beforeend",
+            `<span>${gapToFirst}</span>`
+          );
+        }
+
+        if (gapToFront) {
+          gapEl.insertAdjacentHTML(
+            "beforeend",
+            `<span class="gap-front">${gapToFront}</span>`
+          );
+        }
+
+        // Fallback if both are empty
+        if (!gapToFirst && !gapToFront) {
+          gapEl.textContent = "—";
+        }
+      } else {
+        gapEl.textContent = gapToFirst ?? "—";
+      }
+
 
       // Update arrow classes
       const oldPos = previousPositions[row.car_number];
@@ -371,20 +440,26 @@ async function loadLeaderboard() {
 
     /* ---------- Reset FLIP if idle ---------- */
     if (!flipEnabled) {
-      [...leaderboard.children].forEach(row => {
-        row.style.transition = "";
-        row.style.transform = "";
+      [...leaderboard.children].forEach(wrapper => {
+        wrapper.style.transition = "";
+        wrapper.style.transform = "";
 
-        // 🔥 RESET MOVEMENT STATE
-        row.classList.remove("up", "down");
+        const rowDiv = wrapper.querySelector(".row");
+        if (!rowDiv) return;
 
-        const arrow = row.querySelector(".arrow");
+        const arrow = rowDiv.querySelector(".arrow");
+
+        // ✅ Remove movement classes from the ROW
+        rowDiv.classList.remove("up", "down");
+
+        // ✅ Reset arrow
         if (arrow) {
           arrow.textContent = "";
           arrow.classList.remove("up", "down");
         }
       });
     }
+
 
     /* ---------- Reorder DOM for FLIP ---------- */
     if (flipEnabled && movedCars.size) {
