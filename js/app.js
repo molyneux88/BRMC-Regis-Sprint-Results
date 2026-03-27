@@ -675,23 +675,3 @@ function enableRowExpansion() {
   });
 }
 
-const yearSelectIds = ['yearSelectDesktop', 'yearSelectMobile'];
-
-yearSelectIds.forEach(id => {
-  const selectEl = document.getElementById(id);
-  if (selectEl) {
-    selectEl.addEventListener('change', (e) => {
-      selectedYear = e.target.value;
-      firstLoad = true;
-      // reset previous positions if needed
-      Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
-      loadLeaderboard();
-
-      // Update both dropdowns to stay in sync
-      yearSelectIds.forEach(syncId => {
-        const otherEl = document.getElementById(syncId);
-        if (otherEl && otherEl !== selectEl) otherEl.value = selectedYear;
-      });
-    });
-  }
-});
