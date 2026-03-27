@@ -17,7 +17,7 @@ function renderHeader() {
   header.innerHTML = `
     <!-- Desktop nav -->
     <nav class="header-nav desktop-only">
-      <a href="index.html" class="nav-link" data-page="overall">Overall Test</a>
+      <a href="index.html" class="nav-link" data-page="overall">Overall</a>
       <a href="class.html" class="nav-link" data-page="class">Class</a>
       <a href="personal.html" class="nav-link" data-page="personal">Personal</a>
     </nav>
