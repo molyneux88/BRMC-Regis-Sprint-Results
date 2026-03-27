@@ -1315,3 +1315,32 @@ main {
   }
   
 }
+
+.year-selector-container {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.year-selector-container select {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+}
+
+.year-selector-container select {
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.historical-header {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 1rem 0;
+  color: #222;
+}

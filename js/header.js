@@ -22,6 +22,14 @@ function renderHeader() {
       <a href="personal.html" class="nav-link" data-page="personal">Personal</a>
     </nav>
 
+    <!-- Desktop Dropdown (below nav) -->
+    <div class="desktop-only year-selector-container">
+      <select id="yearSelectDesktop">
+        <option value="live">2026 (Live)</option>
+        <option value="2025">2025</option>
+      </select>
+    </div>
+
     <!-- Burger (mobile only) -->
     <button class="burger mobile-only" id="burgerBtn">
       <span class="burger-bar top"></span>
@@ -37,13 +45,6 @@ function renderHeader() {
 
     <!-- Right controls -->
     <div class="header-right">
-
-      <div class="year-selector">
-        <select id="yearSelect">
-          <option value="live">2026 (Live)</option>
-          <option value="2025">2025</option>
-        </select>
-      </div>
 
       <div class="desktop-only">
         ${page === "overall" ? `
@@ -66,25 +67,20 @@ function renderHeader() {
       <a href="index.html" class="mobile-link" data-page="overall">Overall</a>
       <a href="class.html" class="mobile-link" data-page="class">Class</a>
       <a href="personal.html" class="mobile-link" data-page="personal">Personal</a>
+
+      <!-- Mobile Dropdown (own section below buttons) -->
+      <div class="mobile-only year-selector-container">
+        <select id="yearSelectMobile">
+          <option value="live">2026 (Live)</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
     </nav>
   `;
 
   highlightActiveNav(page);
   wireBurgerMenu();
 }
-
-document.addEventListener("change", (e) => {
-  if (e.target.id === "yearSelect") {
-    selectedYear = e.target.value;
-
-    // Reset table state
-    firstLoad = true;
-    Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
-
-    loadLeaderboard();
-  }
-});
-
 
 /* ==============================
    ACTIVE NAV HIGHLIGHT

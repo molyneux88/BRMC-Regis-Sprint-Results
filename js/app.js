@@ -527,6 +527,16 @@ async function loadLeaderboard() {
     const mobileTime = document.getElementById("lastUpdatedMobile");
     if (mobileTime) mobileTime.textContent = timeText;
 
+    const historicalHeader = document.getElementById("historicalHeader");
+    if (historicalHeader) {
+      if (selectedYear === "live") {
+        historicalHeader.style.display = "none";
+      } else {
+        historicalHeader.style.display = "block";
+        historicalHeader.textContent = `Viewing ${selectedYear} Results`;
+      }
+    }
+
   } catch (err) {
     console.error("Error loading leaderboard:", err);
   }
@@ -664,3 +674,24 @@ function enableRowExpansion() {
     });
   });
 }
+
+const yearSelectIds = ['yearSelectDesktop', 'yearSelectMobile'];
+
+yearSelectIds.forEach(id => {
+  const selectEl = document.getElementById(id);
+  if (selectEl) {
+    selectEl.addEventListener('change', (e) => {
+      selectedYear = e.target.value;
+      firstLoad = true;
+      // reset previous positions if needed
+      Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
+      loadLeaderboard();
+
+      // Update both dropdowns to stay in sync
+      yearSelectIds.forEach(syncId => {
+        const otherEl = document.getElementById(syncId);
+        if (otherEl && otherEl !== selectEl) otherEl.value = selectedYear;
+      });
+    });
+  }
+});
