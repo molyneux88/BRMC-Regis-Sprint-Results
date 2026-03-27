@@ -5,6 +5,7 @@ const GAP_DISPLAY_MODE = "stacked"; // "separate" | "stacked"
 const FLIP_IDLE_TIMEOUT = 1 * 60 * 1000; // 5 minutes
 let lastPositionChangeTime = Date.now();
 const movedCars = new Set();
+let selectedYear = "live";
 
 let firstLoad = true;
 const previousPositions = {};
@@ -53,11 +54,22 @@ function isMobileView() {
 --------------------------------*/
 async function loadLeaderboard() {
 
+  const isLive = selectedYear === "live";
   const mobile = isMobileView();
 
   try {
-    const response = await fetch(API_URL, { mode: "cors" });
-    const rawData = await response.json();
+    let rawData;
+
+    if (isLive) {
+      // 🔹 Fetch live data
+      const response = await fetch(API_URL, { mode: "cors" });
+      rawData = await response.json();
+    } else {
+      // 🔹 Load historical JSON
+      const yearFile = `assets/results${selectedYear}.json`;
+      const response = await fetch(yearFile);
+      rawData = await response.json();
+    }
 
     const data = rawData.filter(row => isValidPosition(row.position));
     const leaderboard = document.getElementById("leaderboard");
@@ -223,7 +235,9 @@ async function loadLeaderboard() {
         enableRowExpansion();
       }
 
-      const timeText = "Last updated: " + new Date().toLocaleTimeString();
+      const timeText = isLive
+      ? "Live • " + new Date().toLocaleTimeString()
+      : `Viewing ${selectedYear} Results`;
 
       const desktopTime = document.getElementById("lastUpdated");
       if (desktopTime) desktopTime.textContent = timeText;
@@ -503,7 +517,9 @@ async function loadLeaderboard() {
       });
     }
 
-    const timeText = "Last updated: " + new Date().toLocaleTimeString();
+    const timeText = isLive
+  ? "Live • " + new Date().toLocaleTimeString()
+  : `Viewing ${selectedYear} Results`;
 
     const desktopTime = document.getElementById("lastUpdated");
     if (desktopTime) desktopTime.textContent = timeText;
@@ -525,7 +541,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadLeaderboard();
-  setInterval(loadLeaderboard, 30000);
+  setInterval(() => {
+    if (selectedYear === "live") {
+      loadLeaderboard();
+    }
+  }, 30000);
 });
 
   /* ------------------------------

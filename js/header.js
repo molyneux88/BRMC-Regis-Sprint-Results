@@ -37,6 +37,14 @@ function renderHeader() {
 
     <!-- Right controls -->
     <div class="header-right">
+
+      <div class="year-selector">
+        <select id="yearSelect">
+          <option value="live">2026 (Live)</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+
       <div class="desktop-only">
         ${page === "overall" ? `
           <label class="toggle">
@@ -64,6 +72,18 @@ function renderHeader() {
   highlightActiveNav(page);
   wireBurgerMenu();
 }
+
+document.addEventListener("change", (e) => {
+  if (e.target.id === "yearSelect") {
+    selectedYear = e.target.value;
+
+    // Reset table state
+    firstLoad = true;
+    Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
+
+    loadLeaderboard();
+  }
+});
 
 
 /* ==============================
