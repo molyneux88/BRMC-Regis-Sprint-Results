@@ -31,7 +31,7 @@ function renderHeader() {
 
     <!-- Center branding -->
     <div class="header-center">
-      <img src="BRMC Logo.avif" alt="BRMC Crest" class="header-logo large">
+      <img src="assets/BRMC Logo.avif" alt="BRMC Crest" class="header-logo large">
       <h1>2026 Regis Sprint<br>at Goodwood</h1>
     </div>
 
