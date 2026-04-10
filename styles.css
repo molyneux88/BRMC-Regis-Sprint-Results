@@ -1344,3 +1344,24 @@ main {
   margin: 1rem 0;
   color: #222;
 }
+
+/* Keep nav buttons in a row */
+.header-nav {
+  display: flex;
+  gap: 12px;
+}
+
+/* Dropdown sits BELOW and matches width nicely */
+.year-selector-container {
+  margin-top: 8px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Make dropdown slightly narrower than nav */
+#yearSelectDesktop {
+  width: 90%;   /* tweak: 85–95% depending on look */
+  max-width: 220px;
+  text-align: center;
+}

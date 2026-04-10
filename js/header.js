@@ -16,19 +16,21 @@ function renderHeader() {
 
   header.innerHTML = `
     <!-- Desktop nav -->
-    <nav class="header-nav desktop-only">
-      <a href="index.html" class="nav-link" data-page="overall">Overall</a>
-      <a href="class.html" class="nav-link" data-page="class">Class</a>
-      <a href="personal.html" class="nav-link" data-page="personal">Personal</a>
-    </nav>
+    <header class="header-left desktop-only">
+      <nav class="header-nav">
+        <a href="index.html" class="nav-link" data-page="overall">Overall</a>
+        <a href="class.html" class="nav-link" data-page="class">Class</a>
+        <a href="personal.html" class="nav-link" data-page="personal">Personal</a>
+      </nav>
 
-    <!-- Desktop Dropdown (below nav) -->
-    <div class="desktop-only year-selector-container">
-      <select id="yearSelectDesktop">
-        <option value="live">2026 (Live)</option>
-        <option value="2025">2025</option>
-      </select>
-    </div>
+      <!-- Desktop Dropdown (now BELOW nav) -->
+      <div class="year-selector-container">
+        <select id="yearSelectDesktop">
+          <option value="live">2026 (Live)</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+    </header>
 
     <!-- Burger (mobile only) -->
     <button class="burger mobile-only" id="burgerBtn">
