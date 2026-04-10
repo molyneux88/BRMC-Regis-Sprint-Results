@@ -44,7 +44,8 @@ header {
 /* LEFT */
 .header-left {
   display: flex;
-  align-items: center;
+  flex-direction: column;   /* 🔥 THIS is what you’re missing */
+  align-items: flex-start;  /* or center if you prefer */
 }
 
 .page-title {
@@ -804,12 +805,6 @@ main {
   grid-template-columns: auto 1fr auto; /* left | center | right */
   align-items: center;
   padding: 12px 16px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
 }
 
 .header-right {
