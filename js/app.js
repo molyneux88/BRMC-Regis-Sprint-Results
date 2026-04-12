@@ -242,10 +242,6 @@ async function loadLeaderboard() {
       const desktopTime = document.getElementById("lastUpdated");
       if (desktopTime) desktopTime.textContent = timeText;
 
-      const mobileTime = document.getElementById("lastUpdatedMobile");
-      if (mobileTime) mobileTime.textContent = timeText;
-      firstLoad = false;
-      return;
     }
 
     /* ---------- Detect movement and mark moved cars ---------- */
@@ -523,9 +519,6 @@ async function loadLeaderboard() {
 
     const desktopTime = document.getElementById("lastUpdated");
     if (desktopTime) desktopTime.textContent = timeText;
-
-    const mobileTime = document.getElementById("lastUpdatedMobile");
-    if (mobileTime) mobileTime.textContent = timeText;
     
   } catch (err) {
     console.error("Error loading leaderboard:", err);

@@ -823,9 +823,6 @@ main {
 
 /* Desktop: keep in header */
 @media (min-width: 769px) {
-  .last-updated-mobile {
-    display: none;
-  }
 
   .header-right #lastUpdated {
     display: block;
@@ -836,16 +833,6 @@ main {
 @media (max-width: 768px) {
   .header-right #lastUpdated {
     display: none;
-  }
-
-  .last-updated-mobile {
-    display: block;
-    padding: 6px 12px;
-    font-size: 11px;
-    text-align: center;
-    color: #aaa;
-    background: #0e0e0e;
-    border-bottom: 1px solid #222;
   }
 }
 
