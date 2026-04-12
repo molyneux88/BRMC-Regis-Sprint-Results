@@ -89,6 +89,54 @@ header {
   color: #ccc;
 }
 
+/* ==============================
+   STATUS BAR (LIVE / HISTORICAL)
+================================ */
+.status-bar {
+  width: 100%;
+  text-align: center;
+  padding: 8px 12px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+/* LIVE (subtle) */
+.status-bar.live {
+  background: #0e0e0e;
+  color: #aaa;
+  font-size: 12px;
+}
+
+/* 🚨 HISTORICAL (VERY OBVIOUS) */
+.status-bar.historical {
+  background: #5a0f0f;
+  color: #fff;
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #ff4c4c;
+}
+
+/* Inner layout */
+.status-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Bigger warning text */
+.status-text {
+  font-weight: 900;
+}
+
+/* Mobile emphasis */
+@media (max-width: 768px) {
+  .status-bar.historical {
+    font-size: 20px;
+    padding: 12px;
+  }
+}
+
 /* ------------------------------
    MAIN
 --------------------------------*/

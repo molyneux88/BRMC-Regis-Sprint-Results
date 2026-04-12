@@ -80,6 +80,15 @@ function renderHeader() {
     </nav>
   `;
 
+    // 🔥 Add status bar container (below header)
+  let statusBar = document.getElementById("statusBar");
+
+  if (!statusBar) {
+    statusBar = document.createElement("div");
+    statusBar.id = "statusBar";
+    document.body.insertBefore(statusBar, document.body.children[1]);
+  }
+
   const yearSelectIds = ['yearSelectDesktop', 'yearSelectMobile'];
 
   yearSelectIds.forEach(id => {
@@ -91,6 +100,7 @@ function renderHeader() {
         // reset previous positions if needed
         Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
         loadLeaderboard();
+        updateStatusBar();
 
         // Update both dropdowns to stay in sync
         yearSelectIds.forEach(syncId => {
@@ -104,8 +114,54 @@ function renderHeader() {
 
   highlightActiveNav(page);
   wireBurgerMenu();
-
+  updateStatusBar();
   
+}
+
+
+/* ==============================
+   STATUS BAR 
+================================ */
+function updateStatusBar() {
+  const statusBar = document.getElementById("statusBar");
+  if (!statusBar) return;
+
+  const isLive = selectedYear === "live";
+
+  if (isLive) {
+    statusBar.className = "status-bar live";
+    statusBar.innerHTML = `
+      <span>Live • ${new Date().toLocaleTimeString()}</span>
+    `;
+  } else {
+    statusBar.className = "status-bar historical";
+
+    // Mobile gets dropdown, desktop does NOT
+    statusBar.innerHTML = `
+      <div class="status-inner">
+        <span class="status-text">⚠ VIEWING ${selectedYear} HISTORICAL DATA</span>
+        <div class="mobile-only year-selector-container">
+          <select id="yearSelectStatus">
+            <option value="live">2026 (Live)</option>
+            <option value="2025">2025</option>
+          </select>
+        </div>
+      </div>
+    `;
+
+    // Sync dropdown
+    const select = document.getElementById("yearSelectStatus");
+    if (select) {
+      select.value = selectedYear;
+      select.addEventListener("change", (e) => {
+        selectedYear = e.target.value;
+        firstLoad = true;
+        Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
+        loadLeaderboard();
+        updateStatusBar();
+      });
+    }
+  }
 }
 
 /* ==============================
