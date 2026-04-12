@@ -526,17 +526,7 @@ async function loadLeaderboard() {
 
     const mobileTime = document.getElementById("lastUpdatedMobile");
     if (mobileTime) mobileTime.textContent = timeText;
-
-    const historicalHeader = document.getElementById("historicalHeader");
-    if (historicalHeader) {
-      if (selectedYear === "live") {
-        historicalHeader.style.display = "none";
-      } else {
-        historicalHeader.style.display = "block";
-        historicalHeader.textContent = `Viewing ${selectedYear} Results`;
-      }
-    }
-
+    
   } catch (err) {
     console.error("Error loading leaderboard:", err);
   }

@@ -1,4 +1,26 @@
 /* ==============================
+   HISTORIC YEAR DROPDOWN HANDLE
+================================ */
+
+function handleYearChange(newYear) {
+  selectedYear = newYear;
+
+  firstLoad = true;
+  Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
+
+  loadLeaderboard();
+
+  // 🔥 Sync ALL dropdowns everywhere
+  document.querySelectorAll("#yearSelectDesktop, #yearSelectMobile, #yearSelectStatus")
+    .forEach(el => {
+      if (el) el.value = selectedYear;
+    });
+
+  updateStatusBar();
+}
+
+
+/* ==============================
    HEADER MODULE
 ================================ */
 
@@ -92,21 +114,10 @@ function renderHeader() {
   const yearSelectIds = ['yearSelectDesktop', 'yearSelectMobile'];
 
   yearSelectIds.forEach(id => {
-    const selectEl = document.getElementById(id);
-    if (selectEl) {
-      selectEl.addEventListener('change', (e) => {
-        selectedYear = e.target.value;
-        firstLoad = true;
-        // reset previous positions if needed
-        Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
-        loadLeaderboard();
-        updateStatusBar();
-
-        // Update both dropdowns to stay in sync
-        yearSelectIds.forEach(syncId => {
-          const otherEl = document.getElementById(syncId);
-          if (otherEl && otherEl !== selectEl) otherEl.value = selectedYear;
-        });
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("change", (e) => {
+        handleYearChange(e.target.value);
       });
     }
   });
@@ -127,40 +138,55 @@ function updateStatusBar() {
   if (!statusBar) return;
 
   const isLive = selectedYear === "live";
+  const isMobile = window.innerWidth <= 768;
+
+  // ❌ DESKTOP + LIVE → NO BAR AT ALL
+  if (isLive && !isMobile) {
+    statusBar.style.display = "none";
+    return;
+  }
+
+  // ✅ SHOW BAR OTHERWISE
+  statusBar.style.display = "block";
 
   if (isLive) {
+    // MOBILE LIVE ONLY
     statusBar.className = "status-bar live";
     statusBar.innerHTML = `
       <span>Live • ${new Date().toLocaleTimeString()}</span>
     `;
-  } else {
-    statusBar.className = "status-bar historical";
+    return;
+  }
 
-    // Mobile gets dropdown, desktop does NOT
-    statusBar.innerHTML = `
-      <div class="status-inner">
-        <span class="status-text">⚠ VIEWING ${selectedYear} HISTORICAL DATA</span>
-        <div class="mobile-only year-selector-container">
+  // 🔥 HISTORICAL (mobile + desktop)
+  statusBar.className = "status-bar historical";
+
+  statusBar.innerHTML = `
+    <div class="status-inner">
+      <span class="status-text">⚠ VIEWING ${selectedYear} HISTORICAL DATA</span>
+      ${
+        isMobile
+          ? `
+        <div class="year-selector-container">
           <select id="yearSelectStatus">
             <option value="live">2026 (Live)</option>
             <option value="2025">2025</option>
           </select>
         </div>
-      </div>
-    `;
+      `
+          : ""
+      }
+    </div>
+  `;
 
-    // Sync dropdown
-    const select = document.getElementById("yearSelectStatus");
-    if (select) {
-      select.value = selectedYear;
-      select.addEventListener("change", (e) => {
-        selectedYear = e.target.value;
-        firstLoad = true;
-        Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
-        loadLeaderboard();
-        updateStatusBar();
-      });
-    }
+  // Sync dropdown if mobile
+  const select = document.getElementById("yearSelectStatus");
+  if (select) {
+    select.value = selectedYear;
+
+    select.addEventListener("change", (e) => {
+      handleYearChange(e.target.value);
+    });
   }
 }
 
