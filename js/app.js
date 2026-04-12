@@ -623,27 +623,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-
-document.addEventListener("DOMContentLoaded", () => {
-  const burger = document.getElementById("burgerBtn");
-  const mobileNav = document.getElementById("mobileNav");
-  const closeBtn = document.getElementById("closeBurger");
-
-  if (burger && mobileNav && closeBtn) {
-    // Toggle burger menu open
-    burger.addEventListener("click", () => {
-      burger.classList.toggle("open");
-      mobileNav.classList.toggle("open");
-    });
-
-    // Close button
-    closeBtn.addEventListener("click", () => {
-      burger.classList.remove("open");
-      mobileNav.classList.remove("open");
-    });
-  }
-});
-
 //rebuild the table for mobile/desktop:
 window.addEventListener("resize", () => {
   firstLoad = true;
