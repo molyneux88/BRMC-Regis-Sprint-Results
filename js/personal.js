@@ -1,5 +1,7 @@
 const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 
+import { getSelectedYear, onYearChange } from "./state.js";
+
 let allData = [];
 let currentDriver = null;
 
@@ -30,7 +32,8 @@ function isClassLeader(row, allRows) {
   if (!classRows.length) return false;
 
   const leader = classRows.reduce((best, r) =>
-    r.class_position < best.class_position ? r : best
+    r.class_position < best.class_position ? r : best,
+    classRows[0]
   );
 
   return leader.driver === row.driver;
@@ -59,10 +62,21 @@ function updateLapAnimation(bestLap) {
    Load Data
 --------------------------------*/
 async function loadPersonalData() {
-  const res = await fetch(API_URL, { mode: "cors" });
-  const data = await res.json();
 
-  allData = data
+  let rawData;
+
+  const selectedYear = getSelectedYear();
+
+  if (selectedYear === "live") {
+    const response = await fetch(API_URL, { mode: "cors" });
+    rawData = await response.json();
+  } else {
+    const yearFile = `assets/results${selectedYear}.json`;
+    const response = await fetch(yearFile);
+    rawData = await response.json();
+  }
+
+  allData = rawData
     .filter(r => r.driver)
     .sort((a, b) => a.driver.localeCompare(b.driver));
 
@@ -71,8 +85,6 @@ async function loadPersonalData() {
   if (!currentDriver && allData.length) {
     currentDriver = allData[0].driver;
   }
-
-  renderPersonal();
 }
 
 /* ------------------------------
@@ -206,7 +218,11 @@ function renderPersonal() {
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   loadPersonalData();
-  setInterval(loadPersonalData, 30000);
+  setInterval(() => {
+    if (getSelectedYear() === "live") {
+      loadPersonalData();
+    }
+  }, 30000);
 });
 
 
@@ -214,12 +230,18 @@ document.addEventListener("DOMContentLoaded", () => {
    Timestamps
 --------------------------------*/
 function updateTimestamps() {
-  const timeText = "Last updated: " + new Date().toLocaleTimeString();
+  const selectedYear = getSelectedYear();
 
-    const desktopTime = document.getElementById("lastUpdated");
-    if (desktopTime) desktopTime.textContent = timeText;
+  const timeText = selectedYear === "live"
+    ? "Live • " + new Date().toLocaleTimeString()
+    : `Viewing ${selectedYear} Results`;
 
-    const mobileTime = document.getElementById("lastUpdatedMobile");
-    if (mobileTime) mobileTime.textContent = timeText;
-
+  const desktopTime = document.getElementById("lastUpdated");
+  if (desktopTime) desktopTime.textContent = timeText;
 }
+
+// 🔥 Listen for year changes from header
+onYearChange(() => {
+  currentDriver = null;
+  loadPersonalData();
+});

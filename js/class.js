@@ -1,12 +1,13 @@
 const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 
+import { getSelectedYear, onYearChange } from "./state.js";
+
 ;/* ------------------------------
    State
 --------------------------------*/
 let allData = [];
 let currentClass = null;
 let knownClasses = [];
-
 let firstLoad = true;
 let previousPositions = {};
 let movedCars = new Set();
@@ -28,6 +29,7 @@ function isValidPosition(pos) {
 
 function isWithdrawn(row) {
   return (
+    row.best_lap === "Withdrawn" ||
     row.best_lap === null ||
     row.best_lap === "" ||
     !Number.isFinite(row.best_lap)
@@ -99,8 +101,17 @@ function positionsChanged(rows) {
 --------------------------------*/
 async function loadClassData() {
   try {
-    const response = await fetch(API_URL, { mode: "cors" });
-    const rawData = await response.json();
+    const selectedYear = getSelectedYear();
+
+    let rawData;
+
+    if (selectedYear === "live") {
+      const response = await fetch(API_URL, { mode: "cors" });
+      rawData = await response.json();
+    } else {
+      const response = await fetch(`assets/results${selectedYear}.json`);
+      rawData = await response.json();
+    }
 
     allData = rawData.filter(row => isValidPosition(row.position));
 
@@ -601,14 +612,14 @@ function renderClassLeaderboard() {
    Timestamps
 --------------------------------*/
 function updateTimestamps() {
-  const timeText = "Last updated: " + new Date().toLocaleTimeString();
+  const selectedYear = getSelectedYear();
 
-    const desktopTime = document.getElementById("lastUpdated");
-    if (desktopTime) desktopTime.textContent = timeText;
+  const timeText = selectedYear === "live"
+    ? "Live • " + new Date().toLocaleTimeString()
+    : `Viewing ${selectedYear} Results`;
 
-    const mobileTime = document.getElementById("lastUpdatedMobile");
-    if (mobileTime) mobileTime.textContent = timeText;
-
+  const desktopTime = document.getElementById("lastUpdated");
+  if (desktopTime) desktopTime.textContent = timeText;
 }
 
 /* ------------------------------
@@ -616,40 +627,30 @@ function updateTimestamps() {
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   loadClassData();
-  setInterval(loadClassData, 30000);
+  setInterval(() => {
+    if (getSelectedYear() === "live") {
+      loadClassData();
+    }
+  }, 30000);
+
+  onYearChange(() => {
+  firstLoad = true;
+  previousPositions = {};
+  loadClassData();
 });
 
-const burger = document.getElementById("burgerBtn");
-const mobileNav = document.getElementById("mobileNav");
-const closeBtn = document.getElementById("closeBurger");
-
-// Toggle burger menu open
-burger.addEventListener("click", () => {
-  burger.classList.toggle("open");
-  mobileNav.classList.toggle("open");
-});
-
-// Close button
-closeBtn.addEventListener("click", () => {
-  burger.classList.remove("open");
-  mobileNav.classList.remove("open");
 });
 
 //rebuild the table for mobile/desktop:
-window.addEventListener("resize", () => {
-  firstLoad = true;
-  previousPositions = {};
-  renderClassLeaderboard();
-});
+let resizeTimeout;
 
-// Highlight active page
-const currentPage = window.location.pathname.split("/").pop(); 
-document.querySelectorAll(".header-nav a, .mobile-nav a").forEach(a => {
-  if (a.getAttribute("href") === currentPage) {
-    a.classList.add("active");
-  } else {
-    a.classList.remove("active");
-  }
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    firstLoad = true;
+    previousPositions = {};
+    loadClassData(); // 🔥 important
+  }, 200);
 });
 
 function enableRowExpansion() {
@@ -669,4 +670,6 @@ function enableRowExpansion() {
     });
   });
 }
+
+
 

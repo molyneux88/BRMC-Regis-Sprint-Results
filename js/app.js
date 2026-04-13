@@ -1,3 +1,5 @@
+import { getSelectedYear, onYearChange } from "./state.js";
+
 const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 const EXAGGERATION = 1;
 const ANIMATION_DURATION = 2000; // ms
@@ -5,8 +7,6 @@ const GAP_DISPLAY_MODE = "stacked"; // "separate" | "stacked"
 const FLIP_IDLE_TIMEOUT = 1 * 60 * 1000; // 5 minutes
 let lastPositionChangeTime = Date.now();
 const movedCars = new Set();
-let selectedYear = "live";
-
 let firstLoad = true;
 const previousPositions = {};
 
@@ -15,12 +15,6 @@ const previousPositions = {};
 --------------------------------*/
 function isValidPosition(pos) {
   return Number.isFinite(pos) && pos > 0;
-}
-
-function safeText(value) {
-  return value !== null && value !== undefined && value !== ""
-    ? value
-    : null;
 }
 
 function isWithdrawn(row) {
@@ -54,6 +48,7 @@ function isMobileView() {
 --------------------------------*/
 async function loadLeaderboard() {
 
+  const selectedYear = getSelectedYear();
   const isLive = selectedYear === "live";
   const mobile = isMobileView();
 
@@ -535,7 +530,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadLeaderboard();
   setInterval(() => {
-    if (selectedYear === "live") {
+    if (getSelectedYear() === "live") {
       loadLeaderboard();
     }
   }, 30000);
@@ -604,6 +599,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  onYearChange(() => {
+    firstLoad = true;
+    Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
+    loadLeaderboard();
+  });
+
 });
 
 //rebuild the table for mobile/desktop:
@@ -611,16 +612,6 @@ window.addEventListener("resize", () => {
   firstLoad = true;
   Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
   loadLeaderboard();
-});
-
-// Highlight active page
-const currentPage = window.location.pathname.split("/").pop(); 
-document.querySelectorAll(".header-nav a, .mobile-nav a").forEach(a => {
-  if (a.getAttribute("href") === currentPage) {
-    a.classList.add("active");
-  } else {
-    a.classList.remove("active");
-  }
 });
 
 function enableRowExpansion() {

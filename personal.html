@@ -9,13 +9,9 @@
 </head>
 <body data-page="personal">
 
-<header id="site-header"></header>
+  <header id="site-header"></header>
 
-<!-- Mobile last-updated -->
-<div id="lastUpdatedMobile" class="last-updated-mobile">
-  Waiting for data…
-</div> 
-
+  <div id="historicalHeader" class="historical-header desktop-only mobile-only"></div>
 
 <div class="dropdown-personal-wrapper">
   <section class="class-selector">
@@ -173,8 +169,9 @@
 
 </div>
 
-<script src="js/header.js"></script>
-<script src="js/personal.js"></script>
+<script type="module" src="js/state.js"></script>
+<script type="module" src="js/header.js"></script>
+<script type="module" src="js/personal.js"></script>
 <script src="js/nav.js"></script>
 </body>
 </html>

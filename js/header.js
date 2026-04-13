@@ -1,22 +1,11 @@
+import { getSelectedYear, setSelectedYear, onYearChange } from "./state.js";
+
 /* ==============================
    HISTORIC YEAR DROPDOWN HANDLE
 ================================ */
 
 function handleYearChange(newYear) {
-  selectedYear = newYear;
-
-  firstLoad = true;
-  Object.keys(previousPositions).forEach(k => delete previousPositions[k]);
-
-  loadLeaderboard();
-
-  // 🔥 Sync ALL dropdowns everywhere
-  document.querySelectorAll("#yearSelectDesktop, #yearSelectMobile, #yearSelectStatus")
-    .forEach(el => {
-      if (el) el.value = selectedYear;
-    });
-
-  updateStatusBar();
+  setSelectedYear(newYear);
 }
 
 
@@ -122,12 +111,29 @@ function renderHeader() {
     }
   });
 
+  // Sync initial value
+  const currentYear = getSelectedYear();
+
+  document.querySelectorAll("#yearSelectDesktop, #yearSelectMobile")
+    .forEach(el => {
+      if (el) el.value = currentYear;
+    });
 
   highlightActiveNav(page);
   wireBurgerMenu();
   updateStatusBar();
   
 }
+
+onYearChange((year) => {
+    // Sync ALL dropdowns
+    document.querySelectorAll("#yearSelectDesktop, #yearSelectMobile, #yearSelectStatus")
+      .forEach(el => {
+        if (el) el.value = year;
+      });
+
+    updateStatusBar();
+  });
 
 
 /* ==============================
@@ -137,6 +143,7 @@ function updateStatusBar() {
   const statusBar = document.getElementById("statusBar");
   if (!statusBar) return;
 
+  const selectedYear = getSelectedYear();
   const isLive = selectedYear === "live";
   const isMobile = window.innerWidth <= 768;
 
