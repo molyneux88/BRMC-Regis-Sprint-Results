@@ -129,6 +129,10 @@ header {
   font-weight: 900;
 }
 
+select option:disabled {
+  color: #777;
+}
+
 /* Mobile emphasis */
 @media (max-width: 768px) {
   .status-bar.historical {

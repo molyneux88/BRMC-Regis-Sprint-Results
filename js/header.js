@@ -42,6 +42,9 @@ function renderHeader() {
           <option value="2024">2024</option>
           <option value="2023">2023</option>
           <option value="2022">2022</option>
+          <option value="2021" disabled>2021</option>
+          <option value="2020" disabled>2020</option>
+          <option value="2019">2019</option>
         </select>
       </div>
     </header>
@@ -92,6 +95,9 @@ function renderHeader() {
           <option value="2024">2024</option>
           <option value="2023">2023</option>
           <option value="2022">2022</option>
+          <option value="2021" disabled>2021</option>
+          <option value="2020" disabled>2020</option>
+          <option value="2019">2019</option>
         </select>
       </div>
     </nav>
@@ -187,6 +193,9 @@ function updateStatusBar() {
             <option value="2024">2024</option>
             <option value="2023">2023</option>
             <option value="2022">2022</option>
+            <option value="2021" disabled>2021</option>
+            <option value="2020" disabled>2020</option>
+            <option value="2019">2019</option>
           </select>
         </div>
       `
