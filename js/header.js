@@ -39,6 +39,7 @@ function renderHeader() {
         <select id="yearSelectDesktop">
           <option value="live">2026 (Live)</option>
           <option value="2025">2025</option>
+          <option value="2024">2025</option>
         </select>
       </div>
     </header>
@@ -86,6 +87,7 @@ function renderHeader() {
         <select id="yearSelectMobile">
           <option value="live">2026 (Live)</option>
           <option value="2025">2025</option>
+          <option value="2025">2024</option>
         </select>
       </div>
     </nav>
@@ -178,6 +180,7 @@ function updateStatusBar() {
           <select id="yearSelectStatus">
             <option value="live">2026 (Live)</option>
             <option value="2025">2025</option>
+            <option value="2025">2024</option>
           </select>
         </div>
       `

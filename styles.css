@@ -132,8 +132,14 @@ header {
 /* Mobile emphasis */
 @media (max-width: 768px) {
   .status-bar.historical {
-    font-size: 20px;
-    padding: 12px;
+    font-size: clamp(14px, 4.5vw, 20px);
+    padding: 10px 12px;
+  }
+
+  .status-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
