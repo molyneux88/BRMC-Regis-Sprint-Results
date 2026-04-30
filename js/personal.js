@@ -111,53 +111,52 @@ async function loadPersonalData() {
    Dropdown
 --------------------------------*/
 function buildDropdown() {
+  const selects = [
+    document.getElementById("competitorSelect"),
+    document.getElementById("competitorSelectAllTime")
+  ].filter(Boolean);
 
-  const isAllTime = getSelectedYear() === "all";
-
-  const select = isAllTime
-    ? document.getElementById("competitorSelectAllTime")
-    : document.getElementById("competitorSelect");
-
-  if (!select) return;
-
-  select.innerHTML = "";
+  if (!selects.length) return;
 
   const names = [...new Set(allData.map(r => r.driver))]
-    sort((a, b) => a.localeCompare(b));
+    .sort((a, b) => a.localeCompare(b));
 
   if (!names.length) return;
 
-  names.forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    select.appendChild(opt);
-  });
-
-  // ✅ Default to first driver on initial load
+  // Ensure valid driver
   if (!currentDriver || !names.includes(currentDriver)) {
     currentDriver = names[0];
   }
 
-  // ✅ Ensure the dropdown actually displays it
-  select.value = currentDriver;
+  selects.forEach(select => {
+    select.innerHTML = "";
 
-  // 🔥 THIS IS THE CORRECT PLACE
+    names.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      select.appendChild(opt);
+    });
+
+    select.value = currentDriver;
+
+    select.onchange = () => {
+      currentDriver = select.value;
+
+      if (getSelectedYear() === "all") {
+        renderAllTimePlaceholder();
+      } else {
+        renderPersonal();
+      }
+    };
+  });
+
+  // 🔥 Render AFTER dropdowns exist
   if (getSelectedYear() === "all") {
     renderAllTimePlaceholder();
   } else {
     renderPersonal();
   }
-
-  select.onchange = () => {
-    currentDriver = select.value;
-
-    if (getSelectedYear() === "all") {
-      renderAllTimePlaceholder();
-    } else {
-      renderPersonal();
-    }
-  };
 }
 
 /* ------------------------------
@@ -286,13 +285,8 @@ function updateTimestamps() {
 onYearChange(() => {
   toggleViewMode();
 
-  if (getSelectedYear() === "all") {
-    // 🚫 Skip normal data loading for now
-    return;
-  }
-
   currentDriver = null;
-  loadPersonalData();
+  loadPersonalData(); // ✅ ALWAYS load data
 });
 
 function renderAllTimePlaceholder() {
