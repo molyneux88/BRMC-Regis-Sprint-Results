@@ -177,17 +177,45 @@ function updateStatusBar() {
 
   // ✅ ALL TIME BAR
   if (isAllTime) {
-    statusBar.style.display = "block";
-    statusBar.className = "status-bar alltime";
-    statusBar.innerHTML = `
-      <div class="status-inner">
-        <span class="status-text">
-          🏁 ALL TIME MODE • Aggregated results across all years
-        </span>
-      </div>
-    `;
-    return;
+  statusBar.style.display = "block";
+  statusBar.className = "status-bar alltime";
+
+  statusBar.innerHTML = `
+    <div class="status-inner">
+      <span class="status-text">🏁 ALL TIME MODE</span>
+
+      ${
+        isMobile
+          ? `
+        <div class="year-selector-container">
+          <select id="yearSelectStatus">
+            <option value="live">2026 (Live)</option>
+            <option value="all">All Time</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2019">2019</option>
+          </select>
+        </div>
+      `
+          : ""
+      }
+    </div>
+  `;
+
+  // Sync + listener
+  const select = document.getElementById("yearSelectStatus");
+  if (select) {
+    select.value = selectedYear;
+
+    select.addEventListener("change", (e) => {
+      handleYearChange(e.target.value);
+    });
   }
+
+  return;
+}
 
   // ✅ SHOW BAR OTHERWISE
   statusBar.style.display = "block";
