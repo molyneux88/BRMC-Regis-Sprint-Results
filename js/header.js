@@ -180,7 +180,11 @@ function updateStatusBar() {
     statusBar.style.display = "block";
     statusBar.className = "status-bar alltime";
     statusBar.innerHTML = `
-      <span>🏁 ALL TIME PERSONAL STATS</span>
+      <div class="status-inner">
+        <span class="status-text">
+          🏁 ALL TIME MODE • Aggregated results across all years
+        </span>
+      </div>
     `;
     return;
   }

@@ -14,7 +14,7 @@
   <div id="historicalHeader" class="historical-header desktop-only mobile-only"></div>
 
 <div id="personalYearView">
-  
+
   <div class="dropdown-personal-wrapper">
     <section class="class-selector">
       Select Competitor:   
@@ -174,12 +174,49 @@
 </div>
 
 <div id="personalAllTimeView" style="display:none;">
+
   <section class="alltime-container">
-    <h2>All Time Stats</h2>
-    <div id="allTimeContent">
-      Select a driver to view career stats
+
+    <!-- Driver selector (reused UX) -->
+    <div class="dropdown-personal-wrapper">
+      <section class="class-selector">
+        Select Competitor:
+        <select id="competitorSelectAllTime"></select>
+      </section>
     </div>
+
+    <!-- Summary cards -->
+    <div class="alltime-grid">
+
+      <div class="stat-card">
+        <label>Total Laps</label>
+        <span id="stat-total-laps">—</span>
+      </div>
+
+      <div class="stat-card">
+        <label>Fastest Lap</label>
+        <span id="stat-fastest-lap">—</span>
+      </div>
+
+      <div class="stat-card">
+        <label>Average Lap</label>
+        <span id="stat-average-lap">—</span>
+      </div>
+
+      <div class="stat-card">
+        <label>Cars Driven</label>
+        <span id="stat-cars-driven">—</span>
+      </div>
+
+    </div>
+
+    <!-- Future expansion area -->
+    <div id="allTimeExtra">
+      <!-- charts, lap history, etc later -->
+    </div>
+
   </section>
+
 </div>
 
 <script type="module" src="js/state.js"></script>

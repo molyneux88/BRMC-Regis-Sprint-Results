@@ -111,12 +111,19 @@ async function loadPersonalData() {
    Dropdown
 --------------------------------*/
 function buildDropdown() {
-  const select = document.getElementById("competitorSelect");
+
+  const isAllTime = getSelectedYear() === "all";
+
+  const select = isAllTime
+    ? document.getElementById("competitorSelectAllTime")
+    : document.getElementById("competitorSelect");
+
   if (!select) return;
 
   select.innerHTML = "";
 
-  const names = [...new Set(allData.map(r => r.driver))];
+  const names = [...new Set(allData.map(r => r.driver))]
+    sort((a, b) => a.localeCompare(b));
 
   if (!names.length) return;
 
@@ -135,12 +142,21 @@ function buildDropdown() {
   // ✅ Ensure the dropdown actually displays it
   select.value = currentDriver;
 
-  // ✅ Render immediately on load
-  renderPersonal();
+  // 🔥 THIS IS THE CORRECT PLACE
+  if (getSelectedYear() === "all") {
+    renderAllTimePlaceholder();
+  } else {
+    renderPersonal();
+  }
 
   select.onchange = () => {
     currentDriver = select.value;
-    renderPersonal();
+
+    if (getSelectedYear() === "all") {
+      renderAllTimePlaceholder();
+    } else {
+      renderPersonal();
+    }
   };
 }
 
@@ -148,6 +164,11 @@ function buildDropdown() {
    Render
 --------------------------------*/
 function renderPersonal() {
+
+  if (getSelectedYear() === "all") {
+    return;
+  }
+
   const container = isMobileView()
     ? document.getElementById("personalDetailsMobile")
     : document.getElementById("personalDetails");
@@ -273,3 +294,12 @@ onYearChange(() => {
   currentDriver = null;
   loadPersonalData();
 });
+
+function renderAllTimePlaceholder() {
+  const name = currentDriver || "Select driver";
+
+  document.getElementById("stat-total-laps").textContent = "—";
+  document.getElementById("stat-fastest-lap").textContent = "—";
+  document.getElementById("stat-average-lap").textContent = "—";
+  document.getElementById("stat-cars-driven").textContent = "—";
+}
