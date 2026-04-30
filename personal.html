@@ -13,160 +13,173 @@
 
   <div id="historicalHeader" class="historical-header desktop-only mobile-only"></div>
 
-<div class="dropdown-personal-wrapper">
-  <section class="class-selector">
-    Select Competitor:   
-    <select id="competitorSelect"></select>
-  </section>
-</div>
-
-<div class="track-map-wrapper desktop-only">
-
-
-<svg
-  viewBox="0 0 2048 1444"
-  class="track-svg"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
->
-
-  <!-- Glow filter -->
-  <defs>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="6" result="blur1"/>
-      <feGaussianBlur stdDeviation="12" result="blur2"/>
-      <feMerge>
-        <feMergeNode in="blur2"/>
-        <feMergeNode in="blur1"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
-
-  <!-- Track image -->
-  <image
-    href="assets/Goodwood-MC-Map.webp"
-    x="0"
-    y="0"
-    width="2048"
-    height="1444"
-    preserveAspectRatio="xMidYMid meet"
-  />
-
-  <!-- Track path -->
-  <path
-    id="lapPath"
-    d="M1612 713L1523.5 541.5L1518.5 499.5V452L1512 392L1500.5 317L1495.5 289L1489 276L1470.5 262.5L1447 251.5L1431 244L1413.5 241L1400.5 244L1363.5 251.5L1314 262.5L1265.5 276L1233.5 284.5L1193.5 301L1159.5 317L1018 363.5L951 386L906.5 401.5L865.5 416L843.5 421.5L792.5 432.5L752 438.5L710 442L666.5 445H601.5L573.5 448.5L547 454L523 463L505 476L482 497.5L465 522L452 550.5L445 573V593.5L455.5 615L475.5 636L530 667.5L587.5 692.5L656 714L695 726L710 733L731.5 748.5L752 768.5L767 790L772 806L775.5 867.5L778.5 930L782 951L809.5 994L850.5 1042L881 1072L908 1093.5L957.5 1126L1024.5 1160.5L1111 1204.5L1165.5 1224L1196 1232H1212H1237L1255.5 1229L1563.5 1182.5L1628.5 1171L1662 1163.5L1679.5 1156L1691.5 1147.5L1717.5 1118.5L1736.5 1089.5L1759 1051L1762 1030L1759 999L1750.5 967.5L1739.5 941.5L1612 713Z"
-    fill="none"
-    stroke="#004225"
-    stroke-width="14"
-    stroke-linecap="round"
-    opacity="0.0"
-  />
-
-  <!-- Moving dot -->
-  <circle
-    id="lapDot"
-    r="10"
-    fill="#004225"
-    
-  >
-    <animateMotion
-      id="dotAnim"
-      dur="10s"
-      repeatCount="indefinite"
-      rotate="auto"
-      keyPoints="1;0"
-      keyTimes="0;1"
-      calcMode="linear"
-    >
-      <mpath xlink:href="#lapPath"/>
-    </animateMotion>
-  </circle>
-
-</svg>
-
-
-<section id="personalDetails" class="personal-leaderboard">
-  <div class="loading">Waiting for data…</div>
-</section>
-
-</div>
-
-<!-- MOBILE VIEW -->
-<div class="personal-mobile mobile-only-personal">
-
-  <!-- Track map -->
-  <div class="mobile-track">
-    <svg
-      viewBox="0 0 2048 1444"
-      class="track-svg"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-    >
-
-      <!-- Glow filter -->
-      <defs>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="6" result="blur1"/>
-          <feGaussianBlur stdDeviation="12" result="blur2"/>
-          <feMerge>
-            <feMergeNode in="blur2"/>
-            <feMergeNode in="blur1"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
-
-      <!-- Track image -->
-      <image
-        href="assets/Goodwood-MC-Map.webp"
-        x="0"
-        y="0"
-        width="2048"
-        height="1444"
-        preserveAspectRatio="xMidYMid meet"
-      />
-
-      <!-- Track path -->
-      <path
-        id="lapPath"
-        d="M1612 713L1523.5 541.5L1518.5 499.5V452L1512 392L1500.5 317L1495.5 289L1489 276L1470.5 262.5L1447 251.5L1431 244L1413.5 241L1400.5 244L1363.5 251.5L1314 262.5L1265.5 276L1233.5 284.5L1193.5 301L1159.5 317L1018 363.5L951 386L906.5 401.5L865.5 416L843.5 421.5L792.5 432.5L752 438.5L710 442L666.5 445H601.5L573.5 448.5L547 454L523 463L505 476L482 497.5L465 522L452 550.5L445 573V593.5L455.5 615L475.5 636L530 667.5L587.5 692.5L656 714L695 726L710 733L731.5 748.5L752 768.5L767 790L772 806L775.5 867.5L778.5 930L782 951L809.5 994L850.5 1042L881 1072L908 1093.5L957.5 1126L1024.5 1160.5L1111 1204.5L1165.5 1224L1196 1232H1212H1237L1255.5 1229L1563.5 1182.5L1628.5 1171L1662 1163.5L1679.5 1156L1691.5 1147.5L1717.5 1118.5L1736.5 1089.5L1759 1051L1762 1030L1759 999L1750.5 967.5L1739.5 941.5L1612 713Z"
-        fill="none"
-        stroke="#004225"
-        stroke-width="14"
-        stroke-linecap="round"
-        opacity="0.0"
-      />
-
-      <!-- Moving dot -->
-      <circle
-        id="lapDot"
-        r="10"
-        fill="#004225"
-        
-      >
-        <animateMotion
-          id="dotAnim"
-          dur="10s"
-          repeatCount="indefinite"
-          rotate="auto"
-          keyPoints="1;0"
-          keyTimes="0;1"
-          calcMode="linear"
-        >
-          <mpath xlink:href="#lapPath"/>
-        </animateMotion>
-      </circle>
-
-    </svg>
+<div id="personalYearView">
+  
+  <div class="dropdown-personal-wrapper">
+    <section class="class-selector">
+      Select Competitor:   
+      <select id="competitorSelect"></select>
+    </section>
   </div>
 
-  <!-- Driver info -->
-  <section id="personalDetailsMobile" class="mobile-details">
+
+  <div class="track-map-wrapper desktop-only">
+
+  <svg
+    viewBox="0 0 2048 1444"
+    class="track-svg"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+  >
+
+    <!-- Glow filter -->
+    <defs>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="6" result="blur1"/>
+        <feGaussianBlur stdDeviation="12" result="blur2"/>
+        <feMerge>
+          <feMergeNode in="blur2"/>
+          <feMergeNode in="blur1"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- Track image -->
+    <image
+      href="assets/Goodwood-MC-Map.webp"
+      x="0"
+      y="0"
+      width="2048"
+      height="1444"
+      preserveAspectRatio="xMidYMid meet"
+    />
+
+    <!-- Track path -->
+    <path
+      id="lapPath"
+      d="M1612 713L1523.5 541.5L1518.5 499.5V452L1512 392L1500.5 317L1495.5 289L1489 276L1470.5 262.5L1447 251.5L1431 244L1413.5 241L1400.5 244L1363.5 251.5L1314 262.5L1265.5 276L1233.5 284.5L1193.5 301L1159.5 317L1018 363.5L951 386L906.5 401.5L865.5 416L843.5 421.5L792.5 432.5L752 438.5L710 442L666.5 445H601.5L573.5 448.5L547 454L523 463L505 476L482 497.5L465 522L452 550.5L445 573V593.5L455.5 615L475.5 636L530 667.5L587.5 692.5L656 714L695 726L710 733L731.5 748.5L752 768.5L767 790L772 806L775.5 867.5L778.5 930L782 951L809.5 994L850.5 1042L881 1072L908 1093.5L957.5 1126L1024.5 1160.5L1111 1204.5L1165.5 1224L1196 1232H1212H1237L1255.5 1229L1563.5 1182.5L1628.5 1171L1662 1163.5L1679.5 1156L1691.5 1147.5L1717.5 1118.5L1736.5 1089.5L1759 1051L1762 1030L1759 999L1750.5 967.5L1739.5 941.5L1612 713Z"
+      fill="none"
+      stroke="#004225"
+      stroke-width="14"
+      stroke-linecap="round"
+      opacity="0.0"
+    />
+
+    <!-- Moving dot -->
+    <circle
+      id="lapDot"
+      r="10"
+      fill="#004225"
+      
+    >
+      <animateMotion
+        id="dotAnim"
+        dur="10s"
+        repeatCount="indefinite"
+        rotate="auto"
+        keyPoints="1;0"
+        keyTimes="0;1"
+        calcMode="linear"
+      >
+        <mpath xlink:href="#lapPath"/>
+      </animateMotion>
+    </circle>
+
+  </svg>
+
+
+  <section id="personalDetails" class="personal-leaderboard">
     <div class="loading">Waiting for data…</div>
   </section>
 
+  </div>
+
+  <!-- MOBILE VIEW -->
+  <div class="personal-mobile mobile-only-personal">
+
+    <!-- Track map -->
+    <div class="mobile-track">
+      <svg
+        viewBox="0 0 2048 1444"
+        class="track-svg"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+      >
+
+        <!-- Glow filter -->
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="6" result="blur1"/>
+            <feGaussianBlur stdDeviation="12" result="blur2"/>
+            <feMerge>
+              <feMergeNode in="blur2"/>
+              <feMergeNode in="blur1"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Track image -->
+        <image
+          href="assets/Goodwood-MC-Map.webp"
+          x="0"
+          y="0"
+          width="2048"
+          height="1444"
+          preserveAspectRatio="xMidYMid meet"
+        />
+
+        <!-- Track path -->
+        <path
+          id="lapPath"
+          d="M1612 713L1523.5 541.5L1518.5 499.5V452L1512 392L1500.5 317L1495.5 289L1489 276L1470.5 262.5L1447 251.5L1431 244L1413.5 241L1400.5 244L1363.5 251.5L1314 262.5L1265.5 276L1233.5 284.5L1193.5 301L1159.5 317L1018 363.5L951 386L906.5 401.5L865.5 416L843.5 421.5L792.5 432.5L752 438.5L710 442L666.5 445H601.5L573.5 448.5L547 454L523 463L505 476L482 497.5L465 522L452 550.5L445 573V593.5L455.5 615L475.5 636L530 667.5L587.5 692.5L656 714L695 726L710 733L731.5 748.5L752 768.5L767 790L772 806L775.5 867.5L778.5 930L782 951L809.5 994L850.5 1042L881 1072L908 1093.5L957.5 1126L1024.5 1160.5L1111 1204.5L1165.5 1224L1196 1232H1212H1237L1255.5 1229L1563.5 1182.5L1628.5 1171L1662 1163.5L1679.5 1156L1691.5 1147.5L1717.5 1118.5L1736.5 1089.5L1759 1051L1762 1030L1759 999L1750.5 967.5L1739.5 941.5L1612 713Z"
+          fill="none"
+          stroke="#004225"
+          stroke-width="14"
+          stroke-linecap="round"
+          opacity="0.0"
+        />
+
+        <!-- Moving dot -->
+        <circle
+          id="lapDot"
+          r="10"
+          fill="#004225"
+          
+        >
+          <animateMotion
+            id="dotAnim"
+            dur="10s"
+            repeatCount="indefinite"
+            rotate="auto"
+            keyPoints="1;0"
+            keyTimes="0;1"
+            calcMode="linear"
+          >
+            <mpath xlink:href="#lapPath"/>
+          </animateMotion>
+        </circle>
+
+      </svg>
+    </div>
+
+    <!-- Driver info -->
+    <section id="personalDetailsMobile" class="mobile-details">
+      <div class="loading">Waiting for data…</div>
+    </section>
+
+  </div>
+
+</div>
+
+<div id="personalAllTimeView" style="display:none;">
+  <section class="alltime-container">
+    <h2>All Time Stats</h2>
+    <div id="allTimeContent">
+      Select a driver to view career stats
+    </div>
+  </section>
 </div>
 
 <script type="module" src="js/state.js"></script>

@@ -23,6 +23,11 @@ function renderHeader() {
     location.pathname.split("/").pop().replace(".html", "") ||
     "overall";
 
+  // 🚨 If NOT on personal and currently "all", reset to live
+  if (page !== "personal" && getSelectedYear() === "all") {
+    setSelectedYear("live");
+  }
+
   header.className = "site-header centered-layout";
 
   header.innerHTML = `
@@ -38,6 +43,7 @@ function renderHeader() {
       <div class="year-selector-container">
         <select id="yearSelectDesktop">
           <option value="live">2026 (Live)</option>
+          ${page === "personal" ? `<option value="all">All Time</option>` : ""}
           <option value="2025">2025</option>
           <option value="2024">2024</option>
           <option value="2023">2023</option>
@@ -91,6 +97,7 @@ function renderHeader() {
       <div class="mobile-only year-selector-container">
         <select id="yearSelectMobile">
           <option value="live">2026 (Live)</option>
+          ${page === "personal" ? `<option value="all">All Time</option>` : ""}
           <option value="2025">2025</option>
           <option value="2024">2024</option>
           <option value="2023">2023</option>
@@ -158,10 +165,19 @@ function updateStatusBar() {
   const selectedYear = getSelectedYear();
   const isLive = selectedYear === "live";
   const isMobile = window.innerWidth <= 768;
+  const isAllTime = selectedYear === "all";
 
   // ❌ DESKTOP + LIVE → NO BAR AT ALL
-  if (isLive && !isMobile) {
+  if ((isLive || isAllTime) && !isMobile) {
     statusBar.style.display = "none";
+    return;
+  }
+
+  if (isAllTime) {
+    statusBar.className = "status-bar alltime";
+    statusBar.innerHTML = `
+      <span>🏁 ALL TIME PERSONAL STATS</span>
+    `;
     return;
   }
 

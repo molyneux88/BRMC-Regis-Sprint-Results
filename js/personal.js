@@ -6,6 +6,26 @@ let allData = [];
 let currentDriver = null;
 
 /* ------------------------------
+   View Toggling
+--------------------------------*/
+function toggleViewMode() {
+  const year = getSelectedYear();
+
+  const yearView = document.getElementById("personalYearView");
+  const allTimeView = document.getElementById("personalAllTimeView");
+
+  if (!yearView || !allTimeView) return;
+
+  if (year === "all") {
+    yearView.style.display = "none";
+    allTimeView.style.display = "block";
+  } else {
+    yearView.style.display = "block";
+    allTimeView.style.display = "none";
+  }
+}
+
+/* ------------------------------
    Helpers
 --------------------------------*/
 function formatLapSafe(value) {
@@ -217,6 +237,7 @@ function renderPersonal() {
    Init
 --------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
+  toggleViewMode();
   loadPersonalData();
   setInterval(() => {
     if (getSelectedYear() === "live") {
@@ -242,6 +263,13 @@ function updateTimestamps() {
 
 // 🔥 Listen for year changes from header
 onYearChange(() => {
+  toggleViewMode();
+
+  if (getSelectedYear() === "all") {
+    // 🚫 Skip normal data loading for now
+    return;
+  }
+
   currentDriver = null;
   loadPersonalData();
 });
