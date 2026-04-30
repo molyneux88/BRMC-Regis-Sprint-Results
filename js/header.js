@@ -204,7 +204,8 @@ function updateStatusBar() {
           ? `
         <div class="year-selector-container">
           <select id="yearSelectStatus">
-            <option value="live">2026 (Live)</option>
+            <option value="live">2026 (Live)</option>            
+            ${page === "personal" ? `<option value="all">All Time</option>` : ""}
             <option value="2025">2025</option>
             <option value="2024">2024</option>
             <option value="2023">2023</option>
