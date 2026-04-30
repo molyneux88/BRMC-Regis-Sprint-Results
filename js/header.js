@@ -1,5 +1,7 @@
 import { getSelectedYear, setSelectedYear, onYearChange } from "./state.js";
 
+let currentPage = "overall";
+
 /* ==============================
    HISTORIC YEAR DROPDOWN HANDLE
 ================================ */
@@ -18,13 +20,13 @@ function renderHeader() {
   if (!header) return;
 
   // ✅ DEFINE PAGE FIRST
-  const page =
+  currentPage  =
     document.body.dataset.page ||
     location.pathname.split("/").pop().replace(".html", "") ||
     "overall";
 
   // 🚨 If NOT on personal and currently "all", reset to live
-  if (page !== "personal" && getSelectedYear() === "all") {
+  if (currentPage !== "personal" && getSelectedYear() === "all") {
     setSelectedYear("live");
   }
 
@@ -43,7 +45,7 @@ function renderHeader() {
       <div class="year-selector-container">
         <select id="yearSelectDesktop">
           <option value="live">2026 (Live)</option>
-          ${page === "personal" ? `<option value="all">All Time</option>` : ""}
+          ${currentPage  === "personal" ? `<option value="all">All Time</option>` : ""}
           <option value="2025">2025</option>
           <option value="2024">2024</option>
           <option value="2023">2023</option>
@@ -72,7 +74,7 @@ function renderHeader() {
     <div class="header-right">
 
       <div class="desktop-only">
-        ${page === "overall" ? `
+        ${currentPage === "overall" ? `
           <label class="toggle">
             <input type="checkbox" id="autoScrollToggle">
             <span class="slider"></span>
@@ -97,7 +99,7 @@ function renderHeader() {
       <div class="mobile-only year-selector-container">
         <select id="yearSelectMobile">
           <option value="live">2026 (Live)</option>
-          ${page === "personal" ? `<option value="all">All Time</option>` : ""}
+          ${currentPage  === "personal" ? `<option value="all">All Time</option>` : ""}
           <option value="2025">2025</option>
           <option value="2024">2024</option>
           <option value="2023">2023</option>
@@ -138,7 +140,7 @@ function renderHeader() {
       if (el) el.value = currentYear;
     });
 
-  highlightActiveNav(page);
+  highlightActiveNav(currentPage);
   wireBurgerMenu();
   updateStatusBar();
   
@@ -168,12 +170,14 @@ function updateStatusBar() {
   const isAllTime = selectedYear === "all";
 
   // ❌ DESKTOP + LIVE → NO BAR AT ALL
-  if ((isLive || isAllTime) && !isMobile) {
+  if (isLive && !isMobile) {
     statusBar.style.display = "none";
     return;
   }
 
+  // ✅ ALL TIME BAR
   if (isAllTime) {
+    statusBar.style.display = "block";
     statusBar.className = "status-bar alltime";
     statusBar.innerHTML = `
       <span>🏁 ALL TIME PERSONAL STATS</span>
@@ -205,7 +209,7 @@ function updateStatusBar() {
         <div class="year-selector-container">
           <select id="yearSelectStatus">
             <option value="live">2026 (Live)</option>            
-            ${page === "personal" ? `<option value="all">All Time</option>` : ""}
+            ${currentPage === "personal" ? `<option value="all">All Time</option>` : ""}
             <option value="2025">2025</option>
             <option value="2024">2024</option>
             <option value="2023">2023</option>
