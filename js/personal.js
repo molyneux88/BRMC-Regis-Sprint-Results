@@ -289,7 +289,7 @@ onYearChange(async () => {
 });
 
 function renderAllTimePlaceholder(driver = null) {
-  const container = document.getElementById("leaderboard-wrapper");
+  const container = document.getElementById("allTimeExtra"); // ✅ FIXED
   if (!container) return;
 
   container.innerHTML = `
