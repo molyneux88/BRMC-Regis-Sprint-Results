@@ -82,17 +82,15 @@ function updateLapAnimation(bestLap) {
    Load Data
 --------------------------------*/
 async function loadPersonalData() {
-  let rawData;
   const selectedYear = getSelectedYear();
 
-  if (selectedYear === "live") {
+  let rawData;
+
+  if (selectedYear === "all") {
+    rawData = await loadAllTimeData();
+  } else if (selectedYear === "live") {
     const response = await fetch(API_URL, { mode: "cors" });
     rawData = await response.json();
-
-  } else if (selectedYear === "all") {
-    // 🔥 TEMP: use empty or combined dataset
-    rawData = []; // or later: merged years
-
   } else {
     const response = await fetch(`assets/results${selectedYear}.json`);
     rawData = await response.json();
@@ -103,6 +101,10 @@ async function loadPersonalData() {
     .sort((a, b) => a.driver.localeCompare(b.driver));
 
   buildDropdown();
+
+  if (!currentDriver && allData.length) {
+    currentDriver = allData[0].driver;
+  }
 }
 
 /* ------------------------------
@@ -280,10 +282,10 @@ function updateTimestamps() {
 }
 
 // 🔥 Listen for year changes from header
-onYearChange(() => {
+onYearChange(async () => {
   toggleViewMode();
   currentDriver = null;
-  loadPersonalData(); // ✅ ALWAYS load data
+  await loadPersonalData();
 });
 
 function renderAllTimePlaceholder(driver = null) {
@@ -337,4 +339,38 @@ function renderAllTimePlaceholder(driver = null) {
 
     </div>
   `;
+}
+
+async function loadAllTimeData() {
+  const years = ["2026", "2025", "2024", "2023", "2022", "2019"];
+
+  let combined = [];
+
+  for (const year of years) {
+    try {
+      let data;
+
+      if (year === "2026") {
+        const res = await fetch(API_URL, { mode: "cors" });
+        data = await res.json();
+      } else {
+        const res = await fetch(`assets/results${year}.json`);
+        data = await res.json();
+      }
+
+      // Tag each row with its year
+      data.forEach(r => {
+        r._year = year;
+      });
+
+      combined = combined.concat(data);
+
+    } catch (err) {
+      console.warn(`Failed loading ${year}`, err);
+    }
+  }
+
+  return combined
+    .filter(r => r.driver)
+    .sort((a, b) => a.driver.localeCompare(b.driver));
 }
