@@ -309,22 +309,6 @@ function wireBurgerMenu() {
 }
 
 /* ==============================
-   refreshPersonalView
-================================ */
-function refreshPersonalView(year) {
-  if (currentPage !== "personal") return;
-
-  if (year === "all") {
-    renderAllTimeCompetitorList();   // 🔥 rebuild list
-    renderAllTimePlaceholder();      // (your overview panel soon)
-  } else {
-    renderYearCompetitorList(year);  // 🔥 rebuild list
-    renderPersonalForYear(year);     // existing logic
-  }
-}
-
-
-/* ==============================
    INIT
 ================================ */
 document.addEventListener("DOMContentLoaded", renderHeader);

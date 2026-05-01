@@ -82,17 +82,19 @@ function updateLapAnimation(bestLap) {
    Load Data
 --------------------------------*/
 async function loadPersonalData() {
-
   let rawData;
-
   const selectedYear = getSelectedYear();
 
   if (selectedYear === "live") {
     const response = await fetch(API_URL, { mode: "cors" });
     rawData = await response.json();
+
+  } else if (selectedYear === "all") {
+    // 🔥 TEMP: use empty or combined dataset
+    rawData = []; // or later: merged years
+
   } else {
-    const yearFile = `assets/results${selectedYear}.json`;
-    const response = await fetch(yearFile);
+    const response = await fetch(`assets/results${selectedYear}.json`);
     rawData = await response.json();
   }
 
@@ -101,10 +103,6 @@ async function loadPersonalData() {
     .sort((a, b) => a.driver.localeCompare(b.driver));
 
   buildDropdown();
-
-  if (!currentDriver && allData.length) {
-    currentDriver = allData[0].driver;
-  }
 }
 
 /* ------------------------------
@@ -284,7 +282,6 @@ function updateTimestamps() {
 // 🔥 Listen for year changes from header
 onYearChange(() => {
   toggleViewMode();
-
   currentDriver = null;
   loadPersonalData(); // ✅ ALWAYS load data
 });
