@@ -27,7 +27,8 @@ function renderHeader() {
 
   // 🚨 If NOT on personal and currently "all", reset to live
   if (currentPage !== "personal" && getSelectedYear() === "all") {
-    setSelectedYear("live");
+    // delay until after render
+    setTimeout(() => setSelectedYear("live"), 0);
   }
 
   header.className = "site-header centered-layout";
@@ -146,18 +147,28 @@ function renderHeader() {
   
 }
 
+/* ==============================
+   refreshPersonalView
+================================ */
+function refreshPersonalView(year) {
+  if (currentPage !== "personal") return;
+
+  // Let personal.js handle everything via onYearChange
+}
+
+/* ==============================
+   YEAR CHANGE LISTENER
+================================ */
 onYearChange((year) => {
-    // Sync ALL dropdowns
-    document.querySelectorAll("#yearSelectDesktop, #yearSelectMobile, #yearSelectStatus")
-      .forEach(el => {
-        if (el) el.value = year;
-      });
+  document.querySelectorAll("#yearSelectDesktop, #yearSelectMobile, #yearSelectStatus")
+    .forEach(el => {
+      if (el) el.value = year;
+    });
 
-    updateStatusBar();
+  updateStatusBar();
 
-    // 🔥 ADD THIS
-    refreshPersonalView(year);
-  });
+  refreshPersonalView(year); // ✅ now safe
+});
 
 
 /* ==============================
