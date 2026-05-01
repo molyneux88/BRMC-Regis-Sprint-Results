@@ -289,11 +289,55 @@ onYearChange(() => {
   loadPersonalData(); // ✅ ALWAYS load data
 });
 
-function renderAllTimePlaceholder() {
-  const name = currentDriver || "Select driver";
+function renderAllTimePlaceholder(driver = null) {
+  const container = document.getElementById("leaderboard-wrapper");
+  if (!container) return;
 
-  document.getElementById("stat-total-laps").textContent = "—";
-  document.getElementById("stat-fastest-lap").textContent = "—";
-  document.getElementById("stat-average-lap").textContent = "—";
-  document.getElementById("stat-cars-driven").textContent = "—";
+  container.innerHTML = `
+    <div class="personal-leaderboard">
+
+      <!-- DRIVER SUMMARY -->
+      <div class="driver-summary">
+
+        <div class="driver-top">
+          <h2>${driver?.name || "Select a Driver"}</h2>
+        </div>
+
+        <div class="driver-meta alltime-meta">
+          <div>
+            <strong>Years Entered</strong>
+            <div class="years-list">—</div>
+          </div>
+
+          <div>
+            <strong>Cars Driven</strong>
+            <div class="cars-list">—</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- STATS GRID -->
+      <div class="runs alltime-runs">
+
+        <div>
+          <label>Fastest Lap</label>
+          <span>--:--.---</span>
+          <small class="stat-sub">(----)</small>
+        </div>
+
+        <div>
+          <label>Average Lap</label>
+          <span>--:--.---</span>
+        </div>
+
+        <div>
+          <label>Total Laps</label>
+          <span>---</span>
+        </div>
+
+      </div>
+
+    </div>
+  `;
 }
