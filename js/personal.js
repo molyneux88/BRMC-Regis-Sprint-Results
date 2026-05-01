@@ -288,57 +288,102 @@ onYearChange(async () => {
   await loadPersonalData();
 });
 
-function renderAllTimePlaceholder(driver = null) {
-  const container = document.getElementById("allTimeExtra"); // ✅ FIXED
+function renderAllTimePlaceholder() {
+  const container = document.getElementById("allTimeExtra");
   if (!container) return;
 
-  container.innerHTML = `
-    <div class="personal-leaderboard">
+  const mobile = isMobileView();
 
-      <!-- DRIVER SUMMARY -->
-      <div class="driver-summary">
+  container.innerHTML = mobile
+    ? `
+      <div class="personal-leaderboard">
 
-        <div class="driver-top">
-          <h2>${driver?.name || "Select a Driver"}</h2>
-        </div>
+        <!-- DRIVER -->
+        <div class="driver-summary">
+          <div class="driver-top">
+            <h2>${currentDriver || "Select a Driver"}</h2>
+          </div>
 
-        <div class="driver-meta alltime-meta">
-          <div>
+          <!-- YEARS -->
+          <div class="alltime-block">
             <strong>Years Entered</strong>
             <div class="years-list">—</div>
           </div>
 
-          <div>
+          <!-- CARS -->
+          <div class="alltime-block">
             <strong>Cars Driven</strong>
-            <div class="cars-list">—</div>
+            <div class="cars-list">
+              <div class="car-item">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="runs alltime-runs">
+          <div>
+            <label>Fastest Lap</label>
+            <span>--:--.---</span>
+            <small class="stat-sub">(----)</small>
+          </div>
+
+          <div>
+            <label>Average Lap</label>
+            <span>--:--.---</span>
+          </div>
+
+          <div>
+            <label>Total Laps</label>
+            <span>---</span>
           </div>
         </div>
 
       </div>
+    `
+    : `
+      <div class="personal-leaderboard">
 
-      <!-- STATS GRID -->
-      <div class="runs alltime-runs">
+        <!-- DRIVER -->
+        <div class="driver-summary">
+          <div class="driver-top">
+            <h2>${currentDriver || "Select a Driver"}</h2>
+          </div>
 
-        <div>
-          <label>Fastest Lap</label>
-          <span>--:--.---</span>
-          <small class="stat-sub">(----)</small>
+          <!-- DESKTOP SIDE BY SIDE -->
+          <div class="driver-meta alltime-meta">
+            <div>
+              <strong>Years Entered</strong>
+              <div class="years-list">—</div>
+            </div>
+
+            <div>
+              <strong>Cars Driven</strong>
+              <div class="cars-list">—</div>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label>Average Lap</label>
-          <span>--:--.---</span>
-        </div>
+        <!-- STATS -->
+        <div class="runs alltime-runs">
+          <div>
+            <label>Fastest Lap</label>
+            <span>--:--.---</span>
+            <small class="stat-sub">(----)</small>
+          </div>
 
-        <div>
-          <label>Total Laps</label>
-          <span>---</span>
+          <div>
+            <label>Average Lap</label>
+            <span>--:--.---</span>
+          </div>
+
+          <div>
+            <label>Total Laps</label>
+            <span>---</span>
+          </div>
         </div>
 
       </div>
-
-    </div>
-  `;
+    `;
 }
 
 async function loadAllTimeData() {
