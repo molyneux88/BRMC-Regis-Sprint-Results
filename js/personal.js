@@ -308,7 +308,7 @@ function renderAllTimePlaceholder() {
 
   const carsList = cars.map(c => `
     <div class="car-item">
-      ${c.car} (${c.year}) • Class ${c.class}
+      ${c.range}: ${c.car} (${c.carYear}) • Class ${c.class}
     </div>
   `).join("");
 
@@ -465,24 +465,66 @@ async function loadAllTimeData() {
 function getDriverHistory(driverName) {
   const rows = allData.filter(r => r.driver === driverName);
 
+  // ---------- YEARS ----------
   const years = [...new Set(rows.map(r => r._year))]
-    .sort((a, b) => b.localeCompare(a)); // newest first
+    .sort((a, b) => b.localeCompare(a));
 
-  const carsMap = new Map();
+  // ---------- GROUP CARS ----------
+  const carGroups = new Map();
 
   rows.forEach(r => {
-    const key = `${r.car}|${r._year}|${r.class}`;
+    const key = `${r.car}|${r.class || "na"}`;
 
-    if (!carsMap.has(key)) {
-      carsMap.set(key, {
+    if (!carGroups.has(key)) {
+      carGroups.set(key, {
         car: r.car || "Unknown",
-        year: r._year || "n/a",
-        class: Number.isFinite(r.class) ? r.class : "n/a"
+        class: Number.isFinite(r.class) ? r.class : "n/a",
+        years: new Set()
       });
     }
+
+    carGroups.get(key).years.add(Number(r._year));
   });
 
-  const cars = Array.from(carsMap.values());
+  // ---------- BUILD RANGES ----------
+  const cars = [];
+
+  carGroups.forEach(group => {
+    const sortedYears = [...group.years].sort((a, b) => a - b);
+
+    let start = sortedYears[0];
+    let prev = sortedYears[0];
+
+    for (let i = 1; i < sortedYears.length; i++) {
+      const year = sortedYears[i];
+
+      if (year === prev + 1) {
+        prev = year;
+      } else {
+        cars.push({
+          range: start === prev ? `${start}` : `${start} - ${prev}`,
+          car: group.car,
+          class: group.class
+        });
+
+        start = year;
+        prev = year;
+      }
+    }
+
+    // push final range
+    cars.push({
+      range: start === prev ? `${start}` : `${start} - ${prev}`,
+      car: group.car,
+      class: group.class
+    });
+  });
+
+  // sort newest first
+  cars.sort((a, b) => {
+    const getStart = str => Number(str.split(" - ")[0]);
+    return getStart(b.range) - getStart(a.range);
+  });
 
   return { years, cars };
 }

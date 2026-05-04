@@ -1472,18 +1472,29 @@ main {
   margin-bottom: 4px;
 }
 
+/* ==============================
+   Year Pills
+================================ */
+
 .year-pill {
-  background: #eee;
+  background: #f0f0f0;
+  color: #222;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 0.8rem;
   cursor: pointer;
-  transition: 0.2s;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+.year-pill:hover {
+  background: #e0e0e0;
 }
 
 .year-pill.active {
   background: #004225;
-  color: white;
+  color: #fff;
+  border-color: #004225;
 }
 
 .clear-btn {
@@ -1497,4 +1508,13 @@ main {
 
 .clear-wrapper {
   margin-top: 4px;
+}
+
+.car-item {
+  font-size: 0.85rem;
+}
+
+.car-item span.range {
+  color: #666;
+  margin-right: 6px;
 }
