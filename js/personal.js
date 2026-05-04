@@ -312,6 +312,9 @@ function renderAllTimePlaceholder() {
     </div>
   `).join("");
 
+  const driverRows = allData.filter(r => r.driver === currentDriver);
+  const stats = calculateAllTimeStats(driverRows);
+
   container.innerHTML = mobile
     ? `
       <div class="personal-leaderboard">
@@ -352,18 +355,23 @@ function renderAllTimePlaceholder() {
         <div class="runs alltime-runs">
           <div>
             <label>Fastest Lap</label>
-            <span>--:--.---</span>
-            <small class="stat-sub">(----)</small>
+            <span>${formatLapSafe(stats.fastest)}</span>
+            <small class="stat-sub">
+              (${stats.validLapCount} laps)
+            </small>
           </div>
 
           <div>
             <label>Average Lap</label>
-            <span>--:--.---</span>
+            <span>${formatLapSafe(stats.average)}</span>
           </div>
 
           <div>
             <label>Total Laps</label>
-            <span>---</span>
+            <span>
+              ${stats.validLapCount}
+              <small>(+${stats.totalLapCount - stats.validLapCount} practice)</small>
+            </span>
           </div>
         </div>
 
@@ -409,18 +417,23 @@ function renderAllTimePlaceholder() {
         <div class="runs alltime-runs">
           <div>
             <label>Fastest Lap</label>
-            <span>--:--.---</span>
-            <small class="stat-sub">(----)</small>
+            <span>${formatLapSafe(stats.fastest)}</span>
+            <small class="stat-sub">
+              (${stats.validLapCount} laps)
+            </small>
           </div>
 
           <div>
             <label>Average Lap</label>
-            <span>--:--.---</span>
+            <span>${formatLapSafe(stats.average)}</span>
           </div>
 
           <div>
             <label>Total Laps</label>
-            <span>---</span>
+            <span>
+              ${stats.validLapCount}
+              <small>(+${stats.totalLapCount - stats.validLapCount} practice)</small>
+            </span>
           </div>
         </div>
 
@@ -554,4 +567,47 @@ function wireYearPills() {
       renderAllTimePlaceholder();
     });
   }
+}
+
+function calculateAllTimeStats(driverRows) {
+  let validLaps = [];
+  let allLaps = [];
+
+  driverRows.forEach(row => {
+    const runs = [
+      row.run_1_time,
+      row.run_2_time,
+      row.run_3_time
+    ];
+
+    const practice = row.run_p_time;
+
+    // Competitive laps
+    runs.forEach(t => {
+      if (Number.isFinite(t) && t > 0) {
+        validLaps.push(t);
+        allLaps.push(t);
+      }
+    });
+
+    // Practice laps (only count in total laps, not average)
+    if (Number.isFinite(practice) && practice > 0) {
+      allLaps.push(practice);
+    }
+  });
+
+  const fastest = validLaps.length
+    ? Math.min(...validLaps)
+    : null;
+
+  const average = validLaps.length
+    ? validLaps.reduce((a, b) => a + b, 0) / validLaps.length
+    : null;
+
+  return {
+    fastest,
+    average,
+    validLapCount: validLaps.length,
+    totalLapCount: allLaps.length
+  };
 }

@@ -1485,6 +1485,7 @@ main {
   cursor: pointer;
   border: 1px solid #ccc;
   transition: all 0.2s ease;
+  margin: 2px;
 }
 
 .year-pill:hover {
