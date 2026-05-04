@@ -4,6 +4,7 @@ import { getSelectedYear, onYearChange } from "./state.js";
 
 let allData = [];
 let currentDriver = null;
+let selectedYearPills = new Set();
 
 /* ------------------------------
    View Toggling
@@ -140,8 +141,9 @@ function buildDropdown() {
 
     select.value = currentDriver;
 
-    select.onchange = () => {
+    select.onchange = () => {      
       currentDriver = select.value;
+      selectedYearPills.clear();
 
       if (getSelectedYear() === "all") {
         renderAllTimePlaceholder();
@@ -290,9 +292,25 @@ onYearChange(async () => {
 
 function renderAllTimePlaceholder() {
   const container = document.getElementById("allTimeExtra");
-  if (!container) return;
+  if (!container || !currentDriver) return;
 
   const mobile = isMobileView();
+
+  const { years, cars } = getDriverHistory(currentDriver);
+
+  const yearPills = years.map(year => `
+    <span 
+      class="year-pill ${selectedYearPills.has(year) ? "active" : ""}" 
+      data-year="${year}">
+      ${year}
+    </span>
+  `).join("");
+
+  const carsList = cars.map(c => `
+    <div class="car-item">
+      ${c.car} (${c.year}) • Class ${c.class}
+    </div>
+  `).join("");
 
   container.innerHTML = mobile
     ? `
@@ -307,14 +325,25 @@ function renderAllTimePlaceholder() {
           <!-- YEARS -->
           <div class="alltime-block">
             <strong>Years Entered</strong>
-            <div class="years-list">—</div>
+            <div class="years-list">
+            ${yearPills}
+            </div>
+
+            ${
+              selectedYearPills.size > 0
+                 ? `<div class="clear-wrapper">
+                    <button id="clearYearPills" class="clear-btn">Clear</button>
+                  </div>`
+                : ""
+            }
+
           </div>
 
           <!-- CARS -->
           <div class="alltime-block">
             <strong>Cars Driven</strong>
             <div class="cars-list">
-              <div class="car-item">—</div>
+              ${carsList}
             </div>
           </div>
         </div>
@@ -353,12 +382,25 @@ function renderAllTimePlaceholder() {
           <div class="driver-meta alltime-meta">
             <div>
               <strong>Years Entered</strong>
-              <div class="years-list">—</div>
+              <div class="years-list">
+              ${yearPills}
+              </div>
+
+              ${
+                selectedYearPills.size > 0
+                  ? `<div class="clear-wrapper">
+                      <button id="clearYearPills" class="clear-btn">Clear</button>
+                    </div>`
+                  : ""
+              } 
+
             </div>
 
             <div>
               <strong>Cars Driven</strong>
-              <div class="cars-list">—</div>
+              <div class="cars-list">
+              ${carsList}
+              </div>
             </div>
           </div>
         </div>
@@ -418,4 +460,53 @@ async function loadAllTimeData() {
   return combined
     .filter(r => r.driver)
     .sort((a, b) => a.driver.localeCompare(b.driver));
+}
+
+function getDriverHistory(driverName) {
+  const rows = allData.filter(r => r.driver === driverName);
+
+  const years = [...new Set(rows.map(r => r._year))]
+    .sort((a, b) => b.localeCompare(a)); // newest first
+
+  const carsMap = new Map();
+
+  rows.forEach(r => {
+    const key = `${r.car}|${r._year}|${r.class}`;
+
+    if (!carsMap.has(key)) {
+      carsMap.set(key, {
+        car: r.car || "Unknown",
+        year: r._year || "n/a",
+        class: Number.isFinite(r.class) ? r.class : "n/a"
+      });
+    }
+  });
+
+  const cars = Array.from(carsMap.values());
+
+  return { years, cars };
+}
+
+function wireYearPills() {
+  document.querySelectorAll(".year-pill").forEach(pill => {
+    pill.addEventListener("click", () => {
+      const year = pill.dataset.year;
+
+      if (selectedYearPills.has(year)) {
+        selectedYearPills.delete(year);
+      } else {
+        selectedYearPills.add(year);
+      }
+
+      renderAllTimePlaceholder(); // re-render UI
+    });
+  });
+
+  const clearBtn = document.getElementById("clearYearPills");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      selectedYearPills.clear();
+      renderAllTimePlaceholder();
+    });
+  }
 }

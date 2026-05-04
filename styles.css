@@ -1372,8 +1372,8 @@ main {
   }
 
   .driver-summary {
-    padding-bottom: 0px;
-    margin-bottom: 0px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 
   }
   
@@ -1470,4 +1470,31 @@ main {
   font-size: 0.9rem;
   opacity: 0.9;
   margin-bottom: 4px;
+}
+
+.year-pill {
+  background: #eee;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.year-pill.active {
+  background: #004225;
+  color: white;
+}
+
+.clear-btn {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+}
+
+.clear-wrapper {
+  margin-top: 4px;
 }
