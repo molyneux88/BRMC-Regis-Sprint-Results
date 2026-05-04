@@ -308,7 +308,7 @@ function renderAllTimePlaceholder() {
 
   const carsList = cars.map(c => `
     <div class="car-item">
-      ${c.range}: ${c.car} (${c.carYear}) • Class ${c.class}
+      ${c.range}: ${c.car} • Class ${c.class}
     </div>
   `).join("");
 
@@ -426,6 +426,9 @@ function renderAllTimePlaceholder() {
 
       </div>
     `;
+
+  wireYearPills();            
+
 }
 
 async function loadAllTimeData() {

@@ -1493,8 +1493,9 @@ main {
 
 .year-pill.active {
   background: #004225;
-  color: #fff;
+  color: white;
   border-color: #004225;
+  transform: scale(1.05);
 }
 
 .clear-btn {
