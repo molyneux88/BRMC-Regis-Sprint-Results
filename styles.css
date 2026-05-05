@@ -1609,3 +1609,50 @@ main {
     font-size: 0.75rem;
   }
 }
+
+.lap-times-section {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #0f1a14; /* slightly different to main card */
+}
+
+.lap-times-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #9fb5a7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lap-header,
+.lap-row {
+  display: grid;
+  grid-template-columns: 40px 70px 60px 1fr 80px;
+  gap: 8px;
+  align-items: center;
+}
+
+.lap-header {
+  font-size: 12px;
+  color: #7f9487;
+  border-bottom: 1px solid #1e2a23;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+
+.lap-row {
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid #16221c;
+}
+
+.lap-row:last-child {
+  border-bottom: none;
+}
+
+/* Dim non-selected years */
+.lap-row.dimmed {
+  opacity: 0.35;
+}

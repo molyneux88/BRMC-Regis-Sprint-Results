@@ -313,6 +313,31 @@ function renderAllTimePlaceholder() {
   const rankedLaps = buildRankedLapTimes(driverRows);
 
   const lapRows = rankedLaps.map((lap, i) => {
+
+  const lapContainer = document.getElementById("lapTimesContainer");
+
+  if (lapContainer) {
+  lapContainer.innerHTML = `
+    <div class="lap-times-section">
+
+      <div class="lap-times-title">All Lap Times</div>
+
+      <div class="lap-header">
+        <div class="col rank">#</div>
+        <div class="col year">Year</div>
+        <div class="col run">Run</div>
+        <div class="col car">Car</div>
+        <div class="col time">Time</div>
+      </div>
+
+      <div class="lap-body">
+        ${lapRows}
+      </div>
+
+    </div>
+  `;
+  }
+
   const isSelected = selectedYearPills.size === 0 
       || selectedYearPills.has(lap.year);
 
