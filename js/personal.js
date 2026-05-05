@@ -298,13 +298,9 @@ function renderAllTimePlaceholder() {
 
   const { years, cars } = getDriverHistory(currentDriver);
 
-  const yearPills = years.map(year => `
-    <span 
-      class="year-pill ${selectedYearPills.has(year) ? "active" : ""}" 
-      data-year="${year}">
-      ${year}
-    </span>
-  `).join("");
+  const yearPills = years.map(year =>
+    `<span class="year-pill ${selectedYearPills.has(year) ? "active" : ""}" data-year="${year}">${year}</span>`
+  ).join("");
 
   const carsList = cars.map(c => `
     <div class="car-item">
@@ -327,18 +323,19 @@ function renderAllTimePlaceholder() {
 
           <!-- YEARS -->
           <div class="alltime-block">
-            <strong>Years Entered</strong>
-            <div class="years-list">
-            ${yearPills}
+            <div class="alltime-header">
+              <strong>Years Entered</strong>
+
+              ${
+                selectedYearPills.size > 0
+                  ? `<button id="clearYearPills" class="clear-btn">Clear</button>`
+                  : ""
+              }
             </div>
 
-            ${
-              selectedYearPills.size > 0
-                 ? `<div class="clear-wrapper">
-                    <button id="clearYearPills" class="clear-btn">Clear</button>
-                  </div>`
-                : ""
-            }
+            <div class="years-list">
+              ${yearPills}
+            </div>
 
           </div>
 
@@ -395,19 +392,20 @@ function renderAllTimePlaceholder() {
 
           <!-- DESKTOP SIDE BY SIDE -->
           <div class="driver-meta alltime-meta">
-            <div>
-              <strong>Years Entered</strong>
-              <div class="years-list">
-              ${yearPills}
+            <div class="alltime-block">
+              <div class="alltime-header">
+                <strong>Years Entered</strong>
+
+                ${
+                  selectedYearPills.size > 0
+                    ? `<button id="clearYearPills" class="clear-btn">Clear</button>`
+                    : ""
+                }
               </div>
 
-              ${
-                selectedYearPills.size > 0
-                  ? `<div class="clear-wrapper">
-                      <button id="clearYearPills" class="clear-btn">Clear</button>
-                    </div>`
-                  : ""
-              } 
+              <div class="years-list">
+                ${yearPills}
+              </div>
 
             </div>
 

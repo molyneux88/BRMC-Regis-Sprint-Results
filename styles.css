@@ -1451,7 +1451,7 @@ main {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  padding: 0 16px;
+  padding: 0 0px;
 }
 
 .alltime-runs small.stat-sub {
@@ -1496,6 +1496,13 @@ main {
   min-width: 0;
 }
 
+.alltime-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
 /* ==============================
    Year Pills
 ================================ */
@@ -1524,12 +1531,18 @@ main {
 }
 
 .clear-btn {
-  margin-top: 6px;
-  font-size: 0.75rem;
-  background: none;
+  background: #ff5a5f;
+  color: white;
   border: none;
-  color: #666;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: #e0484d;
 }
 
 .clear-wrapper {
