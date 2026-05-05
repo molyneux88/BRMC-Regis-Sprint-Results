@@ -1448,7 +1448,10 @@ main {
    ALL TIME RUNS TWEAK
 ================================ */
 .alltime-runs {
+  display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 0 16px;
 }
 
 .alltime-runs small.stat-sub {
@@ -1470,6 +1473,27 @@ main {
   font-size: 0.9rem;
   opacity: 0.9;
   margin-bottom: 4px;
+}
+
+.alltime-runs span {
+  font-size: clamp(1rem, 3.5vw, 1.4rem);
+  font-weight: 600;
+}
+
+.alltime-runs label {
+  font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+  opacity: 0.7;
+}
+
+.stat-sub {
+  display: block;
+  font-size: clamp(0.65rem, 2.2vw, 0.8rem);
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+.alltime-runs > div {
+  min-width: 0;
 }
 
 /* ==============================

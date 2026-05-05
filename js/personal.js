@@ -357,21 +357,28 @@ function renderAllTimePlaceholder() {
             <label>Fastest Lap</label>
             <span>${formatLapSafe(stats.fastest)}</span>
             <small class="stat-sub">
-              (${stats.validLapCount} laps)
+              ${
+                stats.fastestMeta
+                  ? `(${stats.fastestMeta.year} - ${stats.fastestMeta.run})`
+                  : ""
+              }
             </small>
           </div>
 
           <div>
             <label>Average Lap</label>
             <span>${formatLapSafe(stats.average)}</span>
+            <small class="stat-sub">
+              (${stats.validLapCount} laps)
+            </small>
           </div>
 
           <div>
             <label>Total Laps</label>
-            <span>
-              ${stats.validLapCount}
-              <small>(+${stats.totalLapCount - stats.validLapCount} practice)</small>
-            </span>
+            <span>${stats.validLapCount}</span>
+            <small class="stat-sub">
+              (+${stats.totalLapCount - stats.validLapCount} practice)
+            </small>
           </div>
         </div>
 
@@ -419,21 +426,28 @@ function renderAllTimePlaceholder() {
             <label>Fastest Lap</label>
             <span>${formatLapSafe(stats.fastest)}</span>
             <small class="stat-sub">
-              (${stats.validLapCount} laps)
+              ${
+                stats.fastestMeta
+                  ? `(${stats.fastestMeta.year} - ${stats.fastestMeta.run})`
+                  : ""
+              }
             </small>
           </div>
 
           <div>
             <label>Average Lap</label>
             <span>${formatLapSafe(stats.average)}</span>
+            <small class="stat-sub">
+              (${stats.validLapCount} laps)
+            </small>
           </div>
 
           <div>
             <label>Total Laps</label>
-            <span>
-              ${stats.validLapCount}
-              <small>(+${stats.totalLapCount - stats.validLapCount} practice)</small>
-            </span>
+            <span>${stats.validLapCount}</span>
+            <small class="stat-sub">
+              (+${stats.totalLapCount - stats.validLapCount} practice)
+            </small>
           </div>
         </div>
 
@@ -573,32 +587,37 @@ function calculateAllTimeStats(driverRows) {
   let validLaps = [];
   let allLaps = [];
 
+  let fastest = null;
+  let fastestMeta = null;
+
   driverRows.forEach(row => {
     const runs = [
-      row.run_1_time,
-      row.run_2_time,
-      row.run_3_time
+      { key: "R1", value: row.run_1_time },
+      { key: "R2", value: row.run_2_time },
+      { key: "R3", value: row.run_3_time }
     ];
 
     const practice = row.run_p_time;
 
-    // Competitive laps
-    runs.forEach(t => {
-      if (Number.isFinite(t) && t > 0) {
-        validLaps.push(t);
-        allLaps.push(t);
+    runs.forEach(r => {
+      if (Number.isFinite(r.value) && r.value > 0) {
+        validLaps.push(r.value);
+        allLaps.push(r.value);
+
+        if (fastest === null || r.value < fastest) {
+          fastest = r.value;
+          fastestMeta = {
+            year: row._year,
+            run: r.key
+          };
+        }
       }
     });
 
-    // Practice laps (only count in total laps, not average)
     if (Number.isFinite(practice) && practice > 0) {
       allLaps.push(practice);
     }
   });
-
-  const fastest = validLaps.length
-    ? Math.min(...validLaps)
-    : null;
 
   const average = validLaps.length
     ? validLaps.reduce((a, b) => a + b, 0) / validLaps.length
@@ -606,6 +625,7 @@ function calculateAllTimeStats(driverRows) {
 
   return {
     fastest,
+    fastestMeta,
     average,
     validLapCount: validLaps.length,
     totalLapCount: allLaps.length
