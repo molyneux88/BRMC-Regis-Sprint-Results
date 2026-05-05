@@ -310,6 +310,22 @@ function renderAllTimePlaceholder() {
 
   const driverRows = allData.filter(r => r.driver === currentDriver);
   const stats = calculateAllTimeStats(driverRows);
+  const rankedLaps = buildRankedLapTimes(driverRows);
+
+  const lapRows = rankedLaps.map((lap, i) => {
+  const isSelected = selectedYearPills.size === 0 
+      || selectedYearPills.has(lap.year);
+
+    return `
+      <div class="lap-row ${isSelected ? "" : "dimmed"}" data-year="${lap.year}">
+        <div class="col rank">${i + 1}</div>
+        <div class="col year">${lap.year}</div>
+        <div class="col run">${lap.run}</div>
+        <div class="col car">${lap.car} • Class ${lap.class}</div>
+        <div class="col time">${formatLapSafe(lap.time)}</div>
+      </div>
+    `;
+  }).join("");
 
   container.innerHTML = mobile
     ? `
@@ -628,4 +644,33 @@ function calculateAllTimeStats(driverRows) {
     validLapCount: validLaps.length,
     totalLapCount: allLaps.length
   };
+}
+
+function buildRankedLapTimes(driverRows) {
+  const laps = [];
+
+  driverRows.forEach(row => {
+    const runs = [
+      { key: "R1", value: row.run_1_time },
+      { key: "R2", value: row.run_2_time },
+      { key: "R3", value: row.run_3_time }
+    ];
+
+    runs.forEach(r => {
+      if (Number.isFinite(r.value) && r.value > 0) {
+        laps.push({
+          time: r.value,
+          year: row._year,
+          run: r.key,
+          car: row.car,
+          class: row.class
+        });
+      }
+    });
+  });
+
+  // Sort fastest first
+  laps.sort((a, b) => a.time - b.time);
+
+  return laps;
 }

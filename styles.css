@@ -1503,6 +1503,14 @@ main {
   margin-bottom: 8px;
 }
 
+/* Desktop */
+@media (min-width: 769px) {
+  .alltime-header {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+}
+
 /* ==============================
    Year Pills
 ================================ */
@@ -1539,10 +1547,13 @@ main {
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  opacity: 0.9;
 }
 
 .clear-btn:hover {
   background: #e0484d;
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 .clear-wrapper {
@@ -1556,4 +1567,45 @@ main {
 .car-item span.range {
   color: #666;
   margin-right: 6px;
+}
+
+/* ==============================
+   Lap Ranking
+================================ */
+
+.lap-header,
+.lap-row {
+  display: grid;
+  grid-template-columns: 50px 70px 60px 1fr 100px;
+  gap: 10px;
+  align-items: center;
+}
+
+.lap-header {
+  font-weight: 600;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.lap-row {
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.lap-row:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.lap-row.dimmed {
+  opacity: 0.35;
+}
+
+@media (max-width: 768px) {
+  .lap-header,
+  .lap-row {
+    grid-template-columns: 40px 60px 50px 1fr 80px;
+    font-size: 0.75rem;
+  }
 }
