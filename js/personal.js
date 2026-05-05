@@ -313,6 +313,20 @@ function renderAllTimePlaceholder() {
   const rankedLaps = buildRankedLapTimes(driverRows);
 
   const lapRows = rankedLaps.map((lap, i) => {
+    const isSelected =
+      selectedYearPills.size === 0 ||
+      selectedYearPills.has(lap.year);
+
+    return `
+      <div class="lap-row ${isSelected ? "" : "dimmed"}" data-year="${lap.year}">
+        <div class="col rank">${i + 1}</div>
+        <div class="col year">${lap.year}</div>
+        <div class="col run">${lap.run}</div>
+        <div class="col car">${lap.car} • Class ${lap.class}</div>
+        <div class="col time">${formatLapSafe(lap.time)}</div>
+      </div>
+    `;
+  }).join("");
 
   const lapContainer = document.getElementById("lapTimesContainer");
 
@@ -337,20 +351,6 @@ function renderAllTimePlaceholder() {
     </div>
   `;
   }
-
-  const isSelected = selectedYearPills.size === 0 
-      || selectedYearPills.has(lap.year);
-
-    return `
-      <div class="lap-row ${isSelected ? "" : "dimmed"}" data-year="${lap.year}">
-        <div class="col rank">${i + 1}</div>
-        <div class="col year">${lap.year}</div>
-        <div class="col run">${lap.run}</div>
-        <div class="col car">${lap.car} • Class ${lap.class}</div>
-        <div class="col time">${formatLapSafe(lap.time)}</div>
-      </div>
-    `;
-  }).join("");
 
   container.innerHTML = mobile
     ? `
