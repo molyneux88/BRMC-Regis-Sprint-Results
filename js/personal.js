@@ -338,18 +338,22 @@ function renderAllTimePlaceholder() {
   lapContainer.innerHTML = `
     <div class="lap-times-section">
 
-      <div class="lap-times-title">All Lap Times</div>
+      <div class="lap-inner">
 
-      <div class="lap-header">
-        <div class="col rank">#</div>
-        <div class="col year">Year</div>
-        <div class="col run">Run</div>
-        <div class="col car">Car</div>
-        <div class="col time">Time</div>
-      </div>
+        <div class="lap-times-title">All Lap Times</div>
 
-      <div class="lap-body">
-        ${lapRows}
+        <div class="lap-header">
+          <div class="col rank">#</div>
+          <div class="col year">Year</div>
+          <div class="col run">Run</div>
+          <div class="col car">Car</div>
+          <div class="col time">Time</div>
+        </div>
+
+        <div class="lap-body">
+          ${lapRows}
+        </div>
+      
       </div>
 
     </div>

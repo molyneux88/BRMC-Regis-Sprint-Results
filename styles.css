@@ -1618,11 +1618,20 @@ body.alltime-mode .lap-body {
   }
 }
 
+/* Outer stays full width */
 .lap-times-section {
+  width: 100%;
   margin-top: 24px;
   padding: 16px;
   border-radius: 12px;
-  background: #111111; /* slightly different to main card */
+  background: #111111;
+}
+
+/* Inner gets constrained */
+.lap-inner {
+  max-width: 900px;   /* tweak this (800–1100 depending on taste) */
+  margin: 0 auto;     /* centers it */
+  width: 100%;
 }
 
 .lap-times-title {
