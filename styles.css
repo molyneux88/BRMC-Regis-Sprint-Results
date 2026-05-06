@@ -1578,11 +1578,12 @@ main {
   display: grid;
   grid-template-columns: 60px 80px 80px 1fr 120px;
   align-items: center;
+  margin-right: 50px;
 }
 
-.lap-body {
-  max-height: 400px;
-  overflow-y: auto;
+body.alltime-mode .lap-body {
+  max-height: none;
+  overflow: visible;
 }
 
 .lap-header {
@@ -1613,6 +1614,7 @@ main {
   .lap-row {
     grid-template-columns: 40px 60px 50px 1fr 80px;
     font-size: 0.75rem;
+    margin-right: 0px;
   }
 }
 
@@ -1644,9 +1646,25 @@ main {
 .col.rank { text-align: center; }
 .col.year { text-align: center; }
 .col.run  { text-align: center; }
-.col.time { text-align: right; }
+.col.car  { text-align: center; }
+.col.time { text-align: center; }
 
 .lap-row.practice .col.run {
   opacity: 0.6;
   font-style: italic;
+}
+
+/* ==============================
+   ALL TIME MODE — ENABLE FULL PAGE SCROLL
+================================ */
+body.alltime-mode {
+  overflow-y: auto;
+}
+
+body.alltime-mode main {
+  overflow: visible;
+}
+
+body.alltime-mode #leaderboard-wrapper {
+  overflow: visible;
 }

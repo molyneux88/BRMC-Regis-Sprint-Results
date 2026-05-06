@@ -20,9 +20,13 @@ function toggleViewMode() {
   if (year === "all") {
     yearView.style.display = "none";
     allTimeView.style.display = "block";
+
+    document.body.classList.add("alltime-mode");
   } else {
     yearView.style.display = "block";
     allTimeView.style.display = "none";
+
+    document.body.classList.remove("alltime-mode");
   }
 }
 
@@ -322,7 +326,7 @@ function renderAllTimePlaceholder() {
         <div class="col rank">${i + 1}</div>
         <div class="col year">${lap.year}</div>
         <div class="col run">${lap.run}</div>
-        <div class="col car">${lap.car} • Class ${lap.class}</div>
+        <div class="col car">${lap.car}</div>
         <div class="col time">${formatLapSafe(lap.time)}</div>
       </div>
     `;
