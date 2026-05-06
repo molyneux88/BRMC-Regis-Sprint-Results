@@ -318,7 +318,7 @@ function renderAllTimePlaceholder() {
       selectedYearPills.has(lap.year);
 
     return `
-      <div class="lap-row ${isSelected ? "" : "dimmed"}" data-year="${lap.year}">
+      <div class="lap-row ${isSelected ? "" : "dimmed"}" ${lap.isPractice ? "practice" : ""} data-year="${lap.year}">
         <div class="col rank">${i + 1}</div>
         <div class="col year">${lap.year}</div>
         <div class="col run">${lap.run}</div>
@@ -676,6 +676,7 @@ function buildRankedLapTimes(driverRows) {
 
   driverRows.forEach(row => {
     const runs = [
+      { key: "P", value: row.run_p_time },
       { key: "R1", value: row.run_1_time },
       { key: "R2", value: row.run_2_time },
       { key: "R3", value: row.run_3_time }
@@ -688,7 +689,8 @@ function buildRankedLapTimes(driverRows) {
           year: row._year,
           run: r.key,
           car: row.car,
-          class: row.class
+          class: row.class,
+          isPractice: r.key === "P"
         });
       }
     });
