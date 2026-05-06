@@ -1,3 +1,11 @@
+// 🔥 Persistent cache (survives page navigation)
+window.__allTimeCache = window.__allTimeCache || new Map();
+const allTimeCache = window.__allTimeCache;
+
+// 🔥 Lap lookup cache
+window.__lapsByDriver = window.__lapsByDriver || new Map();
+const lapsByDriver = window.__lapsByDriver;
+
 const API_URL = "https://lap-times-proxy.molyneux-88.workers.dev/";
 
 import { getSelectedYear, onYearChange } from "./state.js";
@@ -105,6 +113,20 @@ async function loadPersonalData() {
     .filter(r => r.driver)
     .sort((a, b) => a.driver.localeCompare(b.driver));
 
+    // 🔥 Build lookup immediately (fast)
+  buildAllLapLookups();
+
+  // 🔥 Precompute in background (once per dataset load)
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(() => {
+      precomputeAllDrivers();
+    });
+  } else {
+    setTimeout(() => {
+      precomputeAllDrivers();
+    }, 0);
+  }
+
   buildDropdown();
 
   if (!currentDriver && allData.length) {
@@ -169,10 +191,6 @@ function buildDropdown() {
    Render
 --------------------------------*/
 function renderPersonal() {
-
-  if (getSelectedYear() === "all") {
-    return;
-  }
 
   const container = isMobileView()
     ? document.getElementById("personalDetailsMobile")
@@ -300,7 +318,8 @@ function renderAllTimePlaceholder() {
 
   const mobile = isMobileView();
 
-  const { years, cars } = getDriverHistory(currentDriver);
+  const { history, stats, rankedLaps } = getAllTimeComputed(currentDriver);
+  const { years, cars } = history;
 
   const yearPills = years.map(year =>
     `<span class="year-pill ${selectedYearPills.has(year) ? "active" : ""}" data-year="${year}">${year}</span>`
@@ -312,9 +331,7 @@ function renderAllTimePlaceholder() {
     </div>
   `).join("");
 
-  const driverRows = allData.filter(r => r.driver === currentDriver);
-  const stats = calculateAllTimeStats(driverRows);
-  const rankedLaps = buildRankedLapTimes(driverRows);
+  
 
   const lapRows = rankedLaps.map((lap, i) => {
     const isSelected =
@@ -708,4 +725,67 @@ function buildRankedLapTimes(driverRows) {
   laps.sort((a, b) => a.time - b.time);
 
   return laps;
+}
+
+function getAllTimeComputed(driver) {
+  if (allTimeCache.has(driver)) {
+    return allTimeCache.get(driver);
+  }
+
+  const driverRows = allData.filter(r => r.driver === driver);
+
+  const computed = {
+    history: getDriverHistory(driver),
+    stats: calculateAllTimeStats(driverRows),
+    rankedLaps: buildRankedLapTimes(driverRows)
+  };
+
+  allTimeCache.set(driver, computed);
+  return computed;
+}
+
+function buildAllLapLookups() {
+  if (lapsByDriver.size) return; // already built
+
+  allData.forEach(row => {
+    if (!lapsByDriver.has(row.driver)) {
+      lapsByDriver.set(row.driver, []);
+    }
+
+    const laps = lapsByDriver.get(row.driver);
+
+    const runs = [
+      { key: "P", value: row.run_p_time },
+      { key: "R1", value: row.run_1_time },
+      { key: "R2", value: row.run_2_time },
+      { key: "R3", value: row.run_3_time }
+    ];
+
+    runs.forEach(r => {
+      if (Number.isFinite(r.value) && r.value > 0) {
+        laps.push({
+          time: r.value,
+          year: row._year,
+          run: r.key,
+          car: row.car,
+          class: row.class
+        });
+      }
+    });
+  });
+
+  // Sort once per driver
+  lapsByDriver.forEach(laps => {
+    laps.sort((a, b) => a.time - b.time);
+  });
+}
+
+function precomputeAllDrivers() {
+  if (!allData.length) return;
+
+  const drivers = [...new Set(allData.map(r => r.driver))];
+
+  drivers.forEach(driver => {
+    getAllTimeComputed(driver);
+  });
 }
